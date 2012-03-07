@@ -1,0 +1,39 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
+	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+
+    <f:entry title="${%STUDD}">
+        <f:textbox name="rotator.stuff"/>
+    </f:entry>
+    
+		<f:block>
+			<div name="acrs">
+	  		<f:descriptorRadioList title="Snade" descriptors="${descriptor.getSCMs()}" targetType="net.praqma.jenkins.configrotatorAbstractConfigurationRotatorSCM" />
+	  		</div>
+		</f:block>
+
+		<f:block>
+			<div name="acrs">
+	  		<f:hetero-radio descriptors="${descriptor.getSCMs()}" field="${instance.acrs}" />
+	  		</div>
+		</f:block>
+	
+	
+	<!-- 
+	<f:block>
+	  <f:hetero-list name="acrs" hasHeader="true"
+	                 descriptors="${descriptor.getSCMs()}"
+	                 items="${instance.acrs}"
+	                 addCaption="Add SCM"
+	                 deleteCaption = "Delete SCM"/>
+	</f:block>
+	 -->
+ 
+LIST = ${descriptor.getSCMs()}
+<!-- 
+	<select class="setting-input" name="snade">
+		<j:forEach var="t" items="${types}">
+			<f:option selected="${t == inst.name}" value="${t}">${instance.getGraph(t).getDisplayName()}</f:option>
+		</j:forEach>
+	</select>
+ -->
+</j:jelly>
