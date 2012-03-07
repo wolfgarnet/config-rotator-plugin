@@ -19,7 +19,7 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
 
 	@Override
 	public Descriptor<AbstractConfigurationRotatorSCM> getDescriptor() {
-		return (ConfigurationRotatorSCMDescriptor) Jenkins.getInstance().getDescriptorOrDie( getClass() );
+		return (ConfigurationRotatorSCMDescriptor<?>) Jenkins.getInstance().getDescriptorOrDie( getClass() );
 	}
 
 	/**
@@ -29,10 +29,10 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
 		return Jenkins.getInstance().<AbstractConfigurationRotatorSCM, ConfigurationRotatorSCMDescriptor<AbstractConfigurationRotatorSCM>> getDescriptorList( AbstractConfigurationRotatorSCM.class );
 	}
 	
-	public static List<ConfigurationRotatorSCMDescriptor> getDescriptors() {
-		List<ConfigurationRotatorSCMDescriptor> list = new ArrayList<ConfigurationRotatorSCMDescriptor>();
+	public static List<ConfigurationRotatorSCMDescriptor<?>> getDescriptors() {
+		List<ConfigurationRotatorSCMDescriptor<?>> list = new ArrayList<ConfigurationRotatorSCMDescriptor<?>>();
 		System.out.println( "LIST: " + all() );
-		for( ConfigurationRotatorSCMDescriptor d : all() ) {
+		for( ConfigurationRotatorSCMDescriptor<?> d : all() ) {
 			list.add( d );
 		}
 		
