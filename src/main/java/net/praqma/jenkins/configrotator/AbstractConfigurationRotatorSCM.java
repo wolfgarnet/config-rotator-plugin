@@ -25,12 +25,13 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
 	/**
 	 * All registered {@link AbstractConfigurationRotatorSCM}s.
 	 */
-	public static DescriptorExtensionList<AbstractConfigurationRotatorSCM, ConfigurationRotatorSCMDescriptor> all() {
-		return Jenkins.getInstance().<AbstractConfigurationRotatorSCM, ConfigurationRotatorSCMDescriptor> getDescriptorList( AbstractConfigurationRotatorSCM.class );
+	public static DescriptorExtensionList<AbstractConfigurationRotatorSCM, ConfigurationRotatorSCMDescriptor<AbstractConfigurationRotatorSCM>> all() {
+		return Jenkins.getInstance().<AbstractConfigurationRotatorSCM, ConfigurationRotatorSCMDescriptor<AbstractConfigurationRotatorSCM>> getDescriptorList( AbstractConfigurationRotatorSCM.class );
 	}
 	
 	public static List<ConfigurationRotatorSCMDescriptor> getDescriptors() {
 		List<ConfigurationRotatorSCMDescriptor> list = new ArrayList<ConfigurationRotatorSCMDescriptor>();
+		System.out.println( "LIST: " + all() );
 		for( ConfigurationRotatorSCMDescriptor d : all() ) {
 			list.add( d );
 		}

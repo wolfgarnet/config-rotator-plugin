@@ -1,6 +1,5 @@
 package net.praqma.jenkins.configrotator;
 
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -70,7 +69,35 @@ public class ConfigurationRotator extends SCM {
 		public String getDisplayName() {
 			return "Config rotator";
 		}
+		
+		/*
+		@Override
+		public SCM newInstance(StaplerRequest req, JSONObject formData)	throws FormException {
+			System.out.println( formData.toString( 2 ) );
+			return super.newInstance(req, formData);
+		}
+		*/
 
+
+		@Override
+		public ConfigurationRotator newInstance(StaplerRequest req, JSONObject formData) throws FormException {
+			System.out.println( formData.toString( 2 ) );
+			
+			Class<?> cl = null;
+			JSONObject acrs = (JSONObject)formData.get( "acrs" );
+			try {
+					cl = Class.forName( (String) acrs.get( "stapler-class" ) );
+			} catch( ClassNotFoundException e ) {
+				throw new FormException( "WHAT?", "THE?!" );
+			}
+			System.out.println( "CLASS: " + cl );
+			AbstractConfigurationRotatorSCM scm = (AbstractConfigurationRotatorSCM) req.bindJSON( cl, acrs );
+			
+			return new ConfigurationRotator( scm );
+			//return super.newInstance(req, formData);
+		}
+
+		/*
 		@Override
 		public SCM newInstance( StaplerRequest req, JSONObject formData ) throws FormException {
 			System.out.println( formData.toString( 2 ) );
@@ -81,10 +108,12 @@ public class ConfigurationRotator extends SCM {
 			System.out.println( "---->"  + instance );
 			return instance;
 		}
+		*/
 
 		public List<ConfigurationRotatorSCMDescriptor> getSCMs() {
 			return AbstractConfigurationRotatorSCM.getDescriptors();
 		}
+		
 	}
 
 }

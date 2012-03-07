@@ -6,30 +6,30 @@ import hudson.Extension;
 import net.praqma.jenkins.configrotator.AbstractConfigurationRotatorSCM;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorSCMDescriptor;
 
-public class ClearCaseUCM extends AbstractConfigurationRotatorSCM {
+public class Mercurial extends AbstractConfigurationRotatorSCM {
 
-	private String baseline;
+	private String commit;
 	
 	@DataBoundConstructor
-	public ClearCaseUCM( String baseline ) {
-		this.baseline = baseline;
+	public Mercurial( String commit ) {
+		this.commit = commit;
 	}
 	
-	public String getBaseline() {
-		return baseline;
+	public String getCommit() {
+		return commit;
 	}
 	
 	@Override
 	public String getName() {
-		return "ClearCase UCM";
+		return "Mercurial";
 	}
 
 	@Extension
-	public static final class ClearCaseUCMDescriptor extends ConfigurationRotatorSCMDescriptor<ClearCaseUCM> {
+	public static final class MercurialDescriptor extends ConfigurationRotatorSCMDescriptor<Mercurial> {
 
 		@Override
 		public String getDisplayName() {
-			return "ClearCase UCM";
+			return "Mercurial";
 		}
 		
 	}
