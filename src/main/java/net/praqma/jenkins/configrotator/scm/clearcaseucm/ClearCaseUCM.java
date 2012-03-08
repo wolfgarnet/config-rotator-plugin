@@ -19,15 +19,26 @@ import net.praqma.jenkins.configrotator.ConfigurationRotatorSCMDescriptor;
 
 public class ClearCaseUCM extends AbstractConfigurationRotatorSCM {
 
-	private String baseline;
+	private String config;
 
+	/**
+	 * Version 0.1.0 constructor
+	 * 
+	 * Parse config
+	 * Each line represents a {@link Component}, {@link Stream}, {@link Baseline} and a {@Plevel plevel}
+	 * @param config
+	 */
 	@DataBoundConstructor
-	public ClearCaseUCM( String baseline ) {
-		this.baseline = baseline;
+	public ClearCaseUCM( String config ) {
+		this.config = config;
+		
+		/* Parse config */
+		config.split( "\\n" );
+		
 	}
 
-	public String getBaseline() {
-		return baseline;
+	public String getConfig() {
+		return config;
 	}
 
 	@Override
