@@ -110,7 +110,7 @@ public class ConfigurationRotator extends SCM {
 		}
 		*/
 
-		public List<ConfigurationRotatorSCMDescriptor> getSCMs() {
+		public List<ConfigurationRotatorSCMDescriptor<?>> getSCMs() {
 			return AbstractConfigurationRotatorSCM.getDescriptors();
 		}
 		

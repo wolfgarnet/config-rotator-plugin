@@ -1,4 +1,4 @@
-package net.praqma.jenkins.configrotator.scm;
+package net.praqma.jenkins.configrotator.scm.clearcaseucm;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
