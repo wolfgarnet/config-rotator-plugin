@@ -2,6 +2,7 @@ package net.praqma.jenkins.configrotator;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -41,9 +42,12 @@ public class ConfigurationRotator extends SCM {
 	}
 
 	@Override
-	public boolean checkout( AbstractBuild<?, ?> arg0, Launcher arg1, FilePath arg2, BuildListener arg3, File arg4 ) throws IOException, InterruptedException {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean checkout( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, File file ) throws IOException, InterruptedException {
+		PrintStream out = listener.getLogger();
+		
+		out.println( "[CR] Check out" );
+		
+		return acrs.perform( build, launcher, workspace, listener );
 	}
 
 	@Override

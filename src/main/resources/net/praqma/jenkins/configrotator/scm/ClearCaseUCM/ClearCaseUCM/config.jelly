@@ -1,8 +1,39 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
 	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+	
+     <script>
+       <!-- update the visual feedback depending on the checkbox state -->
+       function updateRow(e,i) {
+         e.parentNode.parentNode.style.color = e.checked ? "inherit" : "grey";
+         $("name"+i).disabled = !e.checked;
+       }
+       
+       function test() {
+       		alert("YAY");
+       }
+     </script>
 
     <f:entry title="${%Baseline}">
-        <f:textbox name="ccucm.baseline" value="${instance.baseline}"/>
+        <f:textbox name="ccucm.baseline" value="${instance.baseline}" onchange="" />
     </f:entry>
+    
+    
+    <div class="prototypes to-be-removed">
+      <!-- render one prototype for each type -->
+      <j:forEach var="configuration" items="${descriptor.getConfigurations()}" varStatus="loop">
+        <div name="configs" title="SNADE" tooltip="NOGET" descriptorId="1">
+          <d:invokeBody />
+          <l:renderOnDemand tag="tr" clazz="config-page" capture="">
+            <l:ajax>
+              <!-- <st:include from="${configuration}" page="${descriptor.configPage}" optional="true" /> -->
+              <b>HEJ</b>
+            </l:ajax>
+          </l:renderOnDemand>
+        </div>
+      </j:forEach>
+    </div>
+    
+    <input type="button" onclick="test()" />
+    
 
 </j:jelly>
