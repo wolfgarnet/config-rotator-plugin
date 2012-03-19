@@ -13,6 +13,7 @@ import org.kohsuke.stapler.StaplerRequest;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
+import hudson.model.Action;
 import hudson.model.BuildListener;
 import hudson.model.TaskListener;
 import hudson.model.AbstractBuild;
@@ -26,6 +27,13 @@ import hudson.scm.SCM;
 public class ConfigurationRotator extends SCM {
 	
 	private AbstractConfigurationRotatorSCM acrs;
+	
+	public enum ResultType {
+		COMPATIBLE,   /* Tested and configuration is compatible */
+		INCOMPATIBLE, /* Tested and configuration is NOT compatible */
+		FAILED,       /* The tests failed and was unable to determine compatibility */
+		UNDETERMINED
+	}
 	
 	public ConfigurationRotator( AbstractConfigurationRotatorSCM acrs ) {
 		this.acrs = acrs;

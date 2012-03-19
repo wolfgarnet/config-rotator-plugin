@@ -11,6 +11,7 @@ import hudson.ExtensionPoint;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
@@ -38,11 +39,26 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
 	
 	public static List<ConfigurationRotatorSCMDescriptor<?>> getDescriptors() {
 		List<ConfigurationRotatorSCMDescriptor<?>> list = new ArrayList<ConfigurationRotatorSCMDescriptor<?>>();
-		System.out.println( "LIST: " + all() );
 		for( ConfigurationRotatorSCMDescriptor<?> d : all() ) {
 			list.add( d );
 		}
 		
 		return list;
+	}
+	
+	public ConfigurationRotatorBuildAction getLastResult( AbstractProject<?, ?> project, Class<? extends AbstractConfigurationRotatorSCM> clazz ) {
+		for( AbstractBuild<?, ?> b = getLastBuildToBeConsidered( project ); b != null; b = b.getPreviousNotFailedBuild() ) {
+			
+			ConfigurationRotatorBuildAction r = b.getAction( ConfigurationRotatorBuildAction.class );
+			if( r != null && r.isDetermined() && r.getClazz().equals( clazz ) ) {
+				return r;
+			}
+		}
+		
+		return null;
+	}
+	
+	private AbstractBuild<?, ?> getLastBuildToBeConsidered( AbstractProject<?, ?> project ) {
+		return project.getLastCompletedBuild();
 	}
 }
