@@ -8,29 +8,23 @@ import net.praqma.clearcase.ucm.entities.Component;
 import net.praqma.clearcase.ucm.entities.Project;
 import net.praqma.clearcase.ucm.entities.Project.PromotionLevel;
 import net.praqma.clearcase.ucm.entities.Stream;
-import net.praqma.jenkins.configrotator.AbstractComponentConfiguration;
+import net.praqma.jenkins.configrotator.AbstractConfigurationComponent;
 
-public class ClearCaseUCMComponentConfiguration extends AbstractComponentConfiguration {
+public class ClearCaseUCMConfigurationComponent extends AbstractConfigurationComponent {
 
 	private static final long serialVersionUID = -1777151365163767788L;
 	
-	private Component component;
-	private Stream stream;
 	private Baseline baseline;
 	private PromotionLevel plevel;
 	private boolean fixed;
 	
-	public ClearCaseUCMComponentConfiguration( Component component, Stream stream, Baseline baseline, PromotionLevel plevel, boolean fixed ) {
-		this.component = component;
-		this.stream = stream;
+	public ClearCaseUCMConfigurationComponent( Baseline baseline, PromotionLevel plevel, boolean fixed ) {
 		this.baseline = baseline;
 		this.plevel = plevel;
 		this.fixed = fixed;
 	}
 	
-	public ClearCaseUCMComponentConfiguration( String component, String stream, String baseline, String plevel, String fixed ) throws ClearCaseException {
-		this.component = Component.get( component, false );
-		this.stream = Stream.get( stream, false );
+	public ClearCaseUCMConfigurationComponent( String baseline, String plevel, String fixed ) throws ClearCaseException {
 		this.baseline = Baseline.get( baseline, false );
 		this.plevel = Project.PromotionLevel.valueOf( plevel );
 		if( fixed.equalsIgnoreCase( "manuel" ) || fixed.equalsIgnoreCase( "" ) ) {
@@ -38,14 +32,6 @@ public class ClearCaseUCMComponentConfiguration extends AbstractComponentConfigu
 		} else {
 			this.fixed = false;
 		}
-	}
-
-	public Component getComponent() {
-		return component;
-	}
-
-	public Stream getStream() {
-		return stream;
 	}
 
 	public Baseline getBaseline() {

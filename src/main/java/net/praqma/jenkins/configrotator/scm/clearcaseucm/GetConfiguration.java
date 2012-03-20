@@ -9,7 +9,7 @@ import hudson.FilePath.FileCallable;
 import hudson.model.TaskListener;
 import hudson.remoting.VirtualChannel;
 
-public class GetConfiguration implements FileCallable<ClearCaseUCMComponentConfiguration> {
+public class GetConfiguration implements FileCallable<ClearCaseUCMConfigurationComponent> {
 	
 	private String[] units;
 	private TaskListener listener;
@@ -19,11 +19,11 @@ public class GetConfiguration implements FileCallable<ClearCaseUCMComponentConfi
 		this.listener = listener;
 	}
 	
-	public ClearCaseUCMComponentConfiguration invoke( File f, VirtualChannel channel ) throws IOException, InterruptedException {
+	public ClearCaseUCMConfigurationComponent invoke( File f, VirtualChannel channel ) throws IOException, InterruptedException {
 		PrintStream out = listener.getLogger();
 		
 		try {
-			return new ClearCaseUCMComponentConfiguration( units[0].trim(), units[1].trim(), units[2].trim(), units[3].trim(), units[4].trim() );
+			return new ClearCaseUCMConfigurationComponent( units[0].trim(), units[1].trim(), units[2].trim() );
 		} catch( ClearCaseException e ) {
 			e.print( out );
 			return null;

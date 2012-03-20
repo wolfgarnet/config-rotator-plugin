@@ -9,9 +9,9 @@ public class ConfigurationRotatorBuildAction implements Action {
 	private AbstractBuild<?, ?> build;
 	private Class<? extends AbstractConfigurationRotatorSCM> clazz;
 	private ResultType result = ResultType.UNDETERMINED;
-	private AbstractConfigurationActionElement configuration;
+	private AbstractConfiguration configuration;
 	
-	public ConfigurationRotatorBuildAction( AbstractBuild<?, ?> build, Class<? extends AbstractConfigurationRotatorSCM> clazz, AbstractConfigurationActionElement configuration ) {
+	public ConfigurationRotatorBuildAction( AbstractBuild<?, ?> build, Class<? extends AbstractConfigurationRotatorSCM> clazz, AbstractConfiguration configuration ) {
 		this.build = build;
 		this.clazz = clazz;
 		this.configuration = configuration;
@@ -53,7 +53,7 @@ public class ConfigurationRotatorBuildAction implements Action {
 		return build;
 	}
 	
-	public AbstractConfigurationActionElement getConfiguration() {
+	public AbstractConfiguration getConfiguration() {
 		return configuration;
 	}
 }

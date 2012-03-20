@@ -24,11 +24,12 @@ import net.praqma.clearcase.exceptions.ClearCaseException;
 import net.praqma.clearcase.exceptions.UCMEntityNotFoundException;
 import net.praqma.clearcase.exceptions.UnableToCreateEntityException;
 import net.praqma.clearcase.exceptions.UnableToGetEntityException;
+import net.praqma.clearcase.exceptions.UnableToLoadEntityException;
 import net.praqma.clearcase.ucm.entities.Baseline;
 import net.praqma.clearcase.ucm.entities.Project;
 import net.praqma.clearcase.ucm.entities.Stream;
 import net.praqma.clearcase.ucm.view.SnapshotView;
-import net.praqma.jenkins.configrotator.AbstractComponentConfiguration;
+import net.praqma.jenkins.configrotator.AbstractConfigurationComponent;
 import net.praqma.jenkins.configrotator.AbstractConfigurationRotatorSCM;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorBuildAction;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorException;
@@ -43,7 +44,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	private static Logger logger = Logger.getLogger();
 
 	private String config;
-	private List<AbstractComponentConfiguration> list = new ArrayList<AbstractComponentConfiguration>();
+	private ClearCaseUCMConfiguration configuration;
 
 	
 	private String streamName;
@@ -89,17 +90,19 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		}
 		
 		ConfigurationRotatorBuildAction action = getLastResult( build.getProject(), ClearCaseUCM.class );
+		/* If there's no action, this is the first run */
 		if( action == null ) {
 			try {
-				list = inputToConfiguration( workspace, listener );
+				configuration = ClearCaseUCMConfiguration.getConfigurationFromString( config, workspace, listener );
 			} catch( ConfigurationRotatorException e ) {
 				out.println( "Unable to parse input: " + e.getMessage() );
 			}
 		} else {
-			list = action.getConfiguration().getList();
+			/* Get the configuration from the action */
+			ClearCaseUCMConfiguration oldConfiguration = (ClearCaseUCMConfiguration) action.getConfiguration();
 			/* Get next configuration */
 			try {
-				nextConfiguration( listener, build, list, workspace, stream.getPVob() );
+				configuration = nextConfiguration( listener, build, oldConfiguration, workspace, stream.getPVob() );
 			} catch( Exception e ) {
 				out.println( "Unable to get next configuration: " + e.getMessage() );
 				return false;
@@ -108,26 +111,31 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		
 		
 		/* Just try to save */
-		ConfigurationRotatorBuildAction action1 = new ConfigurationRotatorBuildAction( build, ClearCaseUCM.class, new ClearCaseUCMConfigurationAction( list ) );
+		ConfigurationRotatorBuildAction action1 = new ConfigurationRotatorBuildAction( build, ClearCaseUCM.class, configuration );
 		build.addAction( action1 );
 		
 		return true;
 	}
 	
-	private void nextConfiguration( TaskListener listener, AbstractBuild<?, ?> build, List<AbstractComponentConfiguration> list, FilePath workspace, PVob pvob ) throws IOException, InterruptedException {
+	private ClearCaseUCMConfiguration nextConfiguration( TaskListener listener, AbstractBuild<?, ?> build, ClearCaseUCMConfiguration configuration, FilePath workspace, PVob pvob ) throws IOException, InterruptedException {
 		Project project = null;
 
 		project = workspace.act( new DetermineProject( Arrays.asList( new String[] { "jenkins" } ), pvob ) );
 		
 		List<Baseline> selectedBaselines = new ArrayList<Baseline>();
 		
-		for( AbstractComponentConfiguration config : list ) {
-			ClearCaseUCMComponentConfiguration c = (ClearCaseUCMComponentConfiguration)config;
+		for( AbstractConfigurationComponent config : configuration.getList() ) {
+			ClearCaseUCMConfigurationComponent c = (ClearCaseUCMConfigurationComponent)config;
 			List<Baseline> baselines = null;
 			if( c.isFixed() ) {
 				selectedBaselines.add( c.getBaseline() );
 			} else {
-				baselines = workspace.act( new GetBaselines( listener, c.getComponent(), c.getStream(), c.getPlevel(), c.getBaseline() ) );
+				try {
+					baselines = workspace.act( new GetBaselines( listener, c.getBaseline().getComponent(), c.getBaseline().getStream(), c.getPlevel(), c.getBaseline() ) );
+				} catch( ClearCaseException e ) {
+					e.print( listener.getLogger() );
+					/* Continue */
+				}
 				
 			}
 		}
@@ -136,44 +144,11 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		String viewtag = "cr-" + build.getDisplayName().replaceAll( "\\s", "_" ) + "-" + System.getenv( "COMPUTERNAME" );
 		
 		SnapshotView view = workspace.act( new PrepareWorkspace( project, (Baseline[])selectedBaselines.toArray(), viewtag, listener ) );
+		
+		return null;
 	}
 	
-	private List<AbstractComponentConfiguration> inputToConfiguration( FilePath workspace, BuildListener listener ) throws ConfigurationRotatorException, IOException {
-		PrintStream out = listener.getLogger();
-		/* v 1 parsing */
-		
-		out.println( "CONFIG: " + config );
-		
-		/* Parse config */
-		String[] parts = config.split( "\\n" );
-		
-		/**/
-		List<AbstractComponentConfiguration> list = new ArrayList<AbstractComponentConfiguration>();
-		
-		/* Each line is component, stream, baseline, plevel, type */
-		for( String part : parts ) {
-			final String[] units = part.split( "," );
-			
-			if( units.length == 4 ) {
-				try {
-					ClearCaseUCMComponentConfiguration config = workspace.act( new GetConfiguration( units, listener ) );
-					out.println( "[Rotator] Config: " + config );
-					list.add( config );
-				} catch( InterruptedException e ) {
-					out.println( "[Rotator] Error: " + e.getMessage() );
-					
-					throw new ConfigurationRotatorException( "Unable parse input", e );
-				}
-			} else {
-				/* Do nothing */
-				out.println( "[Rotator] \"" + part + "\" was not correct" );
-				throw new ConfigurationRotatorException( "Wrong input, length is " + units.length );
-			}
-		}
-		
-		return list;
-	}
-	
+
 
 	@Extension
 	public static final class ClearCaseUCMDescriptor extends ConfigurationRotatorSCMDescriptor<ClearCaseUCM> {
