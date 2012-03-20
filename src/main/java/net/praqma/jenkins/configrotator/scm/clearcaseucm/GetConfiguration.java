@@ -23,7 +23,7 @@ public class GetConfiguration implements FileCallable<ClearCaseUCMComponentConfi
 		PrintStream out = listener.getLogger();
 		
 		try {
-			return new ClearCaseUCMComponentConfiguration( units[0].trim(), units[1].trim(), units[2].trim(), units[3].trim() );
+			return new ClearCaseUCMComponentConfiguration( units[0].trim(), units[1].trim(), units[2].trim(), units[3].trim(), units[4].trim() );
 		} catch( ClearCaseException e ) {
 			e.print( out );
 			return null;

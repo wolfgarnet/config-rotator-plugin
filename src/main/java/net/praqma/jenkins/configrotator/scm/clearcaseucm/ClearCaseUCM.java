@@ -24,6 +24,7 @@ import net.praqma.clearcase.exceptions.ClearCaseException;
 import net.praqma.clearcase.exceptions.UCMEntityNotFoundException;
 import net.praqma.clearcase.exceptions.UnableToCreateEntityException;
 import net.praqma.clearcase.exceptions.UnableToGetEntityException;
+import net.praqma.clearcase.ucm.entities.Baseline;
 import net.praqma.clearcase.ucm.entities.Project;
 import net.praqma.clearcase.ucm.entities.Stream;
 import net.praqma.clearcase.ucm.view.SnapshotView;
@@ -34,6 +35,7 @@ import net.praqma.jenkins.configrotator.ConfigurationRotatorException;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorSCMDescriptor;
 import net.praqma.jenkins.utils.remoting.DetermineProject;
 import net.praqma.jenkins.utils.remoting.LoadEntity;
+import net.praqma.jenkins.utils.remoting.GetBaselines;
 import net.praqma.util.debug.Logger;
 
 public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Serializable {
@@ -97,7 +99,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 			list = action.getConfiguration().getList();
 			/* Get next configuration */
 			try {
-				nextConfiguration( listener, list, workspace, stream.getPVob() );
+				nextConfiguration( listener, build, list, workspace, stream.getPVob() );
 			} catch( Exception e ) {
 				out.println( "Unable to get next configuration: " + e.getMessage() );
 				return false;
@@ -112,12 +114,28 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		return true;
 	}
 	
-	private void nextConfiguration( TaskListener listener, List<AbstractComponentConfiguration> list, FilePath workspace, PVob pvob ) throws IOException, InterruptedException {
+	private void nextConfiguration( TaskListener listener, AbstractBuild<?, ?> build, List<AbstractComponentConfiguration> list, FilePath workspace, PVob pvob ) throws IOException, InterruptedException {
 		Project project = null;
 
 		project = workspace.act( new DetermineProject( Arrays.asList( new String[] { "jenkins" } ), pvob ) );
 		
-		SnapshotView view = workspace.act( new PrepareWorkspace( project, listener ) );
+		List<Baseline> selectedBaselines = new ArrayList<Baseline>();
+		
+		for( AbstractComponentConfiguration config : list ) {
+			ClearCaseUCMComponentConfiguration c = (ClearCaseUCMComponentConfiguration)config;
+			List<Baseline> baselines = null;
+			if( c.isFixed() ) {
+				selectedBaselines.add( c.getBaseline() );
+			} else {
+				baselines = workspace.act( new GetBaselines( listener, c.getComponent(), c.getStream(), c.getPlevel(), c.getBaseline() ) );
+				
+			}
+		}
+		
+		/* Make a view tag*/
+		String viewtag = "cr-" + build.getDisplayName().replaceAll( "\\s", "_" ) + "-" + System.getenv( "COMPUTERNAME" );
+		
+		SnapshotView view = workspace.act( new PrepareWorkspace( project, (Baseline[])selectedBaselines.toArray(), viewtag, listener ) );
 	}
 	
 	private List<AbstractComponentConfiguration> inputToConfiguration( FilePath workspace, BuildListener listener ) throws ConfigurationRotatorException, IOException {

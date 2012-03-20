@@ -20,11 +20,13 @@ public class PrepareWorkspace implements FileCallable<SnapshotView> {
 	private Project project;
 	private TaskListener listener;
 	private String viewtag;
+	private Baseline[] baselines;
 
-	public PrepareWorkspace( Project project, String viewtag, TaskListener listener ) {
+	public PrepareWorkspace( Project project, Baseline[] baselines, String viewtag, TaskListener listener ) {
 		this.project = project;
 		this.viewtag = viewtag;
 		this.listener = listener;
+		this.baselines = baselines;
 	}
 
 	@Override
@@ -33,15 +35,16 @@ public class PrepareWorkspace implements FileCallable<SnapshotView> {
 		SnapshotView view = null;
 			
 		String streamName = viewtag + "@" + project.getPVob();
+		Stream devStream = null;
 		try {
-			Stream devStream = Stream.create( project.getIntegrationStream(), streamName, true, (Baseline)null );
+			devStream = Stream.create( project.getIntegrationStream(), streamName, true, baselines );
 		} catch( ClearCaseException e1 ) {
 			e1.print( out );
 			throw new IOException( "Unable to create stream " + streamName, e1 );
 		}
 
 		try {
-			view = ViewUtils.createView( out, project.getIntegrationStream(), "ALL", new File( workspace, "view" ), "", true );
+			view = ViewUtils.createView( out, devStream, "ALL", new File( workspace, "view" ), viewtag, true );
 		} catch( ClearCaseException e ) {
 			e.print( out );
 		}

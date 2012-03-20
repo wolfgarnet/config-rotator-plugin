@@ -18,19 +18,26 @@ public class ClearCaseUCMComponentConfiguration extends AbstractComponentConfigu
 	private Stream stream;
 	private Baseline baseline;
 	private PromotionLevel plevel;
+	private boolean fixed;
 	
-	public ClearCaseUCMComponentConfiguration( Component component, Stream stream, Baseline baseline, PromotionLevel plevel ) {
+	public ClearCaseUCMComponentConfiguration( Component component, Stream stream, Baseline baseline, PromotionLevel plevel, boolean fixed ) {
 		this.component = component;
 		this.stream = stream;
 		this.baseline = baseline;
 		this.plevel = plevel;
+		this.fixed = fixed;
 	}
 	
-	public ClearCaseUCMComponentConfiguration( String component, String stream, String baseline, String plevel ) throws ClearCaseException {
+	public ClearCaseUCMComponentConfiguration( String component, String stream, String baseline, String plevel, String fixed ) throws ClearCaseException {
 		this.component = Component.get( component, false );
 		this.stream = Stream.get( stream, false );
 		this.baseline = Baseline.get( baseline, false );
 		this.plevel = Project.PromotionLevel.valueOf( plevel );
+		if( fixed.equalsIgnoreCase( "manuel" ) || fixed.equalsIgnoreCase( "" ) ) {
+			this.fixed = true;
+		} else {
+			this.fixed = false;
+		}
 	}
 
 	public Component getComponent() {
@@ -47,5 +54,9 @@ public class ClearCaseUCMComponentConfiguration extends AbstractComponentConfigu
 	
 	public PromotionLevel getPlevel() {
 		return plevel;
+	}
+	
+	public boolean isFixed() {
+		return fixed;
 	}
 }
