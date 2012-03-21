@@ -23,6 +23,10 @@
 		</f:block>
 	
 	
+	<f:entry>
+		<f:hidden name="fresh" value="${instance.fresh}"/>
+	</f:entry>
+	
 	<!-- 
 	<f:block>
 	  <f:hetero-list name="acrs" hasHeader="true"

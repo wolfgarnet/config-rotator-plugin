@@ -1,18 +1,12 @@
 package net.praqma.jenkins.configrotator.scm.clearcaseucm;
 
-import java.io.Serializable;
-
 import net.praqma.clearcase.exceptions.ClearCaseException;
 import net.praqma.clearcase.ucm.entities.Baseline;
-import net.praqma.clearcase.ucm.entities.Component;
 import net.praqma.clearcase.ucm.entities.Project;
 import net.praqma.clearcase.ucm.entities.Project.PromotionLevel;
-import net.praqma.clearcase.ucm.entities.Stream;
 import net.praqma.jenkins.configrotator.AbstractConfigurationComponent;
 
 public class ClearCaseUCMConfigurationComponent extends AbstractConfigurationComponent {
-
-	private static final long serialVersionUID = -1777151365163767788L;
 	
 	private Baseline baseline;
 	private PromotionLevel plevel;
@@ -33,6 +27,10 @@ public class ClearCaseUCMConfigurationComponent extends AbstractConfigurationCom
 			this.fixed = false;
 		}
 	}
+	
+	public void setBaseline( Baseline baseline ) {
+		this.baseline = baseline;
+	}
 
 	public Baseline getBaseline() {
 		return baseline;
@@ -44,5 +42,9 @@ public class ClearCaseUCMConfigurationComponent extends AbstractConfigurationCom
 	
 	public boolean isFixed() {
 		return fixed;
+	}
+	
+	public String toString() {
+		return baseline.getNormalizedName() + "@" + plevel + "(" + fixed + ")";
 	}
 }

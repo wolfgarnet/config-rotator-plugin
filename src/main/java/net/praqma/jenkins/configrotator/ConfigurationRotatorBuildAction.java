@@ -35,8 +35,7 @@ public class ConfigurationRotatorBuildAction implements Action {
 
 	@Override
 	public String getIconFileName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "graph.gif";
 	}
 
 	@Override

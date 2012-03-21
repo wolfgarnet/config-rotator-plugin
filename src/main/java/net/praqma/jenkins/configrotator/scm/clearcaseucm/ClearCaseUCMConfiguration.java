@@ -11,6 +11,7 @@ import java.util.List;
 import net.praqma.clearcase.ucm.entities.Baseline;
 import net.praqma.jenkins.configrotator.AbstractConfiguration;
 import net.praqma.jenkins.configrotator.AbstractConfigurationComponent;
+import net.praqma.jenkins.configrotator.ConfigurationRotator;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorException;
 
 public class ClearCaseUCMConfiguration extends AbstractConfiguration {
@@ -18,7 +19,7 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration {
 	private List<ClearCaseUCMConfigurationComponent> list;
 	
 	public ClearCaseUCMConfiguration() {
-		
+		list = new ArrayList<ClearCaseUCMConfigurationComponent>();
 	}
 	
 	
@@ -50,24 +51,28 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration {
 		for( String part : parts ) {
 			final String[] units = part.split( "," );
 			
-			if( units.length == 5 ) {
+			if( units.length == 3 ) {
 				try {
 					ClearCaseUCMConfigurationComponent config = workspace.act( new GetConfiguration( units, listener ) );
-					out.println( "[Rotator] Config: " + config );
+					out.println( ConfigurationRotator.LOGGERNAME + "Config: " + config );
 					configuration.list.add( config );
 				} catch( InterruptedException e ) {
-					out.println( "[Rotator] Error: " + e.getMessage() );
+					out.println( ConfigurationRotator.LOGGERNAME + "Error: " + e.getMessage() );
 					
 					throw new ConfigurationRotatorException( "Unable parse input", e );
 				}
 			} else {
 				/* Do nothing */
-				out.println( "[Rotator] \"" + part + "\" was not correct" );
+				out.println( ConfigurationRotator.LOGGERNAME + "\"" + part + "\" was not correct" );
 				throw new ConfigurationRotatorException( "Wrong input, length is " + units.length );
 			}
 		}
 		
 		return configuration;
+	}
+	
+	public String toString() {
+		return list.toString();
 	}
 
 }

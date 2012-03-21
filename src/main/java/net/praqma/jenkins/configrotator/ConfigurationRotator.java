@@ -35,6 +35,9 @@ public class ConfigurationRotator extends SCM {
 		UNDETERMINED
 	}
 	
+	public static final String NAME = "ConfigRotator";
+	public static final String LOGGERNAME = "[" + NAME + "] ";
+	
 	public ConfigurationRotator( AbstractConfigurationRotatorSCM acrs ) {
 		this.acrs = acrs;
 	}
@@ -53,9 +56,15 @@ public class ConfigurationRotator extends SCM {
 	public boolean checkout( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, File file ) throws IOException, InterruptedException {
 		PrintStream out = listener.getLogger();
 		
-		out.println( "[CR] Check out" );
+		out.println( LOGGERNAME + "Check out" );
 		
-		return acrs.perform( build, launcher, workspace, listener );
+		boolean r = acrs.perform( build, launcher, workspace, listener );
+		ConfigurationRotatorBuildAction action = build.getAction( ConfigurationRotatorBuildAction.class );
+		if( !r ) {
+			action.setResult( ResultType.FAILED );
+		}
+		
+		return r;
 	}
 
 	@Override
