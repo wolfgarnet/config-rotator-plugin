@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 
 import net.praqma.jenkins.configrotator.ConfigurationRotator.ResultType;
+import net.praqma.util.debug.Logger;
 import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.StaplerRequest;
@@ -22,6 +23,8 @@ import hudson.tasks.Recorder;
 
 public class ConfigurationRotatorPublisher extends Notifier {
 	
+	private static Logger logger = Logger.getLogger();
+	
 	public ConfigurationRotatorPublisher() {
 		
 	}
@@ -34,21 +37,24 @@ public class ConfigurationRotatorPublisher extends Notifier {
 	@Override
 	public boolean perform( AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener ) throws InterruptedException, IOException {
 		PrintStream out = listener.getLogger();
-		out.println( "I am here" );
 		
 		/* This must be ConfigRotator job */
 		if( build.getProject().getScm() instanceof ConfigurationRotator ) {
-			out.println( "IT IS" );
+			logger.debug( "SCM is part of ConfigRotator" );
 			
 			ConfigurationRotatorBuildAction action = build.getAction( ConfigurationRotatorBuildAction.class );
-			out.println( "Action: " + action );
-			out.println( "Action: " + action.getResult() );
-			if( !action.getResult().equals( ResultType.FAILED ) ) {
-				if( build.getResult().isBetterOrEqualTo( Result.SUCCESS ) ) {
-					action.setResult( ResultType.COMPATIBLE );
-				} else {
-					action.setResult( ResultType.INCOMPATIBLE );
+			logger.debug( "Action object is: " + action );
+			if( action != null ) {
+				out.println( "Action: " + action.getResult() );
+				if( !action.getResult().equals( ResultType.FAILED ) ) {
+					if( build.getResult().isBetterOrEqualTo( Result.SUCCESS ) ) {
+						action.setResult( ResultType.COMPATIBLE );
+					} else {
+						action.setResult( ResultType.INCOMPATIBLE );
+					}
 				}
+			} else {
+				out.println( ConfigurationRotator.LOGGERNAME + "Action was null, unable to determine compatability of configuration" );
 			}
 		} else {
 			out.println( "IT IS NOT" );

@@ -10,26 +10,19 @@ import java.util.List;
 import javax.servlet.ServletException;
 
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
 
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.model.TaskListener;
 import hudson.util.FormValidation;
 
-import net.praqma.util.ExceptionUtils;
+import net.praqma.clearcase.util.ExceptionUtils;
 
 import net.praqma.clearcase.PVob;
 import net.praqma.clearcase.exceptions.ClearCaseException;
-import net.praqma.clearcase.exceptions.UCMEntityNotFoundException;
-import net.praqma.clearcase.exceptions.UnableToCreateEntityException;
-import net.praqma.clearcase.exceptions.UnableToGetEntityException;
-import net.praqma.clearcase.exceptions.UnableToLoadEntityException;
 import net.praqma.clearcase.ucm.entities.Baseline;
 import net.praqma.clearcase.ucm.entities.Project;
 import net.praqma.clearcase.ucm.entities.Stream;
@@ -114,7 +107,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		
 		ClearCaseUCMConfiguration configuration = null;
 		ConfigurationRotatorBuildAction action = getLastResult( build.getProject(), ClearCaseUCM.class );
-		out.println( "FREEEEEESH: " + fresh );
+		out.println( fresh ? "Job is fresh" : "Job is not fresh" );
 		/* If there's no action, this is the first run */
 		if( action == null || fresh ) {
 			try {
@@ -122,6 +115,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 				configuration = ClearCaseUCMConfiguration.getConfigurationFromString( config, workspace, listener );
 			} catch( ConfigurationRotatorException e ) {
 				out.println( "Unable to parse input: " + e.getMessage() );
+				ExceptionUtils.print( e, out, false );
 				return false;
 			}
 		} else {
@@ -134,7 +128,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 				nextConfiguration( listener, build, configuration, workspace, stream.getPVob() );
 			} catch( Exception e ) {
 				out.println( "Unable to get next configuration: " + e.getMessage() );
-				ExceptionUtils.print( e, out, true );
+				ExceptionUtils.print( e, out, false );
 				return false;
 			}
 		}
@@ -180,12 +174,11 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 						oldest = current;
 						chosen = config;
 					}
-				} catch( ClearCaseException e ) {
-					e.print( listener.getLogger() );
-					/* Continue? */
+
 				} catch( Exception e ) {
 					/* No baselines found */
 					logger.debug( "No baselines found: " + e.getMessage() );
+					ExceptionUtils.print( e, listener.getLogger(), false );
 				}
 				
 			}

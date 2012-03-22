@@ -55,4 +55,8 @@ public class ConfigurationRotatorBuildAction implements Action {
 	public AbstractConfiguration getConfiguration() {
 		return configuration;
 	}
+	
+	public String toString() {
+		return configuration.toString();
+	}
 }

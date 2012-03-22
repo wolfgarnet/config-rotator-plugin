@@ -59,8 +59,9 @@ public class ConfigurationRotator extends SCM {
 		out.println( LOGGERNAME + "Check out" );
 		
 		boolean r = acrs.perform( build, launcher, workspace, listener );
+		out.println( "r is " + r );
 		ConfigurationRotatorBuildAction action = build.getAction( ConfigurationRotatorBuildAction.class );
-		if( !r ) {
+		if( action != null && !r ) {
 			action.setResult( ResultType.FAILED );
 		}
 		
