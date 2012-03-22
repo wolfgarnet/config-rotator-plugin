@@ -21,6 +21,7 @@ import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.model.Describable;
+import hudson.model.Saveable;
 import hudson.model.Descriptor;
 import hudson.model.Hudson;
 import hudson.scm.SCM;
@@ -43,11 +44,20 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
 	public boolean isFresh() {
 		return fresh;
 	}
+	
+	public void setFresh( AbstractProject<?, ?> project, boolean fresh ) throws IOException {
+		this.fresh = fresh;
+		project.save();
+	}
 		
+	/*
 	public void doReset( StaplerRequest req, StaplerResponse rsp ) throws IOException, ServletException {
 		fresh = true;
 		rsp.forwardToPreviousPage( req );
 	}
+	*/
+	
+	
 	
 	@Override
 	public Descriptor<AbstractConfigurationRotatorSCM> getDescriptor() {

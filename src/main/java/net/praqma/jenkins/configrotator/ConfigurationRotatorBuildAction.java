@@ -1,8 +1,16 @@
 package net.praqma.jenkins.configrotator;
 
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
+
 import net.praqma.jenkins.configrotator.ConfigurationRotator.ResultType;
 import hudson.model.AbstractBuild;
 import hudson.model.Action;
+import hudson.scm.SCM;
 
 public class ConfigurationRotatorBuildAction implements Action {
 	
@@ -19,6 +27,17 @@ public class ConfigurationRotatorBuildAction implements Action {
 	
 	public Class<?> getClazz() {
 		return clazz;
+	}
+	
+	
+	public void doReset( StaplerRequest req, StaplerResponse rsp ) throws IOException, ServletException {
+		SCM scm = build.getProject().getScm();
+		if( scm instanceof ConfigurationRotator ) {
+			((ConfigurationRotator)scm).setFresh( build.getProject(), true );
+			rsp.forwardToPreviousPage( req );
+		} else {
+			rsp.sendError( StaplerResponse.SC_BAD_REQUEST, "Not Configuration Rotator job" );
+		}
 	}
 	
 	public void setResult( ResultType result ) {

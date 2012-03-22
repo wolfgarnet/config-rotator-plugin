@@ -11,6 +11,7 @@ import javax.servlet.ServletException;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
+import hudson.AbortException;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -93,10 +94,10 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 			stream = (Stream) workspace.act( new LoadEntity( Stream.get( streamName, true ) ) );
 		} catch( ClearCaseException e ) {
 			e.print( out );
-			return false;
-		} catch( InterruptedException e ) {
-			out.println( "Connection failed while loading + " + streamName + ": " + e.getMessage() );
-			return false;
+			throw new AbortException();
+		} catch( Exception e ) {
+			out.println( ConfigurationRotator.LOGGERNAME + "Unable to load " + streamName + ": " + e.getMessage() );
+			throw new AbortException();
 		}
 		
 		try {
@@ -116,7 +117,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 			} catch( ConfigurationRotatorException e ) {
 				out.println( "Unable to parse input: " + e.getMessage() );
 				ExceptionUtils.print( e, out, false );
-				return false;
+				throw new AbortException();
 			}
 		} else {
 			logger.debug( "Action was NOT null" );
@@ -125,12 +126,24 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 			/* Get next configuration */
 			try {
 				logger.debug( "Obtaining new configuration based on old" );
-				nextConfiguration( listener, build, configuration, workspace, stream.getPVob() );
+				/* No new baselines */
+				if( !nextConfiguration( listener, build, configuration, workspace, stream.getPVob() ) ) {
+					return false;
+				}
 			} catch( Exception e ) {
 				out.println( "Unable to get next configuration: " + e.getMessage() );
 				ExceptionUtils.print( e, out, false );
-				return false;
+				throw new AbortException();
 			}
+		}
+		
+		/* Create the view */
+		try {
+			createView( listener, build, configuration, workspace, stream.getPVob() );
+		} catch( Exception e ) {
+			out.println( "Unable to create view: " + e.getMessage() );
+			ExceptionUtils.print( e, out, false );
+			throw new AbortException();
 		}
 		
 		out.println( "---> " + configuration );
@@ -150,13 +163,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		return true;
 	}
 	
-	private void nextConfiguration( TaskListener listener, AbstractBuild<?, ?> build, ClearCaseUCMConfiguration configuration, FilePath workspace, PVob pvob ) throws IOException, InterruptedException, ConfigurationRotatorException {
-		Project project = null;
-
-		logger.debug( "Getting project" );
-		project = workspace.act( new DetermineProject( Arrays.asList( new String[] { "jenkins", projectName } ), pvob ) );
-		
-		logger.debug( "Project is " + project );
+	private boolean nextConfiguration( TaskListener listener, AbstractBuild<?, ?> build, ClearCaseUCMConfiguration configuration, FilePath workspace, PVob pvob ) throws IOException, InterruptedException, ConfigurationRotatorException {
 		
 		Baseline oldest = null, current;
 		ClearCaseUCMConfigurationComponent chosen = null;
@@ -189,9 +196,21 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 			logger.debug( "There was a baseline: " + oldest );
 			chosen.setBaseline( oldest );
 		} else {
-			listener.getLogger().println( ConfigurationRotator.LOGGERNAME + "" );
-			throw new ConfigurationRotatorException( "No new baselines" );
+			listener.getLogger().println( ConfigurationRotator.LOGGERNAME + "No new baselines" );
+			return false;
 		}
+		
+		
+		return true;
+	}
+	
+	public void createView( TaskListener listener, AbstractBuild<?, ?> build, ClearCaseUCMConfiguration configuration, FilePath workspace, PVob pvob ) throws IOException, InterruptedException {
+		Project project = null;
+
+		logger.debug( "Getting project" );
+		project = workspace.act( new DetermineProject( Arrays.asList( new String[] { "jenkins", projectName } ), pvob ) );
+		
+		logger.debug( "Project is " + project );
 		
 		/* Create baselines list */
 		List<Baseline> selectedBaselines = new ArrayList<Baseline>();

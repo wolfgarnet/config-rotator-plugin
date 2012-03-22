@@ -13,6 +13,7 @@ import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
+import hudson.model.Action;
 import hudson.model.BuildListener;
 import hudson.model.Result;
 import hudson.tasks.BuildStepDescriptor;
@@ -22,55 +23,62 @@ import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 
 public class ConfigurationRotatorPublisher extends Notifier {
-	
+
 	private static Logger logger = Logger.getLogger();
-	
+
 	public ConfigurationRotatorPublisher() {
-		
+
 	}
 
 	@Override
 	public BuildStepMonitor getRequiredMonitorService() {
 		return BuildStepMonitor.BUILD;
 	}
-	
+
 	@Override
 	public boolean perform( AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener ) throws InterruptedException, IOException {
 		PrintStream out = listener.getLogger();
-		
+
 		/* This must be ConfigRotator job */
 		if( build.getProject().getScm() instanceof ConfigurationRotator ) {
 			logger.debug( "SCM is part of ConfigRotator" );
-			
+
 			ConfigurationRotatorBuildAction action = build.getAction( ConfigurationRotatorBuildAction.class );
 			logger.debug( "Action object is: " + action );
 			if( action != null ) {
 				out.println( "Action: " + action.getResult() );
-				if( !action.getResult().equals( ResultType.FAILED ) ) {
-					if( build.getResult().isBetterOrEqualTo( Result.SUCCESS ) ) {
-						action.setResult( ResultType.COMPATIBLE );
-					} else {
-						action.setResult( ResultType.INCOMPATIBLE );
-					}
+				if( build.getResult().isBetterOrEqualTo( Result.SUCCESS ) ) {
+					action.setResult( ResultType.COMPATIBLE );
+				} else {
+					action.setResult( ResultType.INCOMPATIBLE );
 				}
+
+				out.println( "before post" );
+				return AbstractPostConfigurationRotator.doit( listener, action );
+
 			} else {
-				out.println( ConfigurationRotator.LOGGERNAME + "Action was null, unable to determine compatability of configuration" );
+				out.println( ConfigurationRotator.LOGGERNAME + "Action was null, unable to set compatability of configuration" );
 			}
 		} else {
-			out.println( "IT IS NOT" );
+			out.println( ConfigurationRotator.LOGGERNAME + "SCM not part of ConfigRotator" );
 		}
-		
+
 		return true;
 	}
-	
+
 	@Override
 	public boolean needsToRunAfterFinalized() {
-		return true;
+		return false;
 	}
-	
+
+	@Override
+	public Action getProjectAction( AbstractProject<?, ?> project ) {
+		return new ConfigurationRotatorProjectAction( project );
+	}
+
 	@Extension
 	public static final class DescriptorImpl extends BuildStepDescriptor<Publisher> {
-		
+
 		@Override
 		public Notifier newInstance( StaplerRequest req, JSONObject formData ) throws FormException {
 			return new ConfigurationRotatorPublisher();
@@ -85,7 +93,7 @@ public class ConfigurationRotatorPublisher extends Notifier {
 		public String getDisplayName() {
 			return "Configuration Rotator Publisher";
 		}
-		
+
 	}
 
 }

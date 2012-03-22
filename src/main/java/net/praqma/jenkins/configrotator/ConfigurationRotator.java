@@ -10,6 +10,7 @@ import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.StaplerRequest;
 
+import hudson.AbortException;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -45,6 +46,10 @@ public class ConfigurationRotator extends SCM {
 	public AbstractConfigurationRotatorSCM getAcrs() {
 		return acrs;
 	}
+	
+	public void setFresh( AbstractProject<?, ?> project, boolean fresh ) throws IOException {
+		acrs.setFresh( project, fresh );
+	}
 
 	@Override
 	public SCMRevisionState calcRevisionsFromBuild( AbstractBuild<?, ?> arg0, Launcher arg1, TaskListener arg2 ) throws IOException, InterruptedException {
@@ -58,14 +63,16 @@ public class ConfigurationRotator extends SCM {
 		
 		out.println( LOGGERNAME + "Check out" );
 		
-		boolean r = acrs.perform( build, launcher, workspace, listener );
-		out.println( "r is " + r );
-		ConfigurationRotatorBuildAction action = build.getAction( ConfigurationRotatorBuildAction.class );
-		if( action != null && !r ) {
-			action.setResult( ResultType.FAILED );
+		boolean failed = false;
+		try {
+			acrs.perform( build, launcher, workspace, listener );
+		} catch( AbortException e ) {
+			failed = true;
+			out.println( LOGGERNAME + "Failed to check out" );
+			throw e;
 		}
 		
-		return r;
+		return true;
 	}
 
 	@Override

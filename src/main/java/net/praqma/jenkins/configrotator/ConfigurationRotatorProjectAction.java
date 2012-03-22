@@ -1,9 +1,16 @@
 package net.praqma.jenkins.configrotator;
 
-import hudson.model.AbstractBuild;
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
+
 import hudson.model.AbstractProject;
 import hudson.model.Actionable;
 import hudson.model.ProminentProjectAction;
+import hudson.scm.SCM;
 
 public class ConfigurationRotatorProjectAction extends Actionable implements ProminentProjectAction {
 
@@ -15,8 +22,7 @@ public class ConfigurationRotatorProjectAction extends Actionable implements Pro
 	
 	@Override
 	public String getIconFileName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "graph.gif";
 	}
 
 	@Override
@@ -34,19 +40,14 @@ public class ConfigurationRotatorProjectAction extends Actionable implements Pro
 		return getUrlName();
 	}
 	
-	public ConfigurationRotatorBuildAction getLastBuild( Class<? extends AbstractConfigurationRotatorSCM> clazz ) {
-		for( AbstractBuild<?, ?> b = getLastBuildToBeConsidered(); b != null; b = b.getPreviousNotFailedBuild() ) {
-			
-			ConfigurationRotatorBuildAction r = b.getAction( ConfigurationRotatorBuildAction.class );
-			if( r != null && r.isDetermined() && r.getClazz().equals( clazz ) ) {
-				return r;
-			}
+	public void doReset( StaplerRequest req, StaplerResponse rsp ) throws IOException, ServletException {
+		SCM scm = project.getScm();
+		if( scm instanceof ConfigurationRotator ) {
+			((ConfigurationRotator)scm).setFresh( project, true );
+			rsp.forwardToPreviousPage( req );
+		} else {
+			rsp.sendError( StaplerResponse.SC_BAD_REQUEST, "Not Configuration Rotator job" );
 		}
-		
-		return null;
 	}
 	
-	private AbstractBuild<?, ?> getLastBuildToBeConsidered() {
-		return project.getLastCompletedBuild();
-	}
 }
