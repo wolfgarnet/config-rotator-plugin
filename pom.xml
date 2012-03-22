@@ -80,11 +80,6 @@
         </repository>
         
 		<repository>
-			<id>m.g.o-public</id>
-			<url>http://maven.glassfish.org/content/groups/public/</url>
-		</repository>
-
-		<repository>
 			<id>praqma-repo</id>
 			<url>http://code.praqma.net/repo/maven/</url>
 		</repository>
@@ -92,8 +87,8 @@
 
 	<pluginRepositories>
 		<pluginRepository>
-			<id>m.g.o-public</id>
-			<url>http://maven.glassfish.org/content/groups/public/</url>
+          <id>repo.jenkins-ci.org</id>
+          <url>http://repo.jenkins-ci.org/public/</url>
 		</pluginRepository>
 	</pluginRepositories>
 
