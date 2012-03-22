@@ -53,6 +53,8 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	
 	transient private Stream stream;
 	transient private String projectName;
+	
+	private boolean printDebug;
 
 	/**
 	 * Version 0.1.0 constructor
@@ -62,9 +64,11 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	 * @param config
 	 */
 	@DataBoundConstructor
-	public ClearCaseUCM( String streamName, String config ) {
+	public ClearCaseUCM( String streamName, String config, boolean printDebug ) {
 		this.config = config;
 		this.streamName = streamName;
+		
+		this.printDebug = printDebug;
 	}
 
 	public String getConfig() {
@@ -73,6 +77,10 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	
 	public String getStreamName() {
 		return streamName;
+	}
+	
+	public boolean doPrintDebug() {
+		return printDebug;
 	}
 
 	@Override
@@ -83,10 +91,14 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	@Override
 	public boolean perform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener ) throws IOException {
 		PrintStream out = listener.getLogger();
-		Appender app = new StreamAppender( out );
-		app.setMinimumLevel( LogLevel.DEBUG );
-		app.setTemplate( "[%level]%space %message%newline" );
-		Logger.addAppender( app );
+		
+		if( printDebug ) {
+			Appender app = new StreamAppender( out );
+			app.setMinimumLevel( LogLevel.DEBUG );
+			app.setTemplate( "[%level]%space %message%newline" );
+			app.lockToCurrentThread();
+			Logger.addAppender( app );
+		}
 		
 		/* Resolve streamName */
 		try {
@@ -139,9 +151,10 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		
 		/* Create the view */
 		try {
+			out.println( ConfigurationRotator.LOGGERNAME + "Creating view" );
 			createView( listener, build, configuration, workspace, stream.getPVob() );
 		} catch( Exception e ) {
-			out.println( "Unable to create view: " + e.getMessage() );
+			out.println( ConfigurationRotator.LOGGERNAME + "Unable to create view: " + e.getMessage() );
 			ExceptionUtils.print( e, out, false );
 			throw new AbortException();
 		}
@@ -155,10 +168,6 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		
 		fresh = false;
 		build.getProject().save();
-
-		/* Adding publisher */
-		out.println( "Adding publisher" );
-		build.getProject().getPublishersList().add( new ConfigurationRotatorPublisher() );
 		
 		return true;
 	}

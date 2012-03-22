@@ -46,14 +46,15 @@ public class ConfigurationRotatorPublisher extends Notifier {
 			ConfigurationRotatorBuildAction action = build.getAction( ConfigurationRotatorBuildAction.class );
 			logger.debug( "Action object is: " + action );
 			if( action != null ) {
-				out.println( "Action: " + action.getResult() );
+				
 				if( build.getResult().isBetterOrEqualTo( Result.SUCCESS ) ) {
 					action.setResult( ResultType.COMPATIBLE );
 				} else {
 					action.setResult( ResultType.INCOMPATIBLE );
 				}
 
-				out.println( "before post" );
+				out.println( ConfigurationRotator.LOGGERNAME + "Configuration is " + action.getResult() );
+				
 				return AbstractPostConfigurationRotator.doit( listener, action );
 
 			} else {

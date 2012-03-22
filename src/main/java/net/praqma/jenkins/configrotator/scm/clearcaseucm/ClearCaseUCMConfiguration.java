@@ -8,6 +8,8 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.tools.ant.taskdefs.Get;
+
 import net.praqma.clearcase.ucm.entities.Baseline;
 import net.praqma.jenkins.configrotator.AbstractConfiguration;
 import net.praqma.jenkins.configrotator.AbstractConfigurationComponent;

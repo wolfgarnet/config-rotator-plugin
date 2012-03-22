@@ -50,4 +50,13 @@ public class ConfigurationRotatorProjectAction extends Actionable implements Pro
 		}
 	}
 	
+	public ConfigurationRotatorBuildAction getLastAction() {
+		SCM scm = project.getScm();
+		if( scm instanceof ConfigurationRotator ) {
+			return ((ConfigurationRotator)scm).getAcrs().getLastResult( project, null );
+		} else {
+			return null;
+		}
+	}
+	
 }

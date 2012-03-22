@@ -24,6 +24,7 @@ import hudson.scm.PollingResult;
 import hudson.scm.SCMDescriptor;
 import hudson.scm.SCMRevisionState;
 import hudson.scm.SCM;
+import hudson.tasks.Publisher;
 
 public class ConfigurationRotator extends SCM {
 	
@@ -63,13 +64,24 @@ public class ConfigurationRotator extends SCM {
 		
 		out.println( LOGGERNAME + "Check out" );
 		
-		boolean failed = false;
 		try {
 			acrs.perform( build, launcher, workspace, listener );
 		} catch( AbortException e ) {
-			failed = true;
 			out.println( LOGGERNAME + "Failed to check out" );
 			throw e;
+		}
+		
+		/* If not aborted, add publisher */
+		out.println( LOGGERNAME + "Adding publisher" );
+		boolean added = false;
+		for( Publisher p : build.getParent().getPublishersList() ) {
+			if( p instanceof ConfigurationRotatorPublisher ) {
+				added = true;
+				break;
+			}
+		}
+		if( !added ) {
+			build.getProject().getPublishersList().add( new ConfigurationRotatorPublisher() );
 		}
 		
 		return true;

@@ -12,7 +12,7 @@ public abstract class AbstractPostConfigurationRotator implements ExtensionPoint
 
 	public static boolean doit( TaskListener listener, ConfigurationRotatorBuildAction action ) {
 		for( AbstractPostConfigurationRotator l : all() ) {
-			if( l.tiedTo().equals( action.getClass() ) ) {
+			if( l.tiedTo().equals( action.getClazz() ) ) {
 				if( !l.perform( listener, action ) ) {
 					return false;
 				}

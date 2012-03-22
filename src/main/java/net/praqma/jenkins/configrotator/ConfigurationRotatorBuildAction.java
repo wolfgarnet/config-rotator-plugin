@@ -29,6 +29,15 @@ public class ConfigurationRotatorBuildAction implements Action {
 		return clazz;
 	}
 	
+	public boolean isFresh() {
+		SCM scm = build.getProject().getScm();
+		if( scm instanceof ConfigurationRotator ) {
+			return ((ConfigurationRotator)scm).getAcrs().isFresh();
+		} else {
+			return false;
+		}
+	}
+	
 	
 	public void doReset( StaplerRequest req, StaplerResponse rsp ) throws IOException, ServletException {
 		SCM scm = build.getProject().getScm();
