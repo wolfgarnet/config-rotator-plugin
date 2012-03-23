@@ -11,6 +11,7 @@ import java.util.List;
 import org.apache.tools.ant.taskdefs.Get;
 
 import net.praqma.clearcase.ucm.entities.Baseline;
+import net.praqma.clearcase.ucm.view.SnapshotView;
 import net.praqma.jenkins.configrotator.AbstractConfiguration;
 import net.praqma.jenkins.configrotator.AbstractConfigurationComponent;
 import net.praqma.jenkins.configrotator.ConfigurationRotator;
@@ -19,6 +20,7 @@ import net.praqma.jenkins.configrotator.ConfigurationRotatorException;
 public class ClearCaseUCMConfiguration extends AbstractConfiguration {
 	
 	private List<ClearCaseUCMConfigurationComponent> list;
+	private SnapshotView view;
 	
 	public ClearCaseUCMConfiguration() {
 		list = new ArrayList<ClearCaseUCMConfigurationComponent>();
@@ -29,9 +31,13 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration {
 		this.list = list;
 	}
 
-	@Override
-	public void getConfiguration() {
-		// TODO Auto-generated method stub
+	
+	public void setView( SnapshotView view ) {
+		this.view = view;
+	}
+	
+	public SnapshotView getView() {
+		return view;
 	}
 	
 	public List<ClearCaseUCMConfigurationComponent> getList() {
@@ -75,6 +81,13 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration {
 	
 	public String toString() {
 		return list.toString();
+	}
+
+
+	@Override
+	public void getConfiguration() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -55,7 +55,7 @@ public class ConfigurationRotatorPublisher extends Notifier {
 
 				out.println( ConfigurationRotator.LOGGERNAME + "Configuration is " + action.getResult() );
 				
-				return AbstractPostConfigurationRotator.doit( listener, action );
+				return AbstractPostConfigurationRotator.doit( build.getWorkspace(), listener, action );
 
 			} else {
 				out.println( ConfigurationRotator.LOGGERNAME + "Action was null, unable to set compatability of configuration" );

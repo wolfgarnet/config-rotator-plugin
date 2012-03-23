@@ -22,6 +22,8 @@ import net.praqma.clearcase.ucm.view.SnapshotView;
 import net.praqma.clearcase.ucm.view.UCMView;
 import net.praqma.jenkins.configrotator.ConfigurationRotator;
 import net.praqma.jenkins.utils.ViewUtils;
+import net.praqma.util.execute.CommandLine;
+import net.praqma.util.execute.CommandLineInterface;
 
 public class PrepareWorkspace implements FileCallable<SnapshotView> {
 
@@ -59,7 +61,42 @@ public class PrepareWorkspace implements FileCallable<SnapshotView> {
 					out.println( ConfigurationRotator.LOGGERNAME + "Removing old view" );
 					oldview.end();
 					oldview.remove();
-					new FilePath( viewroot ).deleteRecursive();
+					try {
+						new FilePath( viewroot ).deleteRecursive();
+					} catch( Exception e ) {
+						out.println( ConfigurationRotator.LOGGERNAME + "Unable to wipe old view" );
+						File vd = new File( viewroot, "view.dat" );
+						if( vd.exists() ) {
+							
+							if( !vd.setWritable( true ) ) {
+								out.println( ConfigurationRotator.LOGGERNAME + "Unable to make view.dat writeable" );
+							}
+							
+							if( !vd.delete() ) {
+								out.println( ConfigurationRotator.LOGGERNAME + "Unable to remove view.dat" );
+							}
+							
+							if( !viewroot.delete() ) {
+								out.println( ConfigurationRotator.LOGGERNAME + "Unable to remove view" );
+							}
+						}
+						
+						if( vd.exists() ) {
+							CommandLineInterface cli = CommandLine.getInstance();
+							try {
+								cli.run( "del /f view.dat", viewroot );
+								viewroot.delete();
+							} catch( Exception e2 ) {
+								out.println( ConfigurationRotator.LOGGERNAME + "Unable to run rm --force view.dat: " + e2.getMessage() );
+							}
+							
+							try {
+								cli.run( "del /F /Q view", viewroot.getParentFile() );
+							} catch( Exception e2 ) {
+								out.println( ConfigurationRotator.LOGGERNAME + "Unable to run rm --force view: " + e2.getMessage() );
+							}
+						}
+					}
 				}
 				
 			} catch( ClearCaseException e ) {
@@ -93,12 +130,10 @@ public class PrepareWorkspace implements FileCallable<SnapshotView> {
 			throw new IOException( "Unable to create stream " + streamName, e1 );
 		}
 		
-
-
 		try {
 			view = ViewUtils.createView( out, devStream, "ALL", new File( workspace, "view" ), viewtag, true );
 		} catch( ClearCaseException e ) {
-			e.print( out );
+			throw new IOException( "Unable to create view", e );
 		}
 		
 		return view;

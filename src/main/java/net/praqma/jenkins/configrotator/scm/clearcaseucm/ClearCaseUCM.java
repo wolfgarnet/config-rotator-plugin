@@ -128,7 +128,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		
 		ClearCaseUCMConfiguration inputconfiguration = null;
 		try {
-			inputconfiguration = ClearCaseUCMConfiguration.getConfigurationFromString( config, workspace, listener );;
+			inputconfiguration = ClearCaseUCMConfiguration.getConfigurationFromString( config, workspace, listener );
 		} catch( ConfigurationRotatorException e ) {
 			out.println( "Unable to parse configuration: " + e.getMessage() );
 			ExceptionUtils.print( e, out, false );
@@ -175,7 +175,8 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		/* Create the view */
 		try {
 			out.println( ConfigurationRotator.LOGGERNAME + "Creating view" );
-			createView( listener, build, configuration, workspace, stream.getPVob() );
+			SnapshotView view = createView( listener, build, configuration, workspace, stream.getPVob() );
+			configuration.setView( view );
 		} catch( Exception e ) {
 			out.println( ConfigurationRotator.LOGGERNAME + "Unable to create view: " + e.getMessage() );
 			ExceptionUtils.print( e, out, false );
@@ -198,19 +199,39 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	private void updateConfiguration( ClearCaseUCMConfiguration configuration ) throws UnableToLoadEntityException, UnableToCreateEntityException, UCMEntityNotFoundException, UnableToGetEntityException {
 		logger.debug( "Updating configuration" );
 		
+		List<ClearCaseUCMConfigurationComponent> adding = new ArrayList<ClearCaseUCMConfigurationComponent>();
+		
 		/* Stupid N^2 running time */
 		for( ClearCaseUCMConfigurationComponent c : origin.getList() ) {
 
+			boolean add = true;
+			
 			for( ClearCaseUCMConfigurationComponent c2 : configuration.getList() ) {
+				logger.debug( "Comparing " + c2.getBaseline().getComponent() + " and " + c.getBaseline().getComponent() );
+				logger.debug( "Comparing " + c2.getBaseline().getStream() + " and " + c.getBaseline().getStream() );
+				
 				if( c2.getBaseline().getComponent().equals( c.getBaseline().getComponent() ) &&
 					c2.getBaseline().getStream().equals( c.getBaseline().getStream() ) ) {
+					logger.debug( "EQUAL!!!! Not adding!" );
+					add = false;
 					break;
 				}
 			}
 			
-			/* Not in, add it */
+			if( add ) {
+				logger.debug( "Adding " + c );
+				adding.add( c );
+			}
+		}
+		
+		logger.debug( "Processing findings" );
+		
+		for( ClearCaseUCMConfigurationComponent c : adding ) {
+			logger.debug( "Adding " + c );
 			configuration.getList().add( c );
 		}
+		
+		logger.debug( "Done updating" );
 	}
 	
 	private boolean nextConfiguration( TaskListener listener, ClearCaseUCMConfiguration configuration, FilePath workspace ) throws IOException, InterruptedException, ConfigurationRotatorException {
@@ -254,7 +275,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		return true;
 	}
 	
-	public void createView( TaskListener listener, AbstractBuild<?, ?> build, ClearCaseUCMConfiguration configuration, FilePath workspace, PVob pvob ) throws IOException, InterruptedException {
+	public SnapshotView createView( TaskListener listener, AbstractBuild<?, ?> build, ClearCaseUCMConfiguration configuration, FilePath workspace, PVob pvob ) throws IOException, InterruptedException {
 		Project project = null;
 
 		logger.debug( "Getting project" );
@@ -265,7 +286,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		/* Create baselines list */
 		List<Baseline> selectedBaselines = new ArrayList<Baseline>();
 		logger.debug( "Selected baselines:" );
-		for( ClearCaseUCMConfigurationComponent config : configuration.getList()) {
+		for( ClearCaseUCMConfigurationComponent config : configuration.getList() ) {
 			logger.debug( config.getBaseline().getNormalizedName() );
 			selectedBaselines.add( config.getBaseline() );
 		}
@@ -273,7 +294,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		/* Make a view tag*/
 		String viewtag = "cr-" + build.getProject().getDisplayName().replaceAll( "\\s", "_" ) + "-" + System.getenv( "COMPUTERNAME" );
 		
-		SnapshotView view = workspace.act( new PrepareWorkspace( project, selectedBaselines, viewtag, listener ) );
+		return workspace.act( new PrepareWorkspace( project, selectedBaselines, viewtag, listener ) );
 	}
 	
 
