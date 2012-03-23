@@ -1,5 +1,6 @@
 package net.praqma.jenkins.configrotator.scm.clearcaseucm;
 
+import hudson.FilePath;
 import hudson.FilePath.FileCallable;
 import hudson.model.TaskListener;
 import hudson.remoting.VirtualChannel;
@@ -18,6 +19,8 @@ import net.praqma.clearcase.ucm.entities.Baseline;
 import net.praqma.clearcase.ucm.entities.Project;
 import net.praqma.clearcase.ucm.entities.Stream;
 import net.praqma.clearcase.ucm.view.SnapshotView;
+import net.praqma.clearcase.ucm.view.UCMView;
+import net.praqma.jenkins.configrotator.ConfigurationRotator;
 import net.praqma.jenkins.utils.ViewUtils;
 
 public class PrepareWorkspace implements FileCallable<SnapshotView> {
@@ -38,31 +41,59 @@ public class PrepareWorkspace implements FileCallable<SnapshotView> {
 	public SnapshotView invoke( File workspace, VirtualChannel channel ) throws IOException, InterruptedException {
 		PrintStream out = listener.getLogger();
 		SnapshotView view = null;
+		File viewroot = new File( workspace, "view" );
+		
+		/* Remove old view, if exists */
+		if( viewroot.exists() ) {
+			try {
+				out.println( ConfigurationRotator.LOGGERNAME + "Determining old view" );
+				SnapshotView oldview = null;
+				try {
+					oldview = SnapshotView.getSnapshotViewFromPath( viewroot );
+				} catch( Exception e ) {
+					out.println( "View root is not a ClearCase view?!" );
+					/* This should indicate, that the view does not exist */
+				}
+				
+				if( oldview != null ) {
+					out.println( ConfigurationRotator.LOGGERNAME + "Removing old view" );
+					oldview.end();
+					oldview.remove();
+					new FilePath( viewroot ).deleteRecursive();
+				}
+				
+			} catch( ClearCaseException e ) {
+				throw new IOException( "Unable to remove the old view", e );
+			}
+		}
 			
+		/* Remove old stream, if exists */
 		String streamName = viewtag + "@" + project.getPVob();
 		Stream devStream = null;
 		try {
 			devStream = Stream.get( streamName, true );
 		} catch( ClearCaseException e ) {
-			out.println( "Could not get " + streamName );
+			out.println( "No stream named " + streamName );
 			e.print( out );
 		}
 		
 		if( devStream != null && devStream.exists() ) {
 			try {
-				devStream.load();
+				out.println( ConfigurationRotator.LOGGERNAME + "Removing old stream" );
+				devStream.remove();
 			} catch( ClearCaseException e ) {
-				out.println( "Could not load " + devStream );
 				throw new IOException( "Could not load " + devStream, e );
 			}
-		} else {
-			try {
-				devStream = Stream.create( project.getIntegrationStream(), streamName, true, baselines );
-			} catch( ClearCaseException e1 ) {
-				e1.print( out );
-				throw new IOException( "Unable to create stream " + streamName, e1 );
-			}
 		}
+		
+		try {
+			out.println( ConfigurationRotator.LOGGERNAME + "Creating new stream" );
+			devStream = Stream.create( project.getIntegrationStream(), streamName, true, baselines );
+		} catch( ClearCaseException e1 ) {
+			throw new IOException( "Unable to create stream " + streamName, e1 );
+		}
+		
+
 
 		try {
 			view = ViewUtils.createView( out, devStream, "ALL", new File( workspace, "view" ), viewtag, true );
