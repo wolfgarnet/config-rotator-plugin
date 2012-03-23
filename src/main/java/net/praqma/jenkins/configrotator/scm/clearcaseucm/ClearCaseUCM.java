@@ -16,14 +16,20 @@ import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.model.TaskListener;
+import hudson.scm.PollingResult;
 import hudson.util.FormValidation;
 
 import net.praqma.clearcase.util.ExceptionUtils;
 
 import net.praqma.clearcase.PVob;
 import net.praqma.clearcase.exceptions.ClearCaseException;
+import net.praqma.clearcase.exceptions.UCMEntityNotFoundException;
+import net.praqma.clearcase.exceptions.UnableToCreateEntityException;
+import net.praqma.clearcase.exceptions.UnableToGetEntityException;
+import net.praqma.clearcase.exceptions.UnableToLoadEntityException;
 import net.praqma.clearcase.ucm.entities.Baseline;
 import net.praqma.clearcase.ucm.entities.Project;
 import net.praqma.clearcase.ucm.entities.Stream;
@@ -50,6 +56,8 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 
 	private String config;
 	private String streamName;
+	
+	private ClearCaseUCMConfiguration origin;
 	
 	transient private Stream stream;
 	transient private String projectName;
@@ -118,18 +126,24 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 			out.println( ConfigurationRotator.LOGGERNAME + "Unable to get project" );
 		}
 		
+		ClearCaseUCMConfiguration inputconfiguration = null;
+		try {
+			inputconfiguration = ClearCaseUCMConfiguration.getConfigurationFromString( config, workspace, listener );;
+		} catch( ConfigurationRotatorException e ) {
+			out.println( "Unable to parse configuration: " + e.getMessage() );
+			ExceptionUtils.print( e, out, false );
+			throw new AbortException();
+		}
+		
 		ClearCaseUCMConfiguration configuration = null;
 		ConfigurationRotatorBuildAction action = getLastResult( build.getProject(), ClearCaseUCM.class );
 		out.println( fresh ? "Job is fresh" : "Job is not fresh" );
 		/* If there's no action, this is the first run */
 		if( action == null || fresh ) {
-			try {
-				logger.debug( "Action was null(" + fresh + "), getting input as configuration" );
-				configuration = ClearCaseUCMConfiguration.getConfigurationFromString( config, workspace, listener );
-			} catch( ConfigurationRotatorException e ) {
-				out.println( "Unable to parse input: " + e.getMessage() );
-				ExceptionUtils.print( e, out, false );
-				throw new AbortException();
+			logger.debug( "Action was null(" + fresh + "), getting input as configuration" );
+			configuration = inputconfiguration;
+			if( origin == null ) {
+				origin = inputconfiguration;
 			}
 		} else {
 			logger.debug( "Action was NOT null" );
@@ -139,11 +153,20 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 			try {
 				logger.debug( "Obtaining new configuration based on old" );
 				/* No new baselines */
-				if( !nextConfiguration( listener, build, configuration, workspace, stream.getPVob() ) ) {
+				if( !nextConfiguration( listener, configuration, workspace ) ) {
 					return false;
 				}
 			} catch( Exception e ) {
 				out.println( "Unable to get next configuration: " + e.getMessage() );
+				ExceptionUtils.print( e, out, false );
+				throw new AbortException();
+			}
+			
+			/* Update configuration */
+			try {
+				updateConfiguration( configuration );
+			} catch( ClearCaseException e ) {
+				out.println( "Unable to get update configuration: " + e.getMessage() );
 				ExceptionUtils.print( e, out, false );
 				throw new AbortException();
 			}
@@ -172,7 +195,25 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		return true;
 	}
 	
-	private boolean nextConfiguration( TaskListener listener, AbstractBuild<?, ?> build, ClearCaseUCMConfiguration configuration, FilePath workspace, PVob pvob ) throws IOException, InterruptedException, ConfigurationRotatorException {
+	private void updateConfiguration( ClearCaseUCMConfiguration configuration ) throws UnableToLoadEntityException, UnableToCreateEntityException, UCMEntityNotFoundException, UnableToGetEntityException {
+		logger.debug( "Updating configuration" );
+		
+		/* Stupid N^2 running time */
+		for( ClearCaseUCMConfigurationComponent c : origin.getList() ) {
+
+			for( ClearCaseUCMConfigurationComponent c2 : configuration.getList() ) {
+				if( c2.getBaseline().getComponent().equals( c.getBaseline().getComponent() ) &&
+					c2.getBaseline().getStream().equals( c.getBaseline().getStream() ) ) {
+					break;
+				}
+			}
+			
+			/* Not in, add it */
+			configuration.getList().add( c );
+		}
+	}
+	
+	private boolean nextConfiguration( TaskListener listener, ClearCaseUCMConfiguration configuration, FilePath workspace ) throws IOException, InterruptedException, ConfigurationRotatorException {
 		
 		Baseline oldest = null, current;
 		ClearCaseUCMConfigurationComponent chosen = null;
@@ -249,5 +290,25 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 			return FormValidation.ok();
 		}
 
+	}
+
+
+
+	@Override
+	public PollingResult poll( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener ) throws IOException, InterruptedException {
+		if( origin != null ) {
+			try {
+				boolean n = nextConfiguration( listener, origin, workspace );
+				if( n ) {
+					return PollingResult.BUILD_NOW;
+				} else {
+					return PollingResult.NO_CHANGES;
+				}
+			} catch( ConfigurationRotatorException e ) {
+				throw new IOException( "Unable to poll: " + e.getMessage(), e );
+			}
+		}
+		
+		return PollingResult.BUILD_NOW;
 	}
 }

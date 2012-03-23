@@ -54,8 +54,11 @@ public class ConfigurationRotator extends SCM {
 
 	@Override
 	public SCMRevisionState calcRevisionsFromBuild( AbstractBuild<?, ?> arg0, Launcher arg1, TaskListener arg2 ) throws IOException, InterruptedException {
-		// TODO Auto-generated method stub
-		return null;
+		if( !acrs.isFresh() ) {
+			return new SCMRevisionState() {};
+		} else {
+			return null;
+		}
 	}
 
 	@Override
@@ -88,9 +91,8 @@ public class ConfigurationRotator extends SCM {
 	}
 
 	@Override
-	protected PollingResult compareRemoteRevisionWith( AbstractProject<?, ?> arg0, Launcher arg1, FilePath arg2, TaskListener arg3, SCMRevisionState arg4 ) throws IOException, InterruptedException {
-		// TODO Auto-generated method stub
-		return null;
+	protected PollingResult compareRemoteRevisionWith( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener, SCMRevisionState arg4 ) throws IOException, InterruptedException {
+		return acrs.poll( project, launcher, workspace, listener );
 	}
 
 	@Override

@@ -22,9 +22,11 @@ import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.model.Describable;
 import hudson.model.Saveable;
+import hudson.model.TaskListener;
 import hudson.model.Descriptor;
 import hudson.model.Hudson;
 import hudson.scm.SCM;
+import hudson.scm.PollingResult;
 import hudson.scm.SCMDescriptor;
 
 public abstract class AbstractConfigurationRotatorSCM implements Describable<AbstractConfigurationRotatorSCM>, ExtensionPoint {
@@ -38,6 +40,8 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
 	public boolean fresh;
 
 	public abstract String getName();
+	
+	public abstract PollingResult poll( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener ) throws IOException, InterruptedException;
 	
 	public abstract boolean perform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener ) throws IOException;
 

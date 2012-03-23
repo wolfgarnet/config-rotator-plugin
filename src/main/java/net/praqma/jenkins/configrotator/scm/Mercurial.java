@@ -8,7 +8,10 @@ import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.BuildListener;
+import hudson.model.TaskListener;
 import hudson.model.AbstractBuild;
+import hudson.model.AbstractProject;
+import hudson.scm.PollingResult;
 import net.praqma.jenkins.configrotator.AbstractConfigurationRotatorSCM;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorSCMDescriptor;
 
@@ -45,6 +48,12 @@ public class Mercurial extends AbstractConfigurationRotatorSCM {
 			return "Mercurial";
 		}
 		
+	}
+
+	@Override
+	public PollingResult poll( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener ) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
