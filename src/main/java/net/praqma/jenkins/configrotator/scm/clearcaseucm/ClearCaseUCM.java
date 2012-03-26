@@ -111,7 +111,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		/* Resolve streamName */
 		try {
 			logger.debug( "Resolving " + streamName );
-			stream = (Stream) workspace.act( new LoadEntity( Stream.get( streamName, true ) ) );
+			stream = (Stream) workspace.act( new LoadEntity( Stream.get( streamName ) ) );
 		} catch( ClearCaseException e ) {
 			e.print( out );
 			throw new AbortException();
@@ -120,11 +120,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 			throw new AbortException();
 		}
 		
-		try {
-			projectName = stream.getProject().getShortname();
-		} catch( ClearCaseException e ) {
-			out.println( ConfigurationRotator.LOGGERNAME + "Unable to get project" );
-		}
+		projectName = stream.getProject().getShortname();
 		
 		ClearCaseUCMConfiguration inputconfiguration = null;
 		try {

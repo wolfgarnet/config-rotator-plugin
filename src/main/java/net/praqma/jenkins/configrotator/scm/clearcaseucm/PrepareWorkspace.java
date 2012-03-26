@@ -108,7 +108,7 @@ public class PrepareWorkspace implements FileCallable<SnapshotView> {
 		String streamName = viewtag + "@" + project.getPVob();
 		Stream devStream = null;
 		try {
-			devStream = Stream.get( streamName, true );
+			devStream = Stream.get( streamName );
 		} catch( ClearCaseException e ) {
 			out.println( "No stream named " + streamName );
 			e.print( out );
