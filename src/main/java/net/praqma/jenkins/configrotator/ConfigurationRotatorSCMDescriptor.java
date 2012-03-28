@@ -1,7 +1,18 @@
 package net.praqma.jenkins.configrotator;
 
+import net.sf.json.JSONObject;
+
+import org.kohsuke.stapler.StaplerRequest;
+
 import hudson.model.Descriptor;
+import hudson.model.Descriptor.FormException;
 
 public abstract class ConfigurationRotatorSCMDescriptor<T extends AbstractConfigurationRotatorSCM> extends Descriptor<AbstractConfigurationRotatorSCM> {
 
+	
+	@Override
+	public AbstractConfigurationRotatorSCM newInstance( StaplerRequest req, JSONObject formData ) throws FormException {
+		System.out.println( "IN HERE" );
+		return super.newInstance( req, formData );
+	}
 }

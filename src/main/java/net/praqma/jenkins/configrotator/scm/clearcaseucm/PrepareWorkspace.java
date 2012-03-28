@@ -16,6 +16,7 @@ import net.praqma.clearcase.exceptions.ClearCaseException;
 import net.praqma.clearcase.exceptions.UCMEntityNotFoundException;
 import net.praqma.clearcase.exceptions.UnableToCreateEntityException;
 import net.praqma.clearcase.exceptions.UnableToGetEntityException;
+import net.praqma.clearcase.exceptions.UnableToInitializeEntityException;
 import net.praqma.clearcase.exceptions.UnableToLoadEntityException;
 import net.praqma.clearcase.ucm.entities.Baseline;
 import net.praqma.clearcase.ucm.entities.Project;
@@ -52,8 +53,9 @@ public class PrepareWorkspace implements FileCallable<SnapshotView> {
 		Stream devStream;
 		try {
 			devStream = Stream.get( streamName );
-		} catch( UnableToCreateEntityException e ) {
+		} catch( UnableToInitializeEntityException e ) {
 			throw new IOException( "No entity", e );
+
 		}
 		
 		/* If the stream exists, change it */

@@ -80,8 +80,9 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	@DataBoundConstructor
 	public ClearCaseUCM( String streamName, boolean printDebug ) {
 		//this.config = config;
+		System.out.println( "CONSTRUCTOR" );
 		this.streamName = streamName;
-		
+		//this.targets = targets;
 		this.printDebug = printDebug;
 	}
 	
@@ -299,21 +300,6 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		return targets;
 	}
 
-	@Extension
-	public static final class ClearCaseUCMDescriptor extends ConfigurationRotatorSCMDescriptor<ClearCaseUCM> {
-
-		@Override
-		public String getDisplayName() {
-			return "ClearCase UCM";
-		}
-		
-		public FormValidation doTest(  ) throws IOException, ServletException {
-			return FormValidation.ok();
-		}
-
-	}
-
-
 
 	@Override
 	public PollingResult poll( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener ) throws IOException, InterruptedException {
@@ -334,20 +320,25 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	}
 	
 	@Extension
-	public static final class DesciptorImpl extends ConfigurationRotatorSCMDescriptor<ClearCaseUCM> {
+	public static final class DescriptorImpl extends ConfigurationRotatorSCMDescriptor<ClearCaseUCM> {
 
 		@Override
 		public String getDisplayName() {
-			return "CONFIG ROTATOR";
+			return "ClearCase UCM";
 		}
 		
+		public FormValidation doTest(  ) throws IOException, ServletException {
+			return FormValidation.ok();
+		}
+
+		
 		@Override
-		public ClearCaseUCM newInstance( StaplerRequest req, JSONObject formData ) throws FormException {
+		public AbstractConfigurationRotatorSCM newInstance( StaplerRequest req, JSONObject formData ) throws FormException {
 			System.out.println( "BAM!" );
 			ClearCaseUCM instance = req.bindJSON( ClearCaseUCM.class, formData );
 			System.out.println( formData.toString( 2 ) );
 			
-			List<ClearCaseUCMTarget> targets = req.bindParametersToList( ClearCaseUCMTarget.class, "acr.inst." );
+			List<ClearCaseUCMTarget> targets = req.bindParametersToList( ClearCaseUCMTarget.class, "cc.target." );
 			instance.targets = targets;
 			save();
 			return instance;

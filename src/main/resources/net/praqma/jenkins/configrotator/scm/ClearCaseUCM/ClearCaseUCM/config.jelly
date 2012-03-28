@@ -16,7 +16,7 @@
      -->
     
 	<f:entry title="${%UCM configuration}">
-		<f:repeatable var="inst" varStatus="instStatus" items="${descriptor.getTargets(instance)}">
+		<f:repeatable var="targets" varStatus="instStatus" items="${descriptor.getTargets(instance)}">
 			
             <table width="40%">
                 <col width="100%"/>
@@ -24,10 +24,10 @@
                 <tbody>
 			 		<tr>
                         <td align="left">
-                        	<f:textbox name="cc.target.component" value="${inst.component}"/>
+                        	<f:textbox name="cc.target.component" value="${targets.component}"/>
 						</td>
 						<td>
-					        <f:checkbox name="cc.target.change" checked="${inst.component==null}" />
+					        <f:checkbox name="cc.target.change" checked="${targets.component==null}" />
 						</td>
                         <td align="right">
                             <f:repeatableDeleteButton/>

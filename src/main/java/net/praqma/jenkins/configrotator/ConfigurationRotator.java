@@ -8,6 +8,7 @@ import java.util.List;
 
 import net.sf.json.JSONObject;
 
+import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
 import hudson.AbortException;
@@ -19,6 +20,7 @@ import hudson.model.BuildListener;
 import hudson.model.TaskListener;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
+import hudson.model.Descriptor;
 import hudson.scm.ChangeLogParser;
 import hudson.scm.PollingResult;
 import hudson.scm.SCMDescriptor;
@@ -40,6 +42,7 @@ public class ConfigurationRotator extends SCM {
 	public static final String NAME = "ConfigRotator";
 	public static final String LOGGERNAME = "[" + NAME + "] ";
 	
+	@DataBoundConstructor
 	public ConfigurationRotator( AbstractConfigurationRotatorSCM acrs ) {
 		this.acrs = acrs;
 	}
@@ -122,6 +125,7 @@ public class ConfigurationRotator extends SCM {
 		*/
 
 
+		/*
 		@Override
 		public ConfigurationRotator newInstance(StaplerRequest req, JSONObject formData) throws FormException {
 			System.out.println( formData.toString( 2 ) );
@@ -139,6 +143,16 @@ public class ConfigurationRotator extends SCM {
 			
 			return new ConfigurationRotator( scm );
 			//return super.newInstance(req, formData);
+		}
+		*/
+
+		@Override
+		public SCM newInstance( StaplerRequest req, JSONObject formData ) throws FormException {
+			System.out.println( "FORM: " + formData.toString( 2 ) );
+			ConfigurationRotator r = (ConfigurationRotator) super.newInstance( req, formData );
+			Descriptor<AbstractConfigurationRotatorSCM> d = r.getAcrs().getDescriptor();
+			r.acrs = d.newInstance( req, formData );
+			return r;
 		}
 
 		/*
