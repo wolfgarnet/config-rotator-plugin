@@ -9,9 +9,34 @@
 		<f:textbox name="cc.streamName" value="${instance.streamName}"/>
 	</f:entry>
 
+	<!-- 
     <f:entry title="${%ClearCase UCM configuration}">
         <f:textarea name="cc.config" value="${instance.config}"/>
     </f:entry>
+     -->
+    
+	<f:entry title="${%UCM configuration}">
+		<f:repeatable var="inst" varStatus="instStatus" items="${descriptor.getTargets(instance)}">
+			
+            <table width="40%">
+                <col width="100%"/>
+
+                <tbody>
+			 		<tr>
+                        <td align="left">
+                        	<f:textbox name="cc.target.component" value="${inst.component}"/>
+						</td>
+						<td>
+					        <f:checkbox name="cc.target.change" checked="${inst.component==null}" />
+						</td>
+                        <td align="right">
+                            <f:repeatableDeleteButton/>
+                        </td>
+					</tr>
+				</tbody>
+			</table>
+		</f:repeatable>
+	</f:entry>
     
 
 </j:jelly>

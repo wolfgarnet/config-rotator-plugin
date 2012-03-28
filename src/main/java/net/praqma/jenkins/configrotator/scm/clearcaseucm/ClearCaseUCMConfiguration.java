@@ -44,20 +44,17 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration {
 		return list;
 	}
 	
-	public static ClearCaseUCMConfiguration getConfigurationFromString( String input, FilePath workspace, BuildListener listener ) throws ConfigurationRotatorException, IOException {
+	public static ClearCaseUCMConfiguration getConfigurationFromTargets( List<ClearCaseUCMTarget> targets, FilePath workspace, BuildListener listener ) throws ConfigurationRotatorException, IOException {
 		PrintStream out = listener.getLogger();
 		
-		out.println( "Input: " + input );
-		
-		/* Parse config */
-		String[] parts = input.split( "\\n" );
+		out.println( "Input: " + targets );
 		
 		/**/
 		ClearCaseUCMConfiguration configuration = new ClearCaseUCMConfiguration();
 		
 		/* Each line is component, stream, baseline, plevel, type */
-		for( String part : parts ) {
-			final String[] units = part.split( "," );
+		for( ClearCaseUCMTarget target : targets ) {
+			final String[] units = target.getComponent().split( "," );
 			
 			if( units.length == 3 ) {
 				try {
@@ -71,7 +68,7 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration {
 				}
 			} else {
 				/* Do nothing */
-				out.println( ConfigurationRotator.LOGGERNAME + "\"" + part + "\" was not correct" );
+				out.println( ConfigurationRotator.LOGGERNAME + "\"" + target + "\" was not correct" );
 				throw new ConfigurationRotatorException( "Wrong input, length is " + units.length );
 			}
 		}

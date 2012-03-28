@@ -10,6 +10,7 @@ import java.util.List;
 import javax.servlet.ServletException;
 
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.StaplerRequest;
 
 import hudson.AbortException;
 import hudson.Extension;
@@ -17,8 +18,10 @@ import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
+import hudson.model.Descriptor;
 import hudson.model.BuildListener;
 import hudson.model.TaskListener;
+import hudson.model.Descriptor.FormException;
 import hudson.scm.PollingResult;
 import hudson.util.FormValidation;
 
@@ -49,15 +52,18 @@ import net.praqma.util.debug.Logger;
 import net.praqma.util.debug.Logger.LogLevel;
 import net.praqma.util.debug.appenders.Appender;
 import net.praqma.util.debug.appenders.StreamAppender;
+import net.sf.json.JSONObject;
 
 public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Serializable {
 	
 	private static Logger logger = Logger.getLogger();
 
-	private String config;
+	//private String config;
 	private String streamName;
 	
 	private ClearCaseUCMConfiguration origin;
+	
+	private List<ClearCaseUCMTarget> targets;
 	
 	transient private Stream stream;
 	transient private String projectName;
@@ -72,15 +78,11 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	 * @param config
 	 */
 	@DataBoundConstructor
-	public ClearCaseUCM( String streamName, String config, boolean printDebug ) {
-		this.config = config;
+	public ClearCaseUCM( String streamName, boolean printDebug ) {
+		//this.config = config;
 		this.streamName = streamName;
 		
 		this.printDebug = printDebug;
-	}
-
-	public String getConfig() {
-		return config;
 	}
 	
 	public String getStreamName() {
@@ -124,7 +126,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		
 		ClearCaseUCMConfiguration inputconfiguration = null;
 		try {
-			inputconfiguration = ClearCaseUCMConfiguration.getConfigurationFromString( config, workspace, listener );
+			inputconfiguration = ClearCaseUCMConfiguration.getConfigurationFromTargets( targets, workspace, listener );
 		} catch( ConfigurationRotatorException e ) {
 			out.println( "Unable to parse configuration: " + e.getMessage() );
 			ExceptionUtils.print( e, out, false );
@@ -293,7 +295,9 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		return workspace.act( new PrepareWorkspace( project, selectedBaselines, viewtag, listener ) );
 	}
 	
-
+	public List<ClearCaseUCMTarget> getTargets() {
+		return targets;
+	}
 
 	@Extension
 	public static final class ClearCaseUCMDescriptor extends ConfigurationRotatorSCMDescriptor<ClearCaseUCM> {
@@ -327,5 +331,38 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		}
 		
 		return PollingResult.BUILD_NOW;
+	}
+	
+	@Extension
+	public static final class DesciptorImpl extends ConfigurationRotatorSCMDescriptor<ClearCaseUCM> {
+
+		@Override
+		public String getDisplayName() {
+			return "CONFIG ROTATOR";
+		}
+		
+		@Override
+		public ClearCaseUCM newInstance( StaplerRequest req, JSONObject formData ) throws FormException {
+			System.out.println( "BAM!" );
+			ClearCaseUCM instance = req.bindJSON( ClearCaseUCM.class, formData );
+			System.out.println( formData.toString( 2 ) );
+			
+			List<ClearCaseUCMTarget> targets = req.bindParametersToList( ClearCaseUCMTarget.class, "acr.inst." );
+			instance.targets = targets;
+			save();
+			return instance;
+		}
+		
+		public List<ClearCaseUCMTarget> getTargets( ClearCaseUCM instance ) {
+			System.out.println("WHOA!");
+			if( instance == null ) {
+				System.out.println("1");
+				return new ArrayList<ClearCaseUCMTarget>();
+			} else {
+				System.out.println("2");
+				return instance.targets;
+			}
+		}
+		
 	}
 }

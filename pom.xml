@@ -8,7 +8,7 @@
 	</parent>
 
 	<groupId>net.praqma</groupId>
-	<artifactId>config-rotator-plugin</artifactId>
+	<artifactId>config-rotator</artifactId>
 	<version>0.1.0-SNAPSHOT</version>
 	<name>Configuration Rotator Plugin</name>
 	<description>Enable SCM configuration rotation for Jenkins</description>

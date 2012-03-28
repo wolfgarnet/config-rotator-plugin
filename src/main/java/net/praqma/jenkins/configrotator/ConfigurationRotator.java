@@ -129,12 +129,13 @@ public class ConfigurationRotator extends SCM {
 			Class<?> cl = null;
 			JSONObject acrs = (JSONObject)formData.get( "acrs" );
 			try {
-					cl = Class.forName( (String) acrs.get( "stapler-class" ) );
+				cl = Class.forName( (String) acrs.get( "stapler-class" ) );
 			} catch( ClassNotFoundException e ) {
 				throw new FormException( "WHAT?", "THE?!" );
 			}
 			System.out.println( "CLASS: " + cl );
 			AbstractConfigurationRotatorSCM scm = (AbstractConfigurationRotatorSCM) req.bindJSON( cl, acrs );
+			//AbstractConfigurationRotatorSCM scm = cl.;
 			
 			return new ConfigurationRotator( scm );
 			//return super.newInstance(req, formData);
