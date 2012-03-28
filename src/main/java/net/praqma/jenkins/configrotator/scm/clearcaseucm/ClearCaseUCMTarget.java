@@ -13,7 +13,7 @@ public class ClearCaseUCMTarget {
 		this.component = component;
 	}
 
-	public boolean isChange() {
+	public boolean doChange() {
 		return change;
 	}
 

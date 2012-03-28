@@ -60,6 +60,7 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration {
 				try {
 					ClearCaseUCMConfigurationComponent config = workspace.act( new GetConfiguration( units, listener ) );
 					out.println( ConfigurationRotator.LOGGERNAME + "Config: " + config );
+					config.setChange( target.doChange() );
 					configuration.list.add( config );
 				} catch( InterruptedException e ) {
 					out.println( ConfigurationRotator.LOGGERNAME + "Error: " + e.getMessage() );

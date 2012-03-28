@@ -210,7 +210,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 				logger.debug( "Comparing " + c2.getBaseline().getStream() + " and " + c.getBaseline().getStream() );
 				
 				if( c2.getBaseline().getComponent().equals( c.getBaseline().getComponent() ) &&
-					c2.getBaseline().getStream().equals( c.getBaseline().getStream() ) ) {
+					c2.getBaseline().getStream().equals( c.getBaseline().getStream() ) && !c.doChange() ) {
 					logger.debug( "EQUAL!!!! Not adding!" );
 					add = false;
 					break;
