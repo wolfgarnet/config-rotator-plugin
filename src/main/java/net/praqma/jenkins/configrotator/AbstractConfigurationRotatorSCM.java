@@ -12,6 +12,7 @@ import org.kohsuke.stapler.StaplerResponse;
 import net.praqma.util.debug.Logger;
 
 import jenkins.model.Jenkins;
+import hudson.AbortException;
 import hudson.DescriptorExtensionList;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
@@ -49,6 +50,11 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
 		return fresh;
 	}
 	
+	public abstract void setConfigurationByAction( AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action ) throws IOException;
+	
+	public void setFreshness( boolean fresh ) {
+		this.fresh = fresh;
+	}
 	
 	/*
 	public void doReset( StaplerRequest req, StaplerResponse rsp ) throws IOException, ServletException {

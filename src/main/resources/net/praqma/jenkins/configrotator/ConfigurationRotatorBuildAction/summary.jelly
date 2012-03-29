@@ -1,0 +1,19 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
+	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+	
+	<j:set var="lastResult" value="${it.getResult()}" />
+	
+	FROM=${from}<br/>
+	IF=${from.getConfiguration()}
+	<j:if test="${lastResult != null}">
+
+		<div style="margin:10px;padding:10px;border-style:solid">
+			<div style="font-weight:bold;font-size:18px;text-align:center;width:100%">${from.getResult()}</div>
+				<j:set var="class" value="${from.getConfiguration().getClass()}" />
+				<st:include it="${from.getConfiguration()}" page="/${from.getConfiguration().getView(class)}" />
+		</div>
+		
+		<a href="config-rotator/reset">Reset to this configuration</a>
+	</j:if>
+	
+</j:jelly>

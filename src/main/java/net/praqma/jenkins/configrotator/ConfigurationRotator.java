@@ -50,6 +50,12 @@ public class ConfigurationRotator extends SCM {
 	public AbstractConfigurationRotatorSCM getAcrs() {
 		return acrs;
 	}
+	
+	/*
+	public void setConfigurationByAction( ConfigurationRotatorBuildAction action ) {
+		
+	}
+	*/
 
 	@Override
 	public SCMRevisionState calcRevisionsFromBuild( AbstractBuild<?, ?> arg0, Launcher arg1, TaskListener arg2 ) throws IOException, InterruptedException {

@@ -22,7 +22,7 @@ public class ConfigurationRotatorProjectAction extends Actionable implements Pro
 	
 	@Override
 	public String getIconFileName() {
-		return "graph.gif";
+		return "rotator.png";
 	}
 
 	@Override

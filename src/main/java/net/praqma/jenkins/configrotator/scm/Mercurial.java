@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 
+import hudson.AbortException;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -13,6 +14,7 @@ import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.scm.PollingResult;
 import net.praqma.jenkins.configrotator.AbstractConfigurationRotatorSCM;
+import net.praqma.jenkins.configrotator.ConfigurationRotatorBuildAction;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorSCMDescriptor;
 
 public class Mercurial extends AbstractConfigurationRotatorSCM {
@@ -54,6 +56,12 @@ public class Mercurial extends AbstractConfigurationRotatorSCM {
 	public PollingResult poll( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener ) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void setConfigurationByAction( AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action ) throws IOException {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

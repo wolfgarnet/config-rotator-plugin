@@ -136,7 +136,8 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 			/* Resolve the configuration */
 			ClearCaseUCMConfiguration inputconfiguration = null;
 			try {
-				inputconfiguration = ClearCaseUCMConfiguration.getConfigurationFromTargets( targets, workspace, listener );
+				inputconfiguration = ClearCaseUCMConfiguration.getConfigurationFromTargets( getTargets(), workspace, listener );
+				out.println( "INPUT CONFIG IS " + inputconfiguration );
 			} catch( ConfigurationRotatorException e ) {
 				out.println( "Unable to parse configuration: " + e.getMessage() );
 				ExceptionUtils.print( e, out, false );
@@ -178,13 +179,20 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		
 		out.println( "---> " + configuration );
 		
-		/* Just try to save */
-		logger.debug( "Adding action" );
-		ConfigurationRotatorBuildAction action1 = new ConfigurationRotatorBuildAction( build, ClearCaseUCM.class, configuration );
-		build.addAction( action1 );
-		
+		/**/
+		out.println( "The configuration is:" );
+		for( ClearCaseUCMConfigurationComponent c : projectConfiguration.getList() ) {
+			out.println( " * " + c.getBaseline().getNormalizedName() );
+		}
+		out.println( "" );
+
 		fresh = false;
 		build.getProject().save();
+		
+		/* Just try to save */
+		logger.debug( "Adding action" );
+		final ConfigurationRotatorBuildAction action1 = new ConfigurationRotatorBuildAction( build, ClearCaseUCM.class, projectConfiguration );
+		build.addAction( action1 );
 		
 		return true;
 	}
@@ -312,12 +320,31 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		}
 	}
 
+	public void setConfigurationByAction( AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action ) throws IOException {
+		if( action.getConfiguration() instanceof ClearCaseUCMConfiguration ) {
+			ClearCaseUCMConfiguration c = (ClearCaseUCMConfiguration)action.getConfiguration();
+			this.projectConfiguration = c;
+			setFreshness( true );
+			project.save();
+		} else {
+			throw new AbortException( "Not a valid configuration" );
+		}
+	}
 
 	@Override
 	public PollingResult poll( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener ) throws IOException, InterruptedException {
+		PrintStream out = listener.getLogger();
 		if( projectConfiguration != null ) {
 			try {
-				boolean n = nextConfiguration( listener, projectConfiguration, workspace );
+				ClearCaseUCMConfiguration cc = projectConfiguration.clone();
+				boolean n = nextConfiguration( listener, cc, workspace );
+				/**/
+				out.println( "The configuration is:" );
+				for( ClearCaseUCMConfigurationComponent c : projectConfiguration.getList() ) {
+					out.println( " * " + c.getBaseline().getNormalizedName() );
+				}
+				out.println( "" );
+				
 				if( n ) {
 					return PollingResult.BUILD_NOW;
 				} else {

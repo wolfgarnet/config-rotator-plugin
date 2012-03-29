@@ -26,6 +26,15 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration {
 		list = new ArrayList<ClearCaseUCMConfigurationComponent>();
 	}
 	
+	public ClearCaseUCMConfiguration clone() {
+		ClearCaseUCMConfiguration n = new ClearCaseUCMConfiguration();
+		n.view = this.view;
+		
+		n.list = new ArrayList<ClearCaseUCMConfigurationComponent>();
+		n.list.addAll( this.list );
+		
+		return n;		
+	}
 	
 	public ClearCaseUCMConfiguration( List<ClearCaseUCMConfigurationComponent> list ) {
 		this.list = list;

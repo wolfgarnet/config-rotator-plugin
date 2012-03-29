@@ -39,17 +39,18 @@ public class ConfigurationRotatorBuildAction implements Action {
 	}
 	
 	
-	/*
+	
 	public void doReset( StaplerRequest req, StaplerResponse rsp ) throws IOException, ServletException {
 		SCM scm = build.getProject().getScm();
 		if( scm instanceof ConfigurationRotator ) {
-			((ConfigurationRotator)scm).setFresh( build.getProject(), true );
+			//((ConfigurationRotator)scm).setFresh( build.getProject(), true );
+			((ConfigurationRotator)scm).getAcrs().setConfigurationByAction( build.getProject(), this );
 			rsp.forwardToPreviousPage( req );
 		} else {
-			rsp.sendError( StaplerResponse.SC_BAD_REQUEST, "Not Configuration Rotator job" );
+			rsp.sendError( StaplerResponse.SC_BAD_REQUEST, "Not a Configuration Rotator job" );
 		}
 	}
-	*/
+	
 	
 	public void setResult( ResultType result ) {
 		this.result = result;
@@ -87,6 +88,6 @@ public class ConfigurationRotatorBuildAction implements Action {
 	}
 	
 	public String toString() {
-		return configuration.toString();
+		return "BUILD ACTION: " + configuration.toString();
 	}
 }
