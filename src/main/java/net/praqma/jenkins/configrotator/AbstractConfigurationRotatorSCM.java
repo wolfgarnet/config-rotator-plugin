@@ -49,11 +49,7 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
 		return fresh;
 	}
 	
-	public void setFresh( AbstractProject<?, ?> project, boolean fresh ) throws IOException {
-		this.fresh = fresh;
-		project.save();
-	}
-		
+	
 	/*
 	public void doReset( StaplerRequest req, StaplerResponse rsp ) throws IOException, ServletException {
 		fresh = true;

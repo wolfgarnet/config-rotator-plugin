@@ -69,7 +69,7 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration {
 				}
 			} else {
 				/* Do nothing */
-				out.println( ConfigurationRotator.LOGGERNAME + "\"" + target + "\" was not correct" );
+				out.println( ConfigurationRotator.LOGGERNAME + "\"" + target.getComponent() + "\" was not correct" );
 				throw new ConfigurationRotatorException( "Wrong input, length is " + units.length );
 			}
 		}

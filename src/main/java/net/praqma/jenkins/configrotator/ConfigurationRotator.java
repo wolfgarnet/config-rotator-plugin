@@ -50,10 +50,6 @@ public class ConfigurationRotator extends SCM {
 	public AbstractConfigurationRotatorSCM getAcrs() {
 		return acrs;
 	}
-	
-	public void setFresh( AbstractProject<?, ?> project, boolean fresh ) throws IOException {
-		acrs.setFresh( project, fresh );
-	}
 
 	@Override
 	public SCMRevisionState calcRevisionsFromBuild( AbstractBuild<?, ?> arg0, Launcher arg1, TaskListener arg2 ) throws IOException, InterruptedException {
@@ -150,8 +146,9 @@ public class ConfigurationRotator extends SCM {
 		public SCM newInstance( StaplerRequest req, JSONObject formData ) throws FormException {
 			System.out.println( "FORM: " + formData.toString( 2 ) );
 			ConfigurationRotator r = (ConfigurationRotator) super.newInstance( req, formData );
-			Descriptor<AbstractConfigurationRotatorSCM> d = r.getAcrs().getDescriptor();
-			r.acrs = d.newInstance( req, formData );
+			ConfigurationRotatorSCMDescriptor<AbstractConfigurationRotatorSCM> d = (ConfigurationRotatorSCMDescriptor<AbstractConfigurationRotatorSCM>) r.getAcrs().getDescriptor();
+			r.acrs = d.newInstance( req, formData, r.acrs );
+			save();
 			return r;
 		}
 

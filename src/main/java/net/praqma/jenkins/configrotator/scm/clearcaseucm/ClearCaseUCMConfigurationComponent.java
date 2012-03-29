@@ -22,7 +22,7 @@ public class ClearCaseUCMConfigurationComponent extends AbstractConfigurationCom
 	public ClearCaseUCMConfigurationComponent( String baseline, String plevel, String fixed ) throws ClearCaseException {
 		this.baseline = Baseline.get( baseline ).load();
 		this.plevel = Project.PromotionLevel.valueOf( plevel );
-		if( fixed.equalsIgnoreCase( "manual" ) || fixed.matches( "^\\s*$" ) || fixed.matches( "^(?i)fixed*$" ) ) {
+		if( fixed.equalsIgnoreCase( "manual" ) || fixed.matches( "^\\s*$" ) || fixed.matches( "^(?i)fixed*$" ) || fixed.matches( "^(?i)true*$" ) ) {
 			this.fixed = true;
 		} else {
 			this.fixed = false;

@@ -40,6 +40,7 @@ public class ConfigurationRotatorProjectAction extends Actionable implements Pro
 		return getUrlName();
 	}
 	
+	/*
 	public void doReset( StaplerRequest req, StaplerResponse rsp ) throws IOException, ServletException {
 		SCM scm = project.getScm();
 		if( scm instanceof ConfigurationRotator ) {
@@ -49,6 +50,7 @@ public class ConfigurationRotatorProjectAction extends Actionable implements Pro
 			rsp.sendError( StaplerResponse.SC_BAD_REQUEST, "Not Configuration Rotator job" );
 		}
 	}
+	*/
 	
 	public ConfigurationRotatorBuildAction getLastAction() {
 		SCM scm = project.getScm();

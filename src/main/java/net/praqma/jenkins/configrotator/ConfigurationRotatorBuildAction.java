@@ -39,6 +39,7 @@ public class ConfigurationRotatorBuildAction implements Action {
 	}
 	
 	
+	/*
 	public void doReset( StaplerRequest req, StaplerResponse rsp ) throws IOException, ServletException {
 		SCM scm = build.getProject().getScm();
 		if( scm instanceof ConfigurationRotator ) {
@@ -48,6 +49,7 @@ public class ConfigurationRotatorBuildAction implements Action {
 			rsp.sendError( StaplerResponse.SC_BAD_REQUEST, "Not Configuration Rotator job" );
 		}
 	}
+	*/
 	
 	public void setResult( ResultType result ) {
 		this.result = result;

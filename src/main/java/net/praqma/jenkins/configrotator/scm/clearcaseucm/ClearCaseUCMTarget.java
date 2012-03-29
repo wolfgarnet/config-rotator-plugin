@@ -1,9 +1,21 @@
 package net.praqma.jenkins.configrotator.scm.clearcaseucm;
 
+import org.kohsuke.stapler.DataBoundConstructor;
+
 public class ClearCaseUCMTarget {
 
 	private String component;
 	private boolean change;
+	
+	public ClearCaseUCMTarget() {
+		
+	}
+	
+	@DataBoundConstructor
+	public ClearCaseUCMTarget( String component, boolean change ) {
+		this.component = component;
+		this.change = change;
+	}
 
 	public String getComponent() {
 		return component;
@@ -21,4 +33,7 @@ public class ClearCaseUCMTarget {
 		this.change = change;
 	}
 	
+	public String toString() {
+		return component;
+	}
 }
