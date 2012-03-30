@@ -3,6 +3,8 @@
 	
 	<j:set var="lastResult" value="${it.getResult()}" />
 	
+	NUMBER=${from.getBuild().getNumber()}<br/>
+	
 	FROM=${from}<br/>
 	IF=${from.getConfiguration()}
 	<j:if test="${lastResult != null}">

@@ -29,6 +29,12 @@ public class ClearCaseUCMConfigurationComponent extends AbstractConfigurationCom
 		}
 	}
 	
+	public ClearCaseUCMConfigurationComponent clone() {
+		ClearCaseUCMConfigurationComponent cc = new ClearCaseUCMConfigurationComponent( this.baseline, this.plevel, this.fixed );
+		
+		return cc;
+	}
+	
 	public void setBaseline( Baseline baseline ) {
 		this.baseline = baseline;
 	}

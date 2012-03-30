@@ -126,7 +126,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		
 		projectName = stream.getProject().getShortname();
 		
-		ClearCaseUCMConfiguration configuration = null;
+		//ClearCaseUCMConfiguration configuration = null;
 		ConfigurationRotatorBuildAction action = getLastResult( build.getProject(), ClearCaseUCM.class );
 		out.println( fresh ? "Job is fresh" : "Job is not fresh" );
 		/* If there's no action, this is the first run */
@@ -144,16 +144,16 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 				throw new AbortException();
 			}
 			
-			configuration = inputconfiguration;
+			projectConfiguration = inputconfiguration;
 		} else {
 			logger.debug( "Action was NOT null" );
 			/* Get the configuration from the action */
-			configuration = (ClearCaseUCMConfiguration) action.getConfiguration();
+			ClearCaseUCMConfiguration configuration = (ClearCaseUCMConfiguration) action.getConfiguration();
 			/* Get next configuration */
 			try {
 				logger.debug( "Obtaining new configuration based on old" );
 				/* No new baselines */
-				if( !nextConfiguration( listener, configuration, workspace ) ) {
+				if( ( projectConfiguration = nextConfiguration( listener, configuration, workspace ) ) == null ) {
 					return false;
 				}
 			} catch( Exception e ) {
@@ -164,20 +164,20 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		}
 		
 		/* Store the next configuration as the project configuration */
-		projectConfiguration = configuration;
+		//projectConfiguration = configuration;
 		
 		/* Create the view */
 		try {
 			out.println( ConfigurationRotator.LOGGERNAME + "Creating view" );
-			SnapshotView view = createView( listener, build, configuration, workspace, stream.getPVob() );
-			configuration.setView( view );
+			SnapshotView view = createView( listener, build, projectConfiguration, workspace, stream.getPVob() );
+			projectConfiguration.setView( view );
 		} catch( Exception e ) {
 			out.println( ConfigurationRotator.LOGGERNAME + "Unable to create view: " + e.getMessage() );
 			ExceptionUtils.print( e, out, false );
 			throw new AbortException();
 		}
 		
-		out.println( "---> " + configuration );
+		out.println( "---> " + projectConfiguration );
 		
 		/**/
 		out.println( "The configuration is:" );
@@ -236,13 +236,15 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	}
 */
 	
-	private boolean nextConfiguration( TaskListener listener, ClearCaseUCMConfiguration configuration, FilePath workspace ) throws IOException, InterruptedException, ConfigurationRotatorException {
+	private ClearCaseUCMConfiguration nextConfiguration( TaskListener listener, ClearCaseUCMConfiguration configuration, FilePath workspace ) throws IOException, InterruptedException, ConfigurationRotatorException {
 		
 		Baseline oldest = null, current;
 		ClearCaseUCMConfigurationComponent chosen = null;
 		
+		ClearCaseUCMConfiguration nconfig = configuration.clone();
+		
 		logger.debug( "Foreach configuration component" );
-		for( ClearCaseUCMConfigurationComponent config : configuration.getList() ) {
+		for( ClearCaseUCMConfigurationComponent config : nconfig.getList() ) {
 			logger.debug( "CONFIG: " + config );
 			/* This configuration is not fixed */
 			if( !config.isFixed() ) {
@@ -270,11 +272,11 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 			chosen.setBaseline( oldest );
 		} else {
 			listener.getLogger().println( ConfigurationRotator.LOGGERNAME + "No new baselines" );
-			return false;
+			return null;
 		}
 		
 		
-		return true;
+		return nconfig;
 	}
 	
 	public SnapshotView createView( TaskListener listener, AbstractBuild<?, ?> build, ClearCaseUCMConfiguration configuration, FilePath workspace, PVob pvob ) throws IOException, InterruptedException {
@@ -336,8 +338,8 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		PrintStream out = listener.getLogger();
 		if( projectConfiguration != null ) {
 			try {
-				ClearCaseUCMConfiguration cc = projectConfiguration.clone();
-				boolean n = nextConfiguration( listener, cc, workspace );
+				ClearCaseUCMConfiguration other;
+				other = nextConfiguration( listener, projectConfiguration, workspace );
 				/**/
 				out.println( "The configuration is:" );
 				for( ClearCaseUCMConfigurationComponent c : projectConfiguration.getList() ) {
@@ -345,7 +347,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 				}
 				out.println( "" );
 				
-				if( n ) {
+				if( other != null ) {
 					return PollingResult.BUILD_NOW;
 				} else {
 					return PollingResult.NO_CHANGES;
