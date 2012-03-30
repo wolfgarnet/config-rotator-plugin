@@ -5,16 +5,14 @@ import org.kohsuke.stapler.DataBoundConstructor;
 public class ClearCaseUCMTarget {
 
 	private String component;
-	private boolean change;
-	
+
 	public ClearCaseUCMTarget() {
 		
 	}
 	
 	@DataBoundConstructor
-	public ClearCaseUCMTarget( String component, boolean change ) {
+	public ClearCaseUCMTarget( String component ) {
 		this.component = component;
-		this.change = change;
 	}
 
 	public String getComponent() {
@@ -25,15 +23,21 @@ public class ClearCaseUCMTarget {
 		this.component = component;
 	}
 
-	public boolean doChange() {
-		return change;
-	}
-
-	public void setChange( boolean change ) {
-		this.change = change;
-	}
-	
 	public String toString() {
 		return component;
+	}
+	
+	public boolean equals( Object other ) {
+		if( other == this ) {
+			return true;
+		}
+		
+		if( other instanceof ClearCaseUCMTarget ) {
+			ClearCaseUCMTarget o = (ClearCaseUCMTarget)other;
+			
+			return component.equals( o.getComponent() );
+		} else {
+			return false;
+		}
 	}
 }

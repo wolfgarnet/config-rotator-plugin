@@ -5,9 +5,10 @@
         <f:checkbox name="cc.printDebug" checked="${h.defaultToTrue(instance.printDebug)}" default="checked" />
     </f:entry>
 	
-	<f:entry>
-		<f:textbox name="cc.streamName" value="${instance.streamName}"/>
+	<f:entry title="Context Project VOB">
+		<f:textbox name="cc.pvobName" value="${instance.pvobName}" help="/plugin/config-rotator/help/pvobname.html" />
 	</f:entry>
+
 
 	<!-- 
     <f:entry title="${%ClearCase UCM configuration}">
@@ -25,9 +26,6 @@
 			 		<tr>
                         <td align="left">
                         	<f:textbox name="cc.target.component" value="${targets.component}"/>
-						</td>
-						<td>
-					        <f:checkbox name="cc.target.change" checked="${targets.component==null}" />
 						</td>
                         <td align="right">
                             <f:repeatableDeleteButton/>

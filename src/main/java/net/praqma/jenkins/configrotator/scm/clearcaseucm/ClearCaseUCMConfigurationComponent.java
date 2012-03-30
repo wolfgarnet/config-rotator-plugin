@@ -11,7 +11,6 @@ public class ClearCaseUCMConfigurationComponent extends AbstractConfigurationCom
 	private Baseline baseline;
 	private PromotionLevel plevel;
 	private boolean fixed;
-	private boolean change;
 	
 	public ClearCaseUCMConfigurationComponent( Baseline baseline, PromotionLevel plevel, boolean fixed ) {
 		this.baseline = baseline;
@@ -55,11 +54,18 @@ public class ClearCaseUCMConfigurationComponent extends AbstractConfigurationCom
 		return baseline.getNormalizedName() + "@" + plevel + "(" + fixed + ")";
 	}
 	
-	public void setChange( boolean change ) {
-		this.change = change;
-	}
-	
-	public boolean doChange() {
-		return change;
+	@Override
+	public boolean equals( Object other ) {
+		if( other == this ) {
+			return true;
+		}
+		
+		if( other instanceof ClearCaseUCMConfigurationComponent ) {
+			ClearCaseUCMConfigurationComponent o = (ClearCaseUCMConfigurationComponent)other;
+
+			return ( o.baseline.equals( baseline ) && ( o.plevel.equals( plevel ) ) && ( o.isFixed() == fixed ) );
+		} else {
+			return false;
+		}
 	}
 }

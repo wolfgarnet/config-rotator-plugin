@@ -18,35 +18,24 @@ import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
-import hudson.model.Descriptor;
 import hudson.model.BuildListener;
 import hudson.model.TaskListener;
-import hudson.model.Descriptor.FormException;
 import hudson.scm.PollingResult;
 import hudson.util.FormValidation;
 
 import net.praqma.clearcase.util.ExceptionUtils;
 
 import net.praqma.clearcase.PVob;
-import net.praqma.clearcase.exceptions.ClearCaseException;
-import net.praqma.clearcase.exceptions.UCMEntityNotFoundException;
-import net.praqma.clearcase.exceptions.UnableToCreateEntityException;
-import net.praqma.clearcase.exceptions.UnableToGetEntityException;
-import net.praqma.clearcase.exceptions.UnableToLoadEntityException;
 import net.praqma.clearcase.ucm.entities.Baseline;
 import net.praqma.clearcase.ucm.entities.Project;
 import net.praqma.clearcase.ucm.entities.Stream;
 import net.praqma.clearcase.ucm.view.SnapshotView;
-import net.praqma.jenkins.configrotator.AbstractConfigurationComponent;
 import net.praqma.jenkins.configrotator.AbstractConfigurationRotatorSCM;
 import net.praqma.jenkins.configrotator.ConfigurationRotator;
-import net.praqma.jenkins.configrotator.ConfigurationRotator.ResultType;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorBuildAction;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorException;
-import net.praqma.jenkins.configrotator.ConfigurationRotatorPublisher;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorSCMDescriptor;
 import net.praqma.jenkins.utils.remoting.DetermineProject;
-import net.praqma.jenkins.utils.remoting.LoadEntity;
 import net.praqma.jenkins.utils.remoting.GetBaselines;
 import net.praqma.util.debug.Logger;
 import net.praqma.util.debug.Logger.LogLevel;
@@ -57,16 +46,12 @@ import net.sf.json.JSONObject;
 public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Serializable {
 	
 	private static Logger logger = Logger.getLogger();
-
-	//private String config;
-	private String streamName;
 	
 	private ClearCaseUCMConfiguration projectConfiguration;
 	
 	public List<ClearCaseUCMTarget> targets;
 	
-	transient private Stream stream;
-	transient private String projectName;
+	private PVob pvob;
 	
 	private boolean printDebug;
 
@@ -78,17 +63,14 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	 * @param config
 	 */
 	@DataBoundConstructor
-	public ClearCaseUCM( String streamName, boolean printDebug ) {
-		//this.config = config;
-		System.out.println( "CONSTRUCTOR=" + streamName );
-		this.streamName = streamName;
-		//this.targets = targets;
+	public ClearCaseUCM( String pvobName, boolean printDebug ) {
+		pvob = new PVob( pvobName );
 		this.printDebug = printDebug;
 		fresh = true;
 	}
 	
-	public String getStreamName() {
-		return streamName;
+	public String getPvobName() {
+		return pvob.toString();
 	}
 	
 	public boolean doPrintDebug() {
@@ -112,21 +94,6 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 			Logger.addAppender( app );
 		}
 		
-		/* Resolve streamName */
-		try {
-			logger.debug( "Resolving " + streamName );
-			stream = (Stream) workspace.act( new LoadEntity( Stream.get( streamName ) ) );
-		} catch( ClearCaseException e ) {
-			e.print( out );
-			throw new AbortException();
-		} catch( Exception e ) {
-			out.println( ConfigurationRotator.LOGGERNAME + "Unable to load " + streamName + ": " + e.getMessage() );
-			throw new AbortException();
-		}
-		
-		projectName = stream.getProject().getShortname();
-		
-		//ClearCaseUCMConfiguration configuration = null;
 		ConfigurationRotatorBuildAction action = getLastResult( build.getProject(), ClearCaseUCM.class );
 		out.println( fresh ? "Job is fresh" : "Job is not fresh" );
 		/* If there's no action, this is the first run */
@@ -168,7 +135,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		/* Create the view */
 		try {
 			out.println( ConfigurationRotator.LOGGERNAME + "Creating view" );
-			SnapshotView view = createView( listener, build, projectConfiguration, workspace, stream.getPVob() );
+			SnapshotView view = createView( listener, build, projectConfiguration, workspace, pvob );
 			projectConfiguration.setView( view );
 		} catch( Exception e ) {
 			out.println( ConfigurationRotator.LOGGERNAME + "Unable to create view: " + e.getMessage() );
@@ -242,7 +209,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		Project project = null;
 
 		logger.debug( "Getting project" );
-		project = workspace.act( new DetermineProject( Arrays.asList( new String[] { "jenkins", projectName } ), pvob ) );
+		project = workspace.act( new DetermineProject( Arrays.asList( new String[] { "jenkins", "Jenkins", "hudson", "Hudson" } ), pvob ) );
 		
 		logger.debug( "Project is " + project );
 		
@@ -261,18 +228,18 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	}
 	
 	public List<ClearCaseUCMTarget> getTargets() {
-		return getConfigurationAsTargets( projectConfiguration );
+		if( projectConfiguration != null ) {
+			return getConfigurationAsTargets( projectConfiguration );
+		} else {
+			return targets;
+		}
 	}
 	
 	private List<ClearCaseUCMTarget> getConfigurationAsTargets( ClearCaseUCMConfiguration config ) {
 		List<ClearCaseUCMTarget> list = new ArrayList<ClearCaseUCMTarget>();
 		if( config != null ) {
 			for( ClearCaseUCMConfigurationComponent c : config.getList() ) {
-				ClearCaseUCMTarget t = new ClearCaseUCMTarget();
-				t.setComponent( c.getBaseline().getNormalizedName() + ", " + c.getPlevel().toString() + ", " + c.isFixed() );
-				t.setChange( c.doChange() );
-				list.add( t );
-				//list.add( new ClearCaseUCMTarget( c.getBaseline().getFullyQualifiedName(), c.doChange() ) );
+				list.add( new ClearCaseUCMTarget( c.getBaseline().getFullyQualifiedName() ) );
 			}
 			
 			return list;
@@ -332,18 +299,22 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		
 		@Override
 		public AbstractConfigurationRotatorSCM newInstance( StaplerRequest req, JSONObject formData, AbstractConfigurationRotatorSCM i ) throws FormException {
-			System.out.println( "BAM!" );
-			//ClearCaseUCM instance = req.bindJSON( ClearCaseUCM.class, formData );
-			System.out.println( formData.toString( 2 ) );
-			System.out.println( "FORMDATA: " + formData.getJSONObject( "acrs" ).getJSONArray( "targets" ) );
 			ClearCaseUCM instance = (ClearCaseUCM)i;
-			//List<ClearCaseUCMTarget> targets = req.bindParametersToList( ClearCaseUCMTarget.class, "cc.target." );
+			
+			/* Check if changed */
 			List<ClearCaseUCMTarget> targets = req.bindJSONToList( ClearCaseUCMTarget.class, formData.getJSONObject( "acrs" ).getJSONArray( "targets" ) );
-			System.out.println( "Targets before: " + instance.targets );
-			instance.targets = targets;
-			System.out.println( "Targets after: " + instance.targets );
-			System.out.println( "Targets: " + targets );
-			System.out.println( "STREAM: " + instance.getStreamName() );
+			if( instance.projectConfiguration != null && instance != null ) {
+				if( !instance.getTargets().equals( targets ) ) {
+					System.out.println( "New config" );
+					instance.targets = targets;
+				} else {
+					System.out.println( "NOT A New config" );
+				}
+			} else {
+				System.out.println( "BRAND NEW!" );
+				instance.targets = targets;
+			}			
+			
 			save();
 			return instance;
 		}

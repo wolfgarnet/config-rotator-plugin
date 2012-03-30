@@ -72,7 +72,6 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration {
 				try {
 					ClearCaseUCMConfigurationComponent config = workspace.act( new GetConfiguration( units, listener ) );
 					out.println( ConfigurationRotator.LOGGERNAME + "Config: " + config );
-					config.setChange( target.doChange() );
 					configuration.list.add( config );
 				} catch( InterruptedException e ) {
 					out.println( ConfigurationRotator.LOGGERNAME + "Error: " + e.getMessage() );
@@ -92,11 +91,42 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration {
 	public String toString() {
 		return list.toString();
 	}
-
+	
 
 	@Override
 	public void getConfiguration() {
 		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public boolean equals( Object other ) {
+		if( other == this ) {
+			return true;
+		}
+		
+		if( other instanceof ClearCaseUCMConfiguration ) {
+			ClearCaseUCMConfiguration o = (ClearCaseUCMConfiguration)other;
+			
+			/* Check size */
+			if( o.getList().size() != list.size() ) {
+				return false;
+			}
+			
+			/* Check elements, the size is identical */
+			for( int i = 0 ; i < list.size() ; ++i ) {
+				if( !o.list.get( i ).equals( list.get( i ) ) ) {
+					return false;
+				}
+			}
+			
+			/* Everything is ok */
+			return true;
+		} else {
+			/* Not same type */
+			return false;
+		}
+		
 		
 	}
 

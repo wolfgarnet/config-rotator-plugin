@@ -37,7 +37,7 @@
 	</f:block>
 	 -->
  
-LIST = ${descriptor.getSCMs()}
+<!-- LIST = ${descriptor.getSCMs()} -->
 <!-- 
 	<select class="setting-input" name="snade">
 		<j:forEach var="t" items="${types}">
