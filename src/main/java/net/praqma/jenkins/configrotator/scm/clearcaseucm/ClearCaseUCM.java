@@ -163,8 +163,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 			}
 		}
 		
-		/* Store the next configuration as the project configuration */
-		//projectConfiguration = configuration;
+		printConfiguration( out, projectConfiguration );
 		
 		/* Create the view */
 		try {
@@ -176,16 +175,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 			ExceptionUtils.print( e, out, false );
 			throw new AbortException();
 		}
-		
-		out.println( "---> " + projectConfiguration );
-		
-		/**/
-		out.println( "The configuration is:" );
-		for( ClearCaseUCMConfigurationComponent c : projectConfiguration.getList() ) {
-			out.println( " * " + c.getBaseline().getNormalizedName() );
-		}
-		out.println( "" );
-
+				
 		fresh = false;
 		build.getProject().save();
 		
@@ -197,44 +187,13 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		return true;
 	}
 	
-	/*
-	private void updateConfiguration( ClearCaseUCMConfiguration configuration ) throws UnableToLoadEntityException, UnableToCreateEntityException, UCMEntityNotFoundException, UnableToGetEntityException {
-		logger.debug( "Updating configuration" );
-		
-		List<ClearCaseUCMConfigurationComponent> adding = new ArrayList<ClearCaseUCMConfigurationComponent>();
-		
-		for( ClearCaseUCMConfigurationComponent c : origin.getList() ) {
-
-			boolean add = true;
-			
-			for( ClearCaseUCMConfigurationComponent c2 : configuration.getList() ) {
-				logger.debug( "Comparing " + c2.getBaseline().getComponent() + " and " + c.getBaseline().getComponent() );
-				logger.debug( "Comparing " + c2.getBaseline().getStream() + " and " + c.getBaseline().getStream() );
-				
-				if( c2.getBaseline().getComponent().equals( c.getBaseline().getComponent() ) &&
-					c2.getBaseline().getStream().equals( c.getBaseline().getStream() ) && !c.doChange() ) {
-					logger.debug( "EQUAL!!!! Not adding!" );
-					add = false;
-					break;
-				}
-			}
-			
-			if( add ) {
-				logger.debug( "Adding " + c );
-				adding.add( c );
-			}
+	public void printConfiguration( PrintStream out, ClearCaseUCMConfiguration config ) {
+		out.println( "The configuration is:" );
+		for( ClearCaseUCMConfigurationComponent c : projectConfiguration.getList() ) {
+			out.println( " * " + c.getBaseline().getNormalizedName() );
 		}
-		
-		logger.debug( "Processing findings" );
-		
-		for( ClearCaseUCMConfigurationComponent c : adding ) {
-			logger.debug( "Adding " + c );
-			configuration.getList().add( c );
-		}
-		
-		logger.debug( "Done updating" );
+		out.println( "" );
 	}
-*/
 	
 	private ClearCaseUCMConfiguration nextConfiguration( TaskListener listener, ClearCaseUCMConfiguration configuration, FilePath workspace ) throws IOException, InterruptedException, ConfigurationRotatorException {
 		
@@ -340,14 +299,9 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 			try {
 				ClearCaseUCMConfiguration other;
 				other = nextConfiguration( listener, projectConfiguration, workspace );
-				/**/
-				out.println( "The configuration is:" );
-				for( ClearCaseUCMConfigurationComponent c : projectConfiguration.getList() ) {
-					out.println( " * " + c.getBaseline().getNormalizedName() );
-				}
-				out.println( "" );
-				
+
 				if( other != null ) {
+					printConfiguration( out, other );
 					return PollingResult.BUILD_NOW;
 				} else {
 					return PollingResult.NO_CHANGES;
