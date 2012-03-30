@@ -22,7 +22,7 @@ public class ConfigurationRotatorProjectAction extends Actionable implements Pro
 	
 	@Override
 	public String getIconFileName() {
-		return "rotator.png";
+		return "/plugin/config-rotator/images/rotate.png";
 	}
 
 	@Override
