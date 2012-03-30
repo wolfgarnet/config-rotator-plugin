@@ -2,7 +2,7 @@
          xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt" xmlns:local="local">
                   
             	<j:forEach var="component" items="${it.getList()}">
-                       <br /><b>${component.getBaseline()}</b>, ${component.getPlevel()}, <j:if test="${component.isFixed()}">Fixed</j:if><j:if test="${!component.isFixed()}">Auto</j:if>
+                       <b>${component.getBaseline()}</b>, ${component.getPlevel()}, <j:if test="${component.isFixed()}">Fixed</j:if><j:if test="${!component.isFixed()}">Auto</j:if><br />
 	            </j:forEach>
          
 </j:jelly>

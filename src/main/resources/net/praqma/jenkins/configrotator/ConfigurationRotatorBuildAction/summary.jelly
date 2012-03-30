@@ -3,13 +3,32 @@
 	
 	<j:set var="lastResult" value="${it.getResult()}" />
 	
+	
+	
 	<j:if test="${lastResult != null}">
-
-		<div style="margin:10px;padding:10px;border-style:solid">
-			<div style="font-weight:bold;font-size:18px;text-align:center;width:100%">${from.getResult()}</div>
+	
+		<table>
+			<tr>
+				<td rowspan="2" style="padding:10px"><img src="/plugin/config-rotator/images/rotate.png" /></td>
+				<td style="font-weight:bold;font-size:18px;text-align:left">
+				<j:choose>
+					<j:when test="${from.isCompatible()}">
+						<b>${%This configuration is compatible}</b>
+					</j:when>
+					<j:otherwise>
+						<b>${%This configuration is not compatible}</b>
+					</j:otherwise>
+				</j:choose>
+				</td>
+			</tr>
+			<tr>
+				<td valign="top">
 				<j:set var="class" value="${from.getConfiguration().getClass()}" />
 				<st:include it="${from.getConfiguration()}" page="/${from.getConfiguration().getView(class)}" />
-		</div>
+				</td>
+			</tr>
+		</table>
+
 		
 		<a href="config-rotator/reset">Reset to this configuration</a>
 	</j:if>

@@ -60,6 +60,10 @@ public class ConfigurationRotatorBuildAction implements Action {
 		return result.equals( ResultType.COMPATIBLE ) || result.equals( ResultType.INCOMPATIBLE );
 	}
 	
+	public boolean isCompatible() {
+		return result.equals( ResultType.COMPATIBLE );
+	}
+	
 	public ResultType getResult() {
 		return result;
 	}
