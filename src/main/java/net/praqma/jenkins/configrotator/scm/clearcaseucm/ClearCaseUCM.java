@@ -295,15 +295,18 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	@Override
 	public PollingResult poll( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener ) throws IOException, InterruptedException {
 		PrintStream out = listener.getLogger();
+		out.println( "POLLING!!!" );
 		if( projectConfiguration != null ) {
+			out.println( "Config is not null" );
 			try {
 				ClearCaseUCMConfiguration other;
 				other = nextConfiguration( listener, projectConfiguration, workspace );
-
+				out.println( "Other=" + other );
 				if( other != null ) {
 					printConfiguration( out, other );
 					return PollingResult.BUILD_NOW;
 				} else {
+					out.println( "No changes!" );
 					return PollingResult.NO_CHANGES;
 				}
 			} catch( ConfigurationRotatorException e ) {
