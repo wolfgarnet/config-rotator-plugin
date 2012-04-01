@@ -21,6 +21,7 @@ import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.model.TaskListener;
 import hudson.scm.PollingResult;
+import hudson.scm.SCM;
 import hudson.util.FormValidation;
 
 import net.praqma.clearcase.util.ExceptionUtils;
@@ -66,7 +67,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	public ClearCaseUCM( String pvobName, boolean printDebug ) {
 		pvob = new PVob( pvobName );
 		this.printDebug = printDebug;
-		fresh = true;
+		//fresh = true;
 	}
 	
 	public String getPvobName() {
@@ -81,9 +82,26 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	public String getName() {
 		return "ClearCase UCM";
 	}
+	
+	@Override
+	public boolean wasReconfigured() {
+		if( targets.size() != projectConfiguration.getList().size() ) {
+			return true;
+		}
+		
+		/**/
+		List<ClearCaseUCMTarget> list = getConfigurationAsTargets( projectConfiguration );
+		for( int i = 0 ; i < targets.size() ; ++i ) {
+			if( !targets.get( i ).equals( list.get( i ) ) ) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
 
 	@Override
-	public boolean perform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener ) throws IOException {
+	public boolean perform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, boolean fresh ) throws IOException {
 		PrintStream out = listener.getLogger();
 		
 		if( printDebug ) {
@@ -143,9 +161,6 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 			throw new AbortException();
 		}
 				
-		fresh = false;
-		build.getProject().save();
-		
 		/* Just try to save */
 		logger.debug( "Adding action" );
 		final ConfigurationRotatorBuildAction action1 = new ConfigurationRotatorBuildAction( build, ClearCaseUCM.class, projectConfiguration );
@@ -239,7 +254,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		List<ClearCaseUCMTarget> list = new ArrayList<ClearCaseUCMTarget>();
 		if( config != null ) {
 			for( ClearCaseUCMConfigurationComponent c : config.getList() ) {
-				list.add( new ClearCaseUCMTarget( c.getBaseline().getFullyQualifiedName() ) );
+				list.add( new ClearCaseUCMTarget( c.getBaseline().getNormalizedName() + ", " + c.getPlevel().toString() + ", " + c.isFixed() ) );
 			}
 			
 			return list;
@@ -252,7 +267,6 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		if( action.getConfiguration() instanceof ClearCaseUCMConfiguration ) {
 			ClearCaseUCMConfiguration c = (ClearCaseUCMConfiguration)action.getConfiguration();
 			this.projectConfiguration = c;
-			setFreshness( true );
 			project.save();
 		} else {
 			throw new AbortException( "Not a valid configuration" );
@@ -301,19 +315,8 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		public AbstractConfigurationRotatorSCM newInstance( StaplerRequest req, JSONObject formData, AbstractConfigurationRotatorSCM i ) throws FormException {
 			ClearCaseUCM instance = (ClearCaseUCM)i;
 			
-			/* Check if changed */
 			List<ClearCaseUCMTarget> targets = req.bindJSONToList( ClearCaseUCMTarget.class, formData.getJSONObject( "acrs" ).getJSONArray( "targets" ) );
-			if( instance.projectConfiguration != null && instance != null ) {
-				if( !instance.getTargets().equals( targets ) ) {
-					System.out.println( "New config" );
-					instance.targets = targets;
-				} else {
-					System.out.println( "NOT A New config" );
-				}
-			} else {
-				System.out.println( "BRAND NEW!" );
-				instance.targets = targets;
-			}			
+			instance.targets = targets;
 			
 			save();
 			return instance;

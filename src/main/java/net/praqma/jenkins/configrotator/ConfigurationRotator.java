@@ -42,13 +42,30 @@ public class ConfigurationRotator extends SCM {
 	public static final String NAME = "ConfigRotator";
 	public static final String LOGGERNAME = "[" + NAME + "] ";
 	
+	public boolean justConfigured = false;
+	
+	/**
+	 * Determines whether a new configuration has been entered.
+	 * If true, the input is new.
+	 */
+	public boolean fresh;
+	
 	@DataBoundConstructor
 	public ConfigurationRotator( AbstractConfigurationRotatorSCM acrs ) {
 		this.acrs = acrs;
+		this.justConfigured = true;
 	}
 	
 	public AbstractConfigurationRotatorSCM getAcrs() {
 		return acrs;
+	}
+
+	public boolean isFresh() {
+		return fresh;
+	}
+		
+	public void setFreshness( boolean fresh ) {
+		this.fresh = fresh;
 	}
 	
 	/*
@@ -59,7 +76,7 @@ public class ConfigurationRotator extends SCM {
 
 	@Override
 	public SCMRevisionState calcRevisionsFromBuild( AbstractBuild<?, ?> arg0, Launcher arg1, TaskListener arg2 ) throws IOException, InterruptedException {
-		if( !acrs.isFresh() ) {
+		if( !isFresh() ) {
 			return new SCMRevisionState() {};
 		} else {
 			return null;
@@ -72,12 +89,23 @@ public class ConfigurationRotator extends SCM {
 		
 		out.println( LOGGERNAME + "Check out" );
 		
+		/**/
+		if( justConfigured ) {
+			fresh = acrs.wasReconfigured();
+			out.println( "Was reconfigured: " + fresh );
+		}
+		
 		try {
-			acrs.perform( build, launcher, workspace, listener );
+			acrs.perform( build, launcher, workspace, listener, fresh );
 		} catch( AbortException e ) {
 			out.println( LOGGERNAME + "Failed to check out" );
 			throw e;
 		}
+		
+		/* Config is not fresh anymore */
+		fresh = false;
+		justConfigured = false;
+		build.getProject().save();
 		
 		/* If not aborted, add publisher */
 		out.println( LOGGERNAME + "Adding publisher" );
@@ -93,6 +121,11 @@ public class ConfigurationRotator extends SCM {
 		}
 		
 		return true;
+	}
+	
+	public void setConfigurationByAction( AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action ) throws IOException {
+		acrs.setConfigurationByAction( project, action );
+		fresh = true;
 	}
 
 	@Override

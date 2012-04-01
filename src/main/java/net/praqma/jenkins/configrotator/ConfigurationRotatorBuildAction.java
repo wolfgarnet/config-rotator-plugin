@@ -32,7 +32,7 @@ public class ConfigurationRotatorBuildAction implements Action {
 	public boolean isFresh() {
 		SCM scm = build.getProject().getScm();
 		if( scm instanceof ConfigurationRotator ) {
-			return ((ConfigurationRotator)scm).getAcrs().isFresh();
+			return ((ConfigurationRotator)scm).isFresh();
 		} else {
 			return false;
 		}
@@ -44,7 +44,7 @@ public class ConfigurationRotatorBuildAction implements Action {
 		SCM scm = build.getProject().getScm();
 		if( scm instanceof ConfigurationRotator ) {
 			//((ConfigurationRotator)scm).setFresh( build.getProject(), true );
-			((ConfigurationRotator)scm).getAcrs().setConfigurationByAction( build.getProject(), this );
+			((ConfigurationRotator)scm).setConfigurationByAction( build.getProject(), this );
 			rsp.forwardToPreviousPage( req );
 		} else {
 			rsp.sendError( StaplerResponse.SC_BAD_REQUEST, "Not a Configuration Rotator job" );

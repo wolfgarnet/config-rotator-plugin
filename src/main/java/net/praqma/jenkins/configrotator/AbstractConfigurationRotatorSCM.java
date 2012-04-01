@@ -34,27 +34,15 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
 	
 	private static Logger logger = Logger.getLogger();
 	
-	/**
-	 * Determines whether a new configuration has been entered.
-	 * If true, the input is new.
-	 */
-	public boolean fresh;
-
 	public abstract String getName();
 	
 	public abstract PollingResult poll( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener ) throws IOException, InterruptedException;
 	
-	public abstract boolean perform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener ) throws IOException;
-
-	public boolean isFresh() {
-		return fresh;
-	}
+	public abstract boolean perform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, boolean fresh ) throws IOException;
 	
 	public abstract void setConfigurationByAction( AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action ) throws IOException;
 	
-	public void setFreshness( boolean fresh ) {
-		this.fresh = fresh;
-	}
+	public abstract boolean wasReconfigured();
 	
 	/*
 	public void doReset( StaplerRequest req, StaplerResponse rsp ) throws IOException, ServletException {

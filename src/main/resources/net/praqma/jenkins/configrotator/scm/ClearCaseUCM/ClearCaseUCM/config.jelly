@@ -9,6 +9,9 @@
 		<f:textbox name="cc.pvobName" value="${instance.pvobName}" help="/plugin/config-rotator/help/pvobname.html" />
 	</f:entry>
 
+	<!-- 
+	<input type="hidden" name="cc.old" value="${instance}" />
+	 -->
 
 	<!-- 
     <f:entry title="${%ClearCase UCM configuration}">
