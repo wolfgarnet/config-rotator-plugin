@@ -88,7 +88,6 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		ConfigurationRotatorBuildAction action = getLastResult( project, ClearCaseUCM.class );
 		
 		if( action == null ) {
-			System.out.println( "NO LAST ACTION" );
 			return true;
 		}
 		
@@ -96,13 +95,11 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		
 		/* Check if the project configuration is even set */
 		if( configuration == null ) {
-			System.out.println( "PROJECT CONFIG WAS NULL" );
 			return true;
 		}
 		
 		/* Check if the sizes are equal */
 		if( targets.size() != configuration.getList().size() ) {
-			System.out.println( "SIZES WAS NOT EQUAL" );
 			return true;
 		}
 		
@@ -111,7 +108,6 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		for( int i = 0 ; i < targets.size() ; ++i ) {
 			System.out.println( list.get( i ) + " = " + targets.get( i ) );
 			if( !targets.get( i ).equals( list.get( i ) ) ) {
-				System.out.println( "CONTENTS WAS NO EQUAL" );
 				return true;
 			}
 		}
@@ -141,7 +137,6 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 			ClearCaseUCMConfiguration inputconfiguration = null;
 			try {
 				inputconfiguration = ClearCaseUCMConfiguration.getConfigurationFromTargets( getTargets(), workspace, listener );
-				out.println( "INPUT CONFIG IS " + inputconfiguration );
 			} catch( ConfigurationRotatorException e ) {
 				out.println( "Unable to parse configuration: " + e.getMessage() );
 				ExceptionUtils.print( e, out, false );

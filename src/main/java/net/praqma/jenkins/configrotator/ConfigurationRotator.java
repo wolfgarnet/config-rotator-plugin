@@ -87,9 +87,9 @@ public class ConfigurationRotator extends SCM {
 	public boolean checkout( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, File file ) throws IOException, InterruptedException {
 		PrintStream out = listener.getLogger();
 		
-		out.println( LOGGERNAME + "Check out" );
+		out.println( LOGGERNAME + "Checking out" );
 		
-		/**/
+		/* Determine if the job was reconfigured */
 		if( justConfigured ) {
 			fresh = acrs.wasReconfigured( build.getProject() );
 			out.println( "Was reconfigured: " + fresh );
@@ -108,7 +108,6 @@ public class ConfigurationRotator extends SCM {
 		build.getProject().save();
 		
 		/* If not aborted, add publisher */
-		out.println( LOGGERNAME + "Adding publisher" );
 		boolean added = false;
 		for( Publisher p : build.getParent().getPublishersList() ) {
 			if( p instanceof ConfigurationRotatorPublisher ) {
