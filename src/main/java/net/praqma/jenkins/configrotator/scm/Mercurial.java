@@ -36,12 +36,6 @@ public class Mercurial extends AbstractConfigurationRotatorSCM {
 	}
 	
 
-	@Override
-	public boolean perform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener ) throws IOException {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 	@Extension
 	public static final class MercurialDescriptor extends ConfigurationRotatorSCMDescriptor<Mercurial> {
 
@@ -62,6 +56,18 @@ public class Mercurial extends AbstractConfigurationRotatorSCM {
 	public void setConfigurationByAction( AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action ) throws IOException {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public boolean perform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, boolean fresh ) throws IOException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean wasReconfigured( AbstractProject<?, ?> project ) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

@@ -67,7 +67,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	public ClearCaseUCM( String pvobName, boolean printDebug ) {
 		pvob = new PVob( pvobName );
 		this.printDebug = printDebug;
-		//fresh = true;
+		System.out.println( "CCUCM: " + this );
 	}
 	
 	public String getPvobName() {
@@ -84,15 +84,34 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	}
 	
 	@Override
-	public boolean wasReconfigured() {
-		if( targets.size() != projectConfiguration.getList().size() ) {
+	public boolean wasReconfigured( AbstractProject<?, ?> project ) {
+		ConfigurationRotatorBuildAction action = getLastResult( project, ClearCaseUCM.class );
+		
+		if( action == null ) {
+			System.out.println( "NO LAST ACTION" );
+			return true;
+		}
+		
+		ClearCaseUCMConfiguration configuration = (ClearCaseUCMConfiguration) action.getConfiguration();
+		
+		/* Check if the project configuration is even set */
+		if( configuration == null ) {
+			System.out.println( "PROJECT CONFIG WAS NULL" );
+			return true;
+		}
+		
+		/* Check if the sizes are equal */
+		if( targets.size() != configuration.getList().size() ) {
+			System.out.println( "SIZES WAS NOT EQUAL" );
 			return true;
 		}
 		
 		/**/
-		List<ClearCaseUCMTarget> list = getConfigurationAsTargets( projectConfiguration );
+		List<ClearCaseUCMTarget> list = getConfigurationAsTargets( configuration );
 		for( int i = 0 ; i < targets.size() ; ++i ) {
+			System.out.println( list.get( i ) + " = " + targets.get( i ) );
 			if( !targets.get( i ).equals( list.get( i ) ) ) {
+				System.out.println( "CONTENTS WAS NO EQUAL" );
 				return true;
 			}
 		}

@@ -91,7 +91,7 @@ public class ConfigurationRotator extends SCM {
 		
 		/**/
 		if( justConfigured ) {
-			fresh = acrs.wasReconfigured();
+			fresh = acrs.wasReconfigured( build.getProject() );
 			out.println( "Was reconfigured: " + fresh );
 		}
 		

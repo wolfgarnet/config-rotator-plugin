@@ -42,7 +42,7 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
 	
 	public abstract void setConfigurationByAction( AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action ) throws IOException;
 	
-	public abstract boolean wasReconfigured();
+	public abstract boolean wasReconfigured( AbstractProject<?, ?> project );
 	
 	/*
 	public void doReset( StaplerRequest req, StaplerResponse rsp ) throws IOException, ServletException {
