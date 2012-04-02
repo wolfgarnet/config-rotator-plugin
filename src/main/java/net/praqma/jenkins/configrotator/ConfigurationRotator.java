@@ -68,12 +68,6 @@ public class ConfigurationRotator extends SCM {
 		this.fresh = fresh;
 	}
 	
-	/*
-	public void setConfigurationByAction( ConfigurationRotatorBuildAction action ) {
-		
-	}
-	*/
-
 	@Override
 	public SCMRevisionState calcRevisionsFromBuild( AbstractBuild<?, ?> arg0, Launcher arg1, TaskListener arg2 ) throws IOException, InterruptedException {
 		if( !isFresh() ) {
@@ -149,36 +143,6 @@ public class ConfigurationRotator extends SCM {
 		public String getDisplayName() {
 			return "Config rotator";
 		}
-		
-		/*
-		@Override
-		public SCM newInstance(StaplerRequest req, JSONObject formData)	throws FormException {
-			System.out.println( formData.toString( 2 ) );
-			return super.newInstance(req, formData);
-		}
-		*/
-
-
-		/*
-		@Override
-		public ConfigurationRotator newInstance(StaplerRequest req, JSONObject formData) throws FormException {
-			System.out.println( formData.toString( 2 ) );
-			
-			Class<?> cl = null;
-			JSONObject acrs = (JSONObject)formData.get( "acrs" );
-			try {
-				cl = Class.forName( (String) acrs.get( "stapler-class" ) );
-			} catch( ClassNotFoundException e ) {
-				throw new FormException( "WHAT?", "THE?!" );
-			}
-			System.out.println( "CLASS: " + cl );
-			AbstractConfigurationRotatorSCM scm = (AbstractConfigurationRotatorSCM) req.bindJSON( cl, acrs );
-			//AbstractConfigurationRotatorSCM scm = cl.;
-			
-			return new ConfigurationRotator( scm );
-			//return super.newInstance(req, formData);
-		}
-		*/
 
 		@Override
 		public SCM newInstance( StaplerRequest req, JSONObject formData ) throws FormException {
@@ -189,19 +153,6 @@ public class ConfigurationRotator extends SCM {
 			save();
 			return r;
 		}
-
-		/*
-		@Override
-		public SCM newInstance( StaplerRequest req, JSONObject formData ) throws FormException {
-			System.out.println( formData.toString( 2 ) );
-			SCM instance =  super.newInstance( req, formData );
-			//Class.forName( (String) formData.get( "stapler-class" ) );
-			
-			//ConfigurationRotator instance = req.bindJSON( ConfigurationRotator.class, formData );
-			System.out.println( "---->"  + instance );
-			return instance;
-		}
-		*/
 
 		public List<ConfigurationRotatorSCMDescriptor<?>> getSCMs() {
 			return AbstractConfigurationRotatorSCM.getDescriptors();
