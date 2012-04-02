@@ -70,7 +70,7 @@ public class ConfigurationRotatorBuildAction implements Action {
 
 	@Override
 	public String getIconFileName() {
-		return "graph.gif";
+		return "/plugin/config-rotator/images/rotate.png";
 	}
 
 	@Override

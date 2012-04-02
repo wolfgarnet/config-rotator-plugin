@@ -168,7 +168,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	public void printConfiguration( PrintStream out, ClearCaseUCMConfiguration config ) {
 		out.println( "The configuration is:" );
 		for( ClearCaseUCMConfigurationComponent c : projectConfiguration.getList() ) {
-			out.println( " * " + c.getBaseline().getNormalizedName() );
+			out.println( " * " + c.getBaseline().getComponent() + ", " + c.getBaseline().getStream() + ", " + c.getBaseline().getNormalizedName() );
 		}
 		out.println( "" );
 	}
@@ -248,9 +248,14 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	
 	private List<ClearCaseUCMTarget> getConfigurationAsTargets( ClearCaseUCMConfiguration config ) {
 		List<ClearCaseUCMTarget> list = new ArrayList<ClearCaseUCMTarget>();
-		if( config != null ) {
+		if( config.getList() != null && config.getList().size() > 0 ) {
 			for( ClearCaseUCMConfigurationComponent c : config.getList() ) {
-				list.add( new ClearCaseUCMTarget( c.getBaseline().getNormalizedName() + ", " + c.getPlevel().toString() + ", " + c.isFixed() ) );
+				if( c != null ) {
+					list.add( new ClearCaseUCMTarget( c.getBaseline().getNormalizedName() + ", " + c.getPlevel().toString() + ", " + c.isFixed() ) );
+				} else {
+					/* A null!? The list is corrupted, return targets */
+					return targets;
+				}
 			}
 			
 			return list;
@@ -273,6 +278,10 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	public PollingResult poll( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener ) throws IOException, InterruptedException {
 		PrintStream out = listener.getLogger();
 		out.println( ConfigurationRotator.LOGGERNAME + "Polling" );
+		
+		if( projectConfiguration == null ) {
+			
+		}
 		
 		ConfigurationRotatorBuildAction action = getLastResult( project, ClearCaseUCM.class );
 		

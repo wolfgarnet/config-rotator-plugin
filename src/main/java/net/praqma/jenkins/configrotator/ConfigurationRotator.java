@@ -32,6 +32,7 @@ import hudson.tasks.Publisher;
 public class ConfigurationRotator extends SCM {
 	
 	private AbstractConfigurationRotatorSCM acrs;
+	private static Logger logger = Logger.getLogger();
 	
 	private boolean printDebug;
 	
@@ -89,8 +90,6 @@ public class ConfigurationRotator extends SCM {
 	public boolean checkout( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, File file ) throws IOException, InterruptedException {
 		PrintStream out = listener.getLogger();
 		
-		out.println( LOGGERNAME + "Checking out" );
-		
 		/* Configure debugger */
 		if( printDebug ) {
 			Appender app = new StreamAppender( out );
@@ -103,7 +102,7 @@ public class ConfigurationRotator extends SCM {
 		/* Determine if the job was reconfigured */
 		if( justConfigured ) {
 			reconfigure = acrs.wasReconfigured( build.getProject() );
-			out.println( "Was reconfigured: " + reconfigure );
+			logger.debug( "Was reconfigured: " + reconfigure );
 		}
 		
 		try {

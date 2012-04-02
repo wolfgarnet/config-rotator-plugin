@@ -70,7 +70,7 @@ public class PrepareWorkspace implements FileCallable<SnapshotView> {
 			}
 			
 			try {
-				out.println( ConfigurationRotator.LOGGERNAME + "Changing stream" );
+				out.println( ConfigurationRotator.LOGGERNAME + "Rebasing stream to " + devStream.getNormalizedName() );
 				Rebase rebase = new Rebase( devStream, view, baselines );
 				rebase.rebase( true );
 			} catch( ClearCaseException e ) {

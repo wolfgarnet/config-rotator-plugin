@@ -58,12 +58,9 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
 		logger.debug( "Getting last result" );
 		
 		for( AbstractBuild<?, ?> b = getLastBuildToBeConsidered( project ); b != null; b = b.getPreviousNotFailedBuild() ) {
-			logger.debug( "b: " + b.getFullDisplayName() );
 			ConfigurationRotatorBuildAction r = b.getAction( ConfigurationRotatorBuildAction.class );
 			if( r != null ) {
-				logger.debug( "r: " + r.getResult() );
 				if( r.isDetermined() && ( clazz == null || r.getClazz().equals( clazz ) ) ) {
-					logger.debug( "I got one" );
 					return r;
 				}
 			}
