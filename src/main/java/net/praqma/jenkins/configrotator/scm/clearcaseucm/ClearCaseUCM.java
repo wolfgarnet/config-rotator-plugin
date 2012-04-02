@@ -21,7 +21,6 @@ import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.model.TaskListener;
 import hudson.scm.PollingResult;
-import hudson.scm.SCM;
 import hudson.util.FormValidation;
 
 import net.praqma.clearcase.util.ExceptionUtils;
@@ -293,18 +292,27 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	@Override
 	public PollingResult poll( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener ) throws IOException, InterruptedException {
 		PrintStream out = listener.getLogger();
-		out.println( "POLLING!!!" );
-		if( projectConfiguration != null ) {
-			out.println( "Config is not null" );
+		out.println( ConfigurationRotator.LOGGERNAME + "Polling" );
+		
+		ConfigurationRotatorBuildAction action = getLastResult( project, ClearCaseUCM.class );
+		
+		if( action == null ) {
+			out.println( ConfigurationRotator.LOGGERNAME + "No previous actions, build now" );
+			return PollingResult.BUILD_NOW;
+		}
+		
+		ClearCaseUCMConfiguration configuration = (ClearCaseUCMConfiguration) action.getConfiguration();
+		
+		if( configuration != null ) {
+			out.println( ConfigurationRotator.LOGGERNAME + "Configuration is not null" );
 			try {
 				ClearCaseUCMConfiguration other;
-				other = nextConfiguration( listener, projectConfiguration, workspace );
-				out.println( "Other=" + other );
+				other = nextConfiguration( listener, configuration, workspace );
 				if( other != null ) {
 					printConfiguration( out, other );
 					return PollingResult.BUILD_NOW;
 				} else {
-					out.println( "No changes!" );
+					out.println( ConfigurationRotator.LOGGERNAME + "No changes!" );
 					return PollingResult.NO_CHANGES;
 				}
 			} catch( ConfigurationRotatorException e ) {
@@ -340,13 +348,9 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		}
 		
 		public List<ClearCaseUCMTarget> getTargets( ClearCaseUCM instance ) {
-			System.out.println("WHOA!");
 			if( instance == null ) {
-				System.out.println("1");
 				return new ArrayList<ClearCaseUCMTarget>();
 			} else {
-				System.out.println("2");
-				//return instance.targets;
 				return instance.getTargets();
 			}
 		}
