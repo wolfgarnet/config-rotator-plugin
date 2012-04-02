@@ -45,7 +45,8 @@ public class ConfigurationRotatorBuildAction implements Action {
 		if( scm instanceof ConfigurationRotator ) {
 			//((ConfigurationRotator)scm).setFresh( build.getProject(), true );
 			((ConfigurationRotator)scm).setConfigurationByAction( build.getProject(), this );
-			rsp.forwardToPreviousPage( req );
+			//rsp.forwardToPreviousPage( req. );
+			rsp.sendRedirect( "../../" );
 		} else {
 			rsp.sendError( StaplerResponse.SC_BAD_REQUEST, "Not a Configuration Rotator job" );
 		}

@@ -13,6 +13,7 @@ import hudson.model.TaskListener;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.scm.PollingResult;
+import net.praqma.jenkins.configrotator.AbstractConfiguration;
 import net.praqma.jenkins.configrotator.AbstractConfigurationRotatorSCM;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorBuildAction;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorSCMDescriptor;
@@ -59,13 +60,13 @@ public class Mercurial extends AbstractConfigurationRotatorSCM {
 	}
 
 	@Override
-	public boolean perform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, boolean fresh ) throws IOException {
+	public boolean wasReconfigured( AbstractProject<?, ?> project ) {
 		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public boolean wasReconfigured( AbstractProject<?, ?> project ) {
+	public boolean perform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, boolean reconfigure ) throws IOException {
 		// TODO Auto-generated method stub
 		return false;
 	}
