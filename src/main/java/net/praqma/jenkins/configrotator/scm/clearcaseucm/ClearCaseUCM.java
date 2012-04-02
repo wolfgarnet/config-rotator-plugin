@@ -38,9 +38,6 @@ import net.praqma.jenkins.configrotator.ConfigurationRotatorSCMDescriptor;
 import net.praqma.jenkins.utils.remoting.DetermineProject;
 import net.praqma.jenkins.utils.remoting.GetBaselines;
 import net.praqma.util.debug.Logger;
-import net.praqma.util.debug.Logger.LogLevel;
-import net.praqma.util.debug.appenders.Appender;
-import net.praqma.util.debug.appenders.StreamAppender;
 import net.sf.json.JSONObject;
 
 public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Serializable {
@@ -52,8 +49,6 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	public List<ClearCaseUCMTarget> targets;
 	
 	private PVob pvob;
-	
-	private boolean printDebug;
 
 	/**
 	 * Version 0.1.0 constructor
@@ -63,18 +58,12 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	 * @param config
 	 */
 	@DataBoundConstructor
-	public ClearCaseUCM( String pvobName, boolean printDebug ) {
+	public ClearCaseUCM( String pvobName ) {
 		pvob = new PVob( pvobName );
-		this.printDebug = printDebug;
-		System.out.println( "CCUCM: " + this );
 	}
 	
 	public String getPvobName() {
 		return pvob.toString();
-	}
-	
-	public boolean doPrintDebug() {
-		return printDebug;
 	}
 
 	@Override
@@ -105,7 +94,6 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		/**/
 		List<ClearCaseUCMTarget> list = getConfigurationAsTargets( configuration );
 		for( int i = 0 ; i < targets.size() ; ++i ) {
-			System.out.println( list.get( i ) + " = " + targets.get( i ) );
 			if( !targets.get( i ).equals( list.get( i ) ) ) {
 				return true;
 			}
@@ -117,14 +105,6 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	@Override
 	public boolean perform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, boolean reconfigure ) throws IOException {
 		PrintStream out = listener.getLogger();
-		
-		if( printDebug ) {
-			Appender app = new StreamAppender( out );
-			app.setMinimumLevel( LogLevel.DEBUG );
-			app.setTemplate( "[%level]%space %message%newline" );
-			app.lockToCurrentThread();
-			Logger.addAppender( app );
-		}
 		
 		ConfigurationRotatorBuildAction action = getLastResult( build.getProject(), ClearCaseUCM.class );
 		if( reconfigure ) {

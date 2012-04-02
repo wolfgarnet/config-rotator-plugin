@@ -5,6 +5,10 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
 
+import net.praqma.util.debug.Logger;
+import net.praqma.util.debug.Logger.LogLevel;
+import net.praqma.util.debug.appenders.Appender;
+import net.praqma.util.debug.appenders.StreamAppender;
 import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -29,6 +33,8 @@ public class ConfigurationRotator extends SCM {
 	
 	private AbstractConfigurationRotatorSCM acrs;
 	
+	private boolean printDebug;
+	
 	public enum ResultType {
 		COMPATIBLE,   /* Tested and configuration is compatible */
 		INCOMPATIBLE, /* Tested and configuration is NOT compatible */
@@ -48,9 +54,10 @@ public class ConfigurationRotator extends SCM {
 	public boolean reconfigure;
 	
 	@DataBoundConstructor
-	public ConfigurationRotator( AbstractConfigurationRotatorSCM acrs ) {
+	public ConfigurationRotator( AbstractConfigurationRotatorSCM acrs, boolean printDebug ) {
 		this.acrs = acrs;
 		this.justConfigured = true;
+		this.printDebug = printDebug;
 	}
 	
 	public AbstractConfigurationRotatorSCM getAcrs() {
@@ -63,6 +70,10 @@ public class ConfigurationRotator extends SCM {
 		
 	public void setReconfigure( boolean reconfigure ) {
 		this.reconfigure = reconfigure;
+	}
+	
+	public boolean doPrintDebug() {
+		return printDebug;
 	}
 	
 	@Override
@@ -79,6 +90,15 @@ public class ConfigurationRotator extends SCM {
 		PrintStream out = listener.getLogger();
 		
 		out.println( LOGGERNAME + "Checking out" );
+		
+		/* Configure debugger */
+		if( printDebug ) {
+			Appender app = new StreamAppender( out );
+			app.setMinimumLevel( LogLevel.DEBUG );
+			app.setTemplate( "[%level]%space %message%newline" );
+			app.lockToCurrentThread();
+			Logger.addAppender( app );
+		}
 		
 		/* Determine if the job was reconfigured */
 		if( justConfigured ) {
