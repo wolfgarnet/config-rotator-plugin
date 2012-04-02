@@ -3,7 +3,6 @@ package net.praqma.jenkins.configrotator;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.lang.reflect.Method;
 import java.util.List;
 
 import net.sf.json.JSONObject;
@@ -15,12 +14,10 @@ import hudson.AbortException;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
-import hudson.model.Action;
 import hudson.model.BuildListener;
 import hudson.model.TaskListener;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
-import hudson.model.Descriptor;
 import hudson.scm.ChangeLogParser;
 import hudson.scm.PollingResult;
 import hudson.scm.SCMDescriptor;
@@ -48,7 +45,7 @@ public class ConfigurationRotator extends SCM {
 	 * Determines whether a new configuration has been entered.
 	 * If true, the input is new.
 	 */
-	public boolean fresh;
+	public boolean reconfigure;
 	
 	@DataBoundConstructor
 	public ConfigurationRotator( AbstractConfigurationRotatorSCM acrs ) {
@@ -60,17 +57,17 @@ public class ConfigurationRotator extends SCM {
 		return acrs;
 	}
 
-	public boolean isFresh() {
-		return fresh;
+	public boolean doReconfigure() {
+		return reconfigure;
 	}
 		
-	public void setFreshness( boolean fresh ) {
-		this.fresh = fresh;
+	public void setReconfigure( boolean reconfigure ) {
+		this.reconfigure = reconfigure;
 	}
 	
 	@Override
 	public SCMRevisionState calcRevisionsFromBuild( AbstractBuild<?, ?> arg0, Launcher arg1, TaskListener arg2 ) throws IOException, InterruptedException {
-		if( !isFresh() ) {
+		if( !doReconfigure() ) {
 			return new SCMRevisionState() {};
 		} else {
 			return null;
@@ -85,19 +82,19 @@ public class ConfigurationRotator extends SCM {
 		
 		/* Determine if the job was reconfigured */
 		if( justConfigured ) {
-			fresh = acrs.wasReconfigured( build.getProject() );
-			out.println( "Was reconfigured: " + fresh );
+			reconfigure = acrs.wasReconfigured( build.getProject() );
+			out.println( "Was reconfigured: " + reconfigure );
 		}
 		
 		try {
-			acrs.perform( build, launcher, workspace, listener, fresh );
+			acrs.perform( build, launcher, workspace, listener, reconfigure );
 		} catch( AbortException e ) {
 			out.println( LOGGERNAME + "Failed to check out" );
 			throw e;
 		}
 		
 		/* Config is not fresh anymore */
-		fresh = false;
+		reconfigure = false;
 		justConfigured = false;
 		build.getProject().save();
 		
@@ -118,7 +115,7 @@ public class ConfigurationRotator extends SCM {
 	
 	public void setConfigurationByAction( AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action ) throws IOException {
 		acrs.setConfigurationByAction( project, action );
-		fresh = true;
+		reconfigure = true;
 	}
 
 	@Override

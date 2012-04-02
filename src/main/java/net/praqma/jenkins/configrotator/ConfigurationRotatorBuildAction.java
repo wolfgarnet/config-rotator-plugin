@@ -32,7 +32,7 @@ public class ConfigurationRotatorBuildAction implements Action {
 	public boolean isFresh() {
 		SCM scm = build.getProject().getScm();
 		if( scm instanceof ConfigurationRotator ) {
-			return ((ConfigurationRotator)scm).isFresh();
+			return ((ConfigurationRotator)scm).doReconfigure();
 		} else {
 			return false;
 		}

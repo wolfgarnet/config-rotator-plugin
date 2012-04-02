@@ -116,7 +116,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	}
 
 	@Override
-	public boolean perform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, boolean fresh ) throws IOException {
+	public boolean perform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, boolean reconfigure ) throws IOException {
 		PrintStream out = listener.getLogger();
 		
 		if( printDebug ) {
@@ -128,10 +128,13 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		}
 		
 		ConfigurationRotatorBuildAction action = getLastResult( build.getProject(), ClearCaseUCM.class );
-		out.println( fresh ? "Job is fresh" : "Job is not fresh" );
+		if( reconfigure ) {
+			out.println( ConfigurationRotator.LOGGERNAME + "Job has been reconfigured" );
+		}
+		
 		/* If there's no action, this is the first run */
-		if( action == null || fresh ) {
-			logger.debug( "Action was null(" + fresh + "), getting input as configuration" );
+		if( action == null || reconfigure ) {
+			logger.debug( "Action was null(" + reconfigure + "), getting input as configuration" );
 			
 			/* Resolve the configuration */
 			ClearCaseUCMConfiguration inputconfiguration = null;
