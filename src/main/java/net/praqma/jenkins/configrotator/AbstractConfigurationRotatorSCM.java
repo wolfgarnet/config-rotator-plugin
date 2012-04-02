@@ -4,17 +4,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletException;
-
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
-
 import net.praqma.util.debug.Logger;
 
 import jenkins.model.Jenkins;
-import hudson.AbortException;
 import hudson.DescriptorExtensionList;
-import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -22,13 +15,9 @@ import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.model.Describable;
-import hudson.model.Saveable;
 import hudson.model.TaskListener;
 import hudson.model.Descriptor;
-import hudson.model.Hudson;
-import hudson.scm.SCM;
 import hudson.scm.PollingResult;
-import hudson.scm.SCMDescriptor;
 
 public abstract class AbstractConfigurationRotatorSCM implements Describable<AbstractConfigurationRotatorSCM>, ExtensionPoint {
 	
@@ -38,21 +27,12 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
 	
 	public abstract PollingResult poll( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener ) throws IOException, InterruptedException;
 	
-	public abstract boolean perform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, boolean fresh ) throws IOException;
+	public abstract boolean perform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, boolean reconfigure ) throws IOException;
 	
 	public abstract void setConfigurationByAction( AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action ) throws IOException;
 	
 	public abstract boolean wasReconfigured( AbstractProject<?, ?> project );
-	
-	/*
-	public void doReset( StaplerRequest req, StaplerResponse rsp ) throws IOException, ServletException {
-		fresh = true;
-		rsp.forwardToPreviousPage( req );
-	}
-	*/
-	
-	
-	
+		
 	@Override
 	public Descriptor<AbstractConfigurationRotatorSCM> getDescriptor() {
 		return (ConfigurationRotatorSCMDescriptor<?>) Jenkins.getInstance().getDescriptorOrDie( getClass() );
