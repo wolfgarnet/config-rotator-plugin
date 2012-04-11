@@ -16,7 +16,6 @@ import net.praqma.jenkins.configrotator.ConfigurationRotator;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorBuildAction;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCM;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMTarget;
-import net.praqma.jenkins.plugin.drmemory.DrMemoryBuildAction;
 import net.praqma.jenkins.utils.test.ClearCaseJenkinsTestCase;
 
 public class ConfigTest extends ClearCaseJenkinsTestCase {
