@@ -22,7 +22,12 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 
 	@Test
 	public void test1() throws Exception {
+		
+		System.out.println( "I AMMMMM HEHREHHREHEHRHEHHERHHERHE" );
+		
 		coolTest.bootStrap();
+		
+		System.out.println( "AFTER" );
 		
 		FreeStyleProject project = createFreeStyleProject( "configrotator" );
 		
