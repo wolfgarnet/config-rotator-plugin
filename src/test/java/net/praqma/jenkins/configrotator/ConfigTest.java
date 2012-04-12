@@ -1,4 +1,4 @@
-package net.praqma.configrotator;
+package net.praqma.jenkins.configrotator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
