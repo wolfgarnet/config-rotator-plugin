@@ -34,7 +34,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		/*  */
 		ClearCaseUCM ccucm = new ClearCaseUCM( coolTest.getPVob().toString() );
 		List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
-		targets.add( new ClearCaseUCMTarget( "_System_1.0@" + coolTest.getPVob() + ", INITIAL, false" ) );
+		targets.add( new ClearCaseUCMTarget( "model-1@" + coolTest.getPVob() + ", INITIAL, false" ) );
 		ccucm.targets = targets;
 		
 		ConfigurationRotator cr = new ConfigurationRotator( ccucm, true );
