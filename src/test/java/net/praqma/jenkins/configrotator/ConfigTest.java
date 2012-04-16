@@ -22,7 +22,17 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		
 		System.out.println( "I AMMMMM HEHREHHREHEHRHEHHERHHERHE" );
 		
-    coolTest.variables.put("pvobname", (System.currentTimeMillis()/1000) + "");
+    String myVobnameTest = "TestVobName-test1" + (System.currentTimeMillis()/1000);
+    String jenkinsJobName = System.getenv("JOB_NAME");
+    String jenkinsBuildNumber = System.getenv("BUILD_NUMBER");
+    if (!(jenkinsJobName.isEmpty() || jenkinsBuildNumber.isEmpty()))
+    {// running under jenkins!
+      myVobnameTest = jenkinsJobName + "_" + jenkinsBuildNumber;
+    }
+    // else using test name from above
+    
+    coolTest.variables.put("vobname", myVobnameTest );
+    coolTest.variables.put("pvobname", myVobnameTest );
 		coolTest.bootStrap();
     		
 		System.out.println( "AFTER" );
@@ -65,7 +75,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 	}
   
   
-  @Test
+  //@Test
 	public void manualIterateThroughAllBaselines() throws Exception {
 		
 		System.out.println( "Started test 'manualIterateThroughAllBaselines'" );
