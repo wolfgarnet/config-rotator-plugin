@@ -127,4 +127,18 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
     assertTrue( true );
     
 	}
+  
+  
+  @Test
+	public void testHelpMePlease() throws Exception {
+        long t0, t1;
+        Integer n = 10; // seconds!
+
+        t0 =  System.currentTimeMillis();
+
+        do{
+            t1 = System.currentTimeMillis();
+        }
+        while ((t1 - t0) < (n * 1000));
+  }
 }
