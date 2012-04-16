@@ -16,42 +16,52 @@ import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMTarget;
 import net.praqma.jenkins.utils.test.ClearCaseJenkinsTestCase;
 
 public class ConfigTest extends ClearCaseJenkinsTestCase {
+  
+  // Controls how many seconds a test as minimum takes by
+  // waiting before asserting on the test.
+  Integer watingSeconds = 10;
+  // A time stamp added to ClearCase Vob names to make them unique for each
+  // test. They also include the test name.
+  // Division by 60000, giving milis to minute precission asuming all tests do
+  // not complete within a minute!
+  Integer uniqueTimeStamp = (int) System.currentTimeMillis()/60000;
 
+  // Note a test must include the string "test" somehow, else 
+  // surefire will not find the test-method.
   @Test
-	public void test1() throws Exception {
-		
-		System.out.println( "I AMMMMM HEHREHHREHEHRHEHHERHHERHE" );
-		
-    String uniqueTestVobName = ""; //System.getenv("BUILD_TAG");
-    if (uniqueTestVobName.isEmpty())
-    {// NOT running under jenkins!
-      uniqueTestVobName = "test1" + (System.currentTimeMillis()/1000);
-    }
-    // else using name telling it is a Jenkins job
+	public void testJustGetBuildAction() throws Exception {
+    String testName = "testJustGetBuildAction";
+    String debugLine = "'" + testName + "': ";
+    System.out.println( debugLine + "Starting" );
+    // ONLY alphanumeric chars and underscore
+		String uniqueTestVobName = testName + "_" + uniqueTimeStamp;
     
+    // set up cool to run tests with ClearCase environment
+    // variables overwrite cool test case setup.xml setting
+    // Unique names for each test is used to avoid all sort of clear case 
+    // complications - but leaves as mess...
     coolTest.variables.put("vobname", uniqueTestVobName );
     coolTest.variables.put("pvobname", uniqueTestVobName );
 		coolTest.bootStrap();
-    		
-		System.out.println( "AFTER" );
+		System.out.println( debugLine + "Cool test case setup done." );
 		
+    // create Jenkins job - also use unique name
 		FreeStyleProject project = createFreeStyleProject( uniqueTestVobName );
-		
-		/*  */
+		// Setup ClearCase UCM as SCM and to use with config-rotator
 		ClearCaseUCM ccucm = new ClearCaseUCM( coolTest.getPVob().toString() );
 		List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
 		targets.add( new ClearCaseUCMTarget( "model-1@" + coolTest.getPVob() + ", INITIAL, false" ) );
 		ccucm.targets = targets;
-		
+    // create config-rotator, and set it as SCM
 		ConfigurationRotator cr = new ConfigurationRotator( ccucm, true );
-		
 		project.setScm( cr );
-		
-		
+	
+		// schedule a build, just to see if the config-rotator setup works
 		FreeStyleBuild b = project.scheduleBuild2( 0 ).get();
 		
-		System.out.println( "Workspace: " + b.getWorkspace() );
-		
+    // now investigate result and print debug out
+		System.out.println( debugLine + "Workspace: " + b.getWorkspace() );
+		// get build actions
 		ConfigurationRotatorBuildAction action = b.getAction( ConfigurationRotatorBuildAction.class );
 		
 		System.out.println( "Action: " + action );
@@ -68,48 +78,61 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		} else {
 			System.out.println( "ACTION IS NULL" );
 		}
+    // NOTICE - this is very IMPORTANT to avoid Jenkins error on cleaning 
+    // temporary dirs after jobs completes meaning test fails
     br.close();
 		
-		//assertNotNull( action );
-    waiting(10);
-    assertTrue( true );
-    waiting(10);
+    // waiting is important to ensure unique timestamps and let Jenkins clean
+    // workspace after each test
+    waiting(watingSeconds);
+        
+    // Build action should not be null
+		assertNotNull( action );
 	}
   
-  
-  @Test
+  // Note a test must include the string "test" somehow, else 
+  // surefire will not find the test-method.
+	@Test
 	public void testManualIterateThroughAllBaselines() throws Exception {
-		
-		System.out.println( "Started test 'manualIterateThroughAllBaselines'" );
-		
-    String uniqueTestVobName = "configrotatorplugintest2" + (System.currentTimeMillis()/10000);
+    String testName = "ManualIterateThroughAllBaselines";
+    String debugLine = "'" + testName + "': ";
+    System.out.println( debugLine + "Starting" );
+    // ONLY alphanumeric chars and underscore
+		String uniqueTestVobName = testName + "_" + uniqueTimeStamp;
     
+    // set up cool to run tests with ClearCase environment
+    // variables overwrite cool test case setup.xml setting
+    // Unique names for each test is used to avoid all sort of clear case 
+    // complications - but leaves as mess...
     coolTest.variables.put("vobname", uniqueTestVobName );
     coolTest.variables.put("pvobname", uniqueTestVobName );
 		coolTest.bootStrap();
-		System.out.println( "coolTest.bootStrap done." );
+		System.out.println( debugLine + "Cool test case setup done." );
 		
+    // create Jenkins job - also use unique name
 		FreeStyleProject project = createFreeStyleProject( uniqueTestVobName );
-		
-		/*  */
+		// Setup ClearCase UCM as SCM and to use with config-rotator
 		ClearCaseUCM ccucm = new ClearCaseUCM( coolTest.getPVob().toString() );
 		List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
 		targets.add( new ClearCaseUCMTarget( "model-1@" + coolTest.getPVob() + ", INITIAL, false" ) ); // prøv forkert navn
     targets.add( new ClearCaseUCMTarget( "client-1@" + coolTest.getPVob() + ", INITIAL, false" ) );
 		ccucm.targets = targets;
-		
+    // create config-rotator, and set it as SCM
 		ConfigurationRotator cr = new ConfigurationRotator( ccucm, true );
 		project.setScm( cr );
-		
-    // scheduling a build should get new baseline for model: model-2
+	
+		// schedule a build, just to see if the config-rotator setup works
 		FreeStyleBuild b = project.scheduleBuild2( 0 ).get();
 		
-    System.out.println( "Workspace: " + b.getWorkspace() );
+    // now investigate result and print debug out
+		System.out.println( debugLine + "Workspace: " + b.getWorkspace() );
+		// get build actions
 		ConfigurationRotatorBuildAction action = b.getAction( ConfigurationRotatorBuildAction.class );
+		
 		System.out.println( "Action: " + action );
 		System.out.println( "Logfile: " + b.getLogFile() );
-    
-    BufferedReader br = new BufferedReader( new FileReader( b.getLogFile() ) );
+		
+		BufferedReader br = new BufferedReader( new FileReader( b.getLogFile() ) );
 		String line = "";
 		while( ( line = br.readLine() ) != null ) {
 			System.out.println( "[JENKINS] " + line );
@@ -126,17 +149,21 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		} else {
 			System.out.println( "ACTION IS NULL" );
 		}
-    
+    // NOTICE - this is very IMPORTANT to avoid Jenkins error on cleaning 
+    // temporary dirs after jobs completes meaning test fails
     br.close();
-		//assertNotNull( action );
-    waiting(10);
-    assertTrue( true );
-    waiting(10);
-    
+		
+    // waiting is important to ensure unique timestamps and let Jenkins clean
+    // workspace after each test
+    waiting(watingSeconds);
+        
+    // Build action should not be null
+		assertNotNull( action );
 	}
-  
-  
-private static void waiting (int seconds){
+    
+
+  // busy wait....
+  private static void waiting (int seconds){
         
         long t0, t1;
 
