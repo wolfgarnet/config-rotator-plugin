@@ -24,7 +24,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
   // test. They also include the test name.
   // Division by 60000, giving milis to minute precission asuming all tests do
   // not complete within a minute!
-  Integer uniqueTimeStamp = (int) System.currentTimeMillis()/60000;
+  String uniqueTimeStamp = "" + System.currentTimeMillis()/60000;
 
   // Note a test must include the string "test" somehow, else 
   // surefire will not find the test-method.
