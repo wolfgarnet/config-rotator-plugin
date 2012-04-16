@@ -25,7 +25,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
     String uniqueTestVobName = ""; //System.getenv("BUILD_TAG");
     if (uniqueTestVobName.isEmpty())
     {// NOT running under jenkins!
-      uniqueTestVobName = "configrotatorplugintest1" + (System.currentTimeMillis()/1000);
+      uniqueTestVobName = "test1" + (System.currentTimeMillis()/1000);
     }
     // else using name telling it is a Jenkins job
     
@@ -35,7 +35,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
     		
 		System.out.println( "AFTER" );
 		
-		FreeStyleProject project = createFreeStyleProject( "configrotator" );
+		FreeStyleProject project = createFreeStyleProject( uniqueTestVobName );
 		
 		/*  */
 		ClearCaseUCM ccucm = new ClearCaseUCM( coolTest.getPVob().toString() );
@@ -75,7 +75,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
   
   
   @Test
-	public void manualIterateThroughAllBaselines() throws Exception {
+	public void testManualIterateThroughAllBaselines() throws Exception {
 		
 		System.out.println( "Started test 'manualIterateThroughAllBaselines'" );
 		
@@ -86,7 +86,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		coolTest.bootStrap();
 		System.out.println( "coolTest.bootStrap done." );
 		
-		FreeStyleProject project = createFreeStyleProject( "configrotator" );
+		FreeStyleProject project = createFreeStyleProject( uniqueTestVobName );
 		
 		/*  */
 		ClearCaseUCM ccucm = new ClearCaseUCM( coolTest.getPVob().toString() );
