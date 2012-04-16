@@ -17,7 +17,7 @@ import net.praqma.jenkins.utils.test.ClearCaseJenkinsTestCase;
 
 public class ConfigTest extends ClearCaseJenkinsTestCase {
 
-	@Test
+	//@Test
 	public void test1() throws Exception {
 		
 		System.out.println( "I AMMMMM HEHREHHREHEHRHEHHERHHERHE" );
