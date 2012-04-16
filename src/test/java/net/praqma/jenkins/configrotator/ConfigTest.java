@@ -22,8 +22,9 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		
 		System.out.println( "I AMMMMM HEHREHHREHEHRHEHHERHHERHE" );
 		
+    coolTest.variables.put("pvobname", (System.currentTimeMillis()/1000) + "");
 		coolTest.bootStrap();
-		
+    		
 		System.out.println( "AFTER" );
 		
 		FreeStyleProject project = createFreeStyleProject( "configrotator" );
