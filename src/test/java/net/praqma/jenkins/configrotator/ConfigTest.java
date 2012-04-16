@@ -68,6 +68,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		} else {
 			System.out.println( "ACTION IS NULL" );
 		}
+    br.close();
 		
 		//assertNotNull( action );
     waiting(10);
@@ -125,6 +126,8 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		} else {
 			System.out.println( "ACTION IS NULL" );
 		}
+    
+    br.close();
 		//assertNotNull( action );
     waiting(10);
     assertTrue( true );
