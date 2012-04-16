@@ -33,8 +33,8 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
     String testName = "testJustGetBuildAction";
     String debugLine = "'" + testName + "': ";
     System.out.println( debugLine + "Starting" );
-    // ONLY alphanumeric chars and underscore
-		String uniqueTestVobName = testName + "_" + uniqueTimeStamp;
+    // ONLY alphanumeric chars
+		String uniqueTestVobName = testName + uniqueTimeStamp;
     
     // set up cool to run tests with ClearCase environment
     // variables overwrite cool test case setup.xml setting
@@ -97,8 +97,8 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
     String testName = "ManualIterateThroughAllBaselines";
     String debugLine = "'" + testName + "': ";
     System.out.println( debugLine + "Starting" );
-    // ONLY alphanumeric chars and underscore
-		String uniqueTestVobName = testName + "_" + uniqueTimeStamp;
+    // ONLY alphanumeric chars
+		String uniqueTestVobName = testName + uniqueTimeStamp;
     
     // set up cool to run tests with ClearCase environment
     // variables overwrite cool test case setup.xml setting
