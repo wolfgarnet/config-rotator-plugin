@@ -22,17 +22,15 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		
 		System.out.println( "I AMMMMM HEHREHHREHEHRHEHHERHHERHE" );
 		
-    String myVobnameTest = "TestVobName-test1" + (System.currentTimeMillis()/1000);
-    String jenkinsJobName = System.getenv("JOB_NAME");
-    String jenkinsBuildNumber = System.getenv("BUILD_NUMBER");
-    if (!(jenkinsJobName.isEmpty() || jenkinsBuildNumber.isEmpty()))
-    {// running under jenkins!
-      myVobnameTest = jenkinsJobName + "_" + jenkinsBuildNumber;
+    String uniqueTestVobName = System.getenv("BUILD_TAG");
+    if (uniqueTestVobName.isEmpty())
+    {// NOT running under jenkins!
+      uniqueTestVobName = "config-rotator-plugin-test1" + (System.currentTimeMillis()/1000);
     }
-    // else using test name from above
+    // else using name telling it is a Jenkins job
     
-    coolTest.variables.put("vobname", myVobnameTest );
-    coolTest.variables.put("pvobname", myVobnameTest );
+    coolTest.variables.put("vobname", uniqueTestVobName );
+    coolTest.variables.put("pvobname", uniqueTestVobName );
 		coolTest.bootStrap();
     		
 		System.out.println( "AFTER" );
@@ -75,11 +73,15 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 	}
   
   
-  //@Test
+  @Test
 	public void manualIterateThroughAllBaselines() throws Exception {
 		
 		System.out.println( "Started test 'manualIterateThroughAllBaselines'" );
 		
+    String uniqueTestVobName = "config-rotator-plugin-test2" + (System.currentTimeMillis()/10000);
+    
+    coolTest.variables.put("vobname", uniqueTestVobName );
+    coolTest.variables.put("pvobname", uniqueTestVobName );
 		coolTest.bootStrap();
 		System.out.println( "coolTest.bootStrap done." );
 		
