@@ -70,7 +70,9 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		}
 		
 		//assertNotNull( action );
+    waiting(10);
     assertTrue( true );
+    waiting(10);
 	}
   
   
@@ -124,21 +126,22 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 			System.out.println( "ACTION IS NULL" );
 		}
 		//assertNotNull( action );
+    waiting(10);
     assertTrue( true );
+    waiting(10);
     
 	}
   
   
-  @Test
-	public void testHelpMePlease() throws Exception {
+private static void waiting (int seconds){
+        
         long t0, t1;
-        Integer n = 10; // seconds!
 
         t0 =  System.currentTimeMillis();
 
         do{
             t1 = System.currentTimeMillis();
         }
-        while ((t1 - t0) < (n * 1000));
-  }
+        while ((t1 - t0) < (seconds * 1000));
+    }
 }
