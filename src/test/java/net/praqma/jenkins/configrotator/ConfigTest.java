@@ -321,8 +321,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		Run build = null;
 		//Project setup done. Now attempt to poll for changes.
 		System.out.println(debugLine + "Polling project.");
-		boolean polling = project.schedulePolling();
-		System.out.println(debugLine + "Poll result: "+polling);
+		System.out.println(debugLine + "Has changes?: " +project.poll(TaskListener.NULL).hasChanges());
 		
 		build = project.getLastBuild();
 		
