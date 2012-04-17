@@ -252,34 +252,35 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		
 		System.out.println( "Action: " + action );
 		
-		System.out.println( "Logfile: " + build.getLogFile());
-		
-		BufferedReader br = new BufferedReader( new FileReader( build.getLogFile() ) );
-		String line = "";
-		while( ( line = br.readLine() ) != null ) {
-			System.out.println( "[JENKINS] " + line );
+		if(build!=null) {		
+			System.out.println( "Logfile: " + build.getLogFile());
+
+			BufferedReader br = new BufferedReader( new FileReader( build.getLogFile() ) );
+			String line = "";
+			while( ( line = br.readLine() ) != null ) {
+				System.out.println( "[JENKINS] " + line );
+			}
+
+			// this test plan to iterate one baseline at a time
+			// ... for now, just printing stuff out to se what I get
+			if( action != null ) {
+				System.out.println( "Action: " + action.getResult() );
+				ClearCaseUCMConfiguration test = (ClearCaseUCMConfiguration) action.getConfiguration();
+				System.out.println( "getShortname()" + test.getList().get(0).getBaseline().getShortname());
+				System.out.println( "getComment()" + test.getList().get(0).getBaseline().getComment());
+				System.out.println( "getPVob()" + test.getList().get(0).getBaseline().getPVob());
+			} else {
+				System.out.println( "ACTION IS NULL" );
+			}
+			// NOTICE - this is very IMPORTANT to avoid Jenkins error on cleaning 
+			// temporary dirs after jobs completes meaning test fails
+			br.close();
+
+			// waiting is important to ensure unique timestamps and let Jenkins clean
+			// workspace after each test
+			waiting(watingSeconds);
 		}
-		
-    // this test plan to iterate one baseline at a time
-    // ... for now, just printing stuff out to se what I get
-		if( action != null ) {
-			System.out.println( "Action: " + action.getResult() );
-      ClearCaseUCMConfiguration test = (ClearCaseUCMConfiguration) action.getConfiguration();
-      System.out.println( "getShortname()" + test.getList().get(0).getBaseline().getShortname());
-      System.out.println( "getComment()" + test.getList().get(0).getBaseline().getComment());
-      System.out.println( "getPVob()" + test.getList().get(0).getBaseline().getPVob());
-		} else {
-			System.out.println( "ACTION IS NULL" );
-		}
-    // NOTICE - this is very IMPORTANT to avoid Jenkins error on cleaning 
-    // temporary dirs after jobs completes meaning test fails
-    br.close();
-		
-    // waiting is important to ensure unique timestamps and let Jenkins clean
-    // workspace after each test
-    waiting(watingSeconds);
-        
-    // Build action should not be null
+		// Build action should not be null
 		assertNotNull( action );
 	}
 }
