@@ -133,16 +133,35 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		// Setup ClearCase UCM as SCM and to use with config-rotator
 		ClearCaseUCM ccucm = new ClearCaseUCM( coolTest.getPVob().toString() );
 		List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
-		System.out.println( debugLine + "Adding target with wrong name..." );
+		System.out.println( debugLine + "Adding two targets with wrong name..." );
 		targets.add( new ClearCaseUCMTarget( "model-WrongName@" + coolTest.getPVob() + ", INITIAL, false" ) );
+		targets.add( new ClearCaseUCMTarget( "client-WrongName@" + coolTest.getPVob() + ", INITIAL, false" ) );
 		ccucm.targets = targets;
     // create config-rotator, and set it as SCM
-		System.out.println( debugLine + "Trying to create configurotator configuration" );
+		System.out.println( debugLine + "Create configurationRotator." );
 		ConfigurationRotator cr = new ConfigurationRotator( ccucm, true );
-		System.out.println( debugLine + "ConfigurationRotator: " + cr.toString() );
-		System.out.println( debugLine + "Trying to set ConfigurationRotator as SCM" );
+		System.out.println( debugLine + "cr.supportsPolling: " + cr.supportsPolling() );
+		System.out.println( debugLine + "Set ConfigurationRotator as SCM" );
 		project.setScm( cr );
-		System.out.println( debugLine + "ConfigurationRotator: " + project.toString() );
+		
+		// Try to build
+		FreeStyleBuild b = project.scheduleBuild2( 0 ).get();
+		
+		    // now investigate result and print debug out
+		System.out.println( debugLine + "Workspace: " + b.getWorkspace() );
+		// get build actions
+		ConfigurationRotatorBuildAction action = b.getAction( ConfigurationRotatorBuildAction.class );
+		
+		System.out.println( debugLine + "Action: " + action );
+		System.out.println( debugLine + "Logfile: " + b.getLogFile() );
+		
+		BufferedReader br = new BufferedReader( new FileReader( b.getLogFile() ) );
+		String line = "";
+		while( ( line = br.readLine() ) != null ) {
+			System.out.println( "[JENKINS] " + line );
+		}
+		
+		
     // waiting is important to ensure unique timestamps and let Jenkins clean
     // workspace after each test
     waiting(watingSeconds);
