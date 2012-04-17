@@ -145,30 +145,33 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		project.setScm( cr );
 		
 		// Try to build
+		System.out.println( debugLine + "Scheduling a build..." );
 		FreeStyleBuild b = project.scheduleBuild2( 0 ).get();
-		
-		    // now investigate result and print debug out
-		System.out.println( debugLine + "Workspace: " + b.getWorkspace() );
-		// get build actions
+		System.out.println( debugLine + "After scheduling build IS DONE!" );
+		// now investigate result and print debug out
+		System.out.println( debugLine + "build.getResult():" + b.getResult().toString());
+		// build should fail for wrong targets
+		assertEquals(b.getResult(), Result.FAILURE);
+				
 		ConfigurationRotatorBuildAction action = b.getAction( ConfigurationRotatorBuildAction.class );
+		System.out.println( debugLine + "action: " + action );
+		// action expected to be null
+		assertNull(action);
 		
-		System.out.println( debugLine + "Action: " + action );
-		System.out.println( debugLine + "Logfile: " + b.getLogFile() );
+		System.out.println( debugLine + "action.isCompatible: " + action.isCompatible() );
+		assertFalse(action.isCompatible());
 		
+		System.out.println( debugLine + "Printing logfile: " + b.getLogFile() );
 		BufferedReader br = new BufferedReader( new FileReader( b.getLogFile() ) );
 		String line = "";
 		while( ( line = br.readLine() ) != null ) {
 			System.out.println( "[JENKINS] " + line );
 		}
-		
+		System.out.println( debugLine + "... done printing logfile: " + b.getLogFile() );
 		
     // waiting is important to ensure unique timestamps and let Jenkins clean
     // workspace after each test
     waiting(watingSeconds);
-        
-    // Build action should not be null
-		//assertNull( action );
-		assertTrue(true);
 	}
 	
 	/* ************************************************************************ 
