@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCM;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigurationComponent;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMTarget;
 import net.praqma.jenkins.utils.test.ClearCaseJenkinsTestCase;
 
@@ -21,17 +22,20 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
   
   // Controls how many seconds a test as minimum takes by
   // waiting before asserting on the test.
-  Integer watingSeconds = 10;
+	Integer watingSeconds = 10;
   // A time stamp added to ClearCase Vob names to make them unique for each
   // test. They also include the test name.
   // Division by 60000, giving milis to minute precission asuming all tests do
   // not complete within a minute!
-  String uniqueTimeStamp = "" + System.currentTimeMillis()/60000;
+	String uniqueTimeStamp = "" + System.currentTimeMillis()/60000;
 
   // Note a test must include the string "test" somehow, else 
   // surefire will not find the test-method.
   @Test
 	public void testJustGetBuildAction() throws Exception {
+		// This test is a first simple one, just making sure the plugin can be used
+		// and loaded, and ClearCaseUCM source control (Scm) can be used as
+		// config-rotator uses this.
     String testName = "testJustGetBuildAction";
     String debugLine = "'" + testName + "': ";
     System.out.println( debugLine + "Starting" );
@@ -96,6 +100,10 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
   // surefire will not find the test-method.
 	@Test
 	public void testManualIterateThroughAllBaselines() throws Exception {
+		// This test is supposed to "manually" iterate over baselines by scheduling
+		// a build. Each build scheduled will poll scm and should find a new baseline
+		// to test, until there is no more.
+		// For each build, we check a lot of output, results etc.
     String testName = "ManualIterateThroughAllBaselines";
     String debugLine = "'" + testName + "': ";
     System.out.println( debugLine + "Starting" );
@@ -116,7 +124,9 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		// Setup ClearCase UCM as SCM and to use with config-rotator
 		ClearCaseUCM ccucm = new ClearCaseUCM( coolTest.getPVob().toString() );
 		List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
-		targets.add( new ClearCaseUCMTarget( "model-1@" + coolTest.getPVob() + ", INITIAL, false" ) ); // prøv forkert navn
+		// A first configuration added as targets: model-1 and client-1 that we 
+		// would know to be compatible.
+		targets.add( new ClearCaseUCMTarget( "model-1@" + coolTest.getPVob() + ", INITIAL, false" ) );
     targets.add( new ClearCaseUCMTarget( "client-1@" + coolTest.getPVob() + ", INITIAL, false" ) );
 		ccucm.targets = targets;
     // create config-rotator, and set it as SCM
@@ -131,8 +141,8 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		// get build actions
 		ConfigurationRotatorBuildAction action = b.getAction( ConfigurationRotatorBuildAction.class );
 		
-		System.out.println( "Action: " + action );
-		System.out.println( "Logfile: " + b.getLogFile() );
+		System.out.println( debugLine + "Action: " + action );
+		System.out.println( debugLine + "Logfile: " + b.getLogFile() );
 		
 		BufferedReader br = new BufferedReader( new FileReader( b.getLogFile() ) );
 		String line = "";
@@ -143,13 +153,19 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
     // this test plan to iterate one baseline at a time
     // ... for now, just printing stuff out to se what I get
 		if( action != null ) {
-			System.out.println( "Action: " + action.getResult() );
-      ClearCaseUCMConfiguration test = (ClearCaseUCMConfiguration) action.getConfiguration();
-      System.out.println( "getShortname()" + test.getList().get(0).getBaseline().getShortname());
-      System.out.println( "getComment()" + test.getList().get(0).getBaseline().getComment());
-      System.out.println( "getPVob()" + test.getList().get(0).getBaseline().getPVob());
+			ClearCaseUCMConfiguration test = (ClearCaseUCMConfiguration) action.getConfiguration();
+			System.out.println( debugLine + "action.getResult(): " + action.getResult() );
+			System.out.println( debugLine + "action.getResult().name: " + action.getResult().name() );
+			System.out.println( debugLine + "getView(): " + test.getView() );
+						
+			System.out.println( debugLine + "getShortname(): " + test.getList().get(0).getBaseline().getShortname() );
+			System.out.println( debugLine + "getComment(): " + test.getList().get(0).getBaseline().getComment() );
+			System.out.println( debugLine + "getPVob(): " + test.getList().get(0).getBaseline().getPVob() );
+			System.out.println( debugLine + "action.isCompatible: " + action.isCompatible() );
+			
+
 		} else {
-			System.out.println( "ACTION IS NULL" );
+			System.out.println( debugLine + "ACTION IS NULL" );
 		}
     // NOTICE - this is very IMPORTANT to avoid Jenkins error on cleaning 
     // temporary dirs after jobs completes meaning test fails
