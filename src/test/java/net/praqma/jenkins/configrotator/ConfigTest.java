@@ -2,13 +2,23 @@ package net.praqma.jenkins.configrotator;
 
 import hudson.console.ConsoleNote;
 import hudson.model.*;
+import hudson.model.Queue.Executable;
+import hudson.model.Queue.Task;
+import hudson.model.queue.CauseOfBlockage;
+import hudson.model.queue.SubTask;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
 import hudson.scm.PollingResult;
+import hudson.scm.SCM;
+import hudson.search.Search;
+import hudson.search.SearchIndex;
+import hudson.security.ACL;
+import hudson.security.Permission;
 import java.io.*;
+import java.util.Collection;
 
 import org.junit.Test;
 
@@ -17,6 +27,7 @@ import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigurati
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigurationComponent;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMTarget;
 import net.praqma.jenkins.utils.test.ClearCaseJenkinsTestCase;
+import org.acegisecurity.AccessDeniedException;
 
 public class ConfigTest extends ClearCaseJenkinsTestCase {
   
@@ -227,7 +238,8 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		Run build = null;
 		//Project setup done. Now attempt to poll for changes.
 		System.out.println(debugLine + "Polling project.");
-		project.schedulePolling();
+		boolean polling = project.schedulePolling();
+		System.out.println(debugLine + "Poll result: "+polling);
 		
 		build = project.getLastBuild();
 		
@@ -239,7 +251,8 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		}
 		
 		System.out.println( "Action: " + action );
-		System.out.println( "Logfile: " + build.getLogFile() );
+		
+		System.out.println( "Logfile: " + build.getLogFile());
 		
 		BufferedReader br = new BufferedReader( new FileReader( build.getLogFile() ) );
 		String line = "";
