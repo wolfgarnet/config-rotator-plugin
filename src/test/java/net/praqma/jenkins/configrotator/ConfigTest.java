@@ -165,11 +165,14 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		while( ( line = br.readLine() ) != null ) {
 			System.out.println( "[JENKINS] " + line );
 		}
+		
+		br.close();
 		System.out.println(debugLine + "... done printing logfile");
 		
     // waiting is important to ensure unique timestamps and let Jenkins clean
     // workspace after each test
     waiting(watingSeconds);
+		
 	}
 	
 	/* ************************************************************************ 
