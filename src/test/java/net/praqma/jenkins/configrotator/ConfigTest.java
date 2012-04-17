@@ -2,13 +2,23 @@ package net.praqma.jenkins.configrotator;
 
 import hudson.console.ConsoleNote;
 import hudson.model.*;
+import hudson.model.Queue.Executable;
+import hudson.model.Queue.Task;
+import hudson.model.queue.CauseOfBlockage;
+import hudson.model.queue.SubTask;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
 import hudson.scm.PollingResult;
+import hudson.scm.SCM;
+import hudson.search.Search;
+import hudson.search.SearchIndex;
+import hudson.security.ACL;
+import hudson.security.Permission;
 import java.io.*;
+import java.util.Collection;
 
 import org.junit.Test;
 
@@ -17,6 +27,7 @@ import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigurati
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigurationComponent;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMTarget;
 import net.praqma.jenkins.utils.test.ClearCaseJenkinsTestCase;
+import org.acegisecurity.AccessDeniedException;
 
 public class ConfigTest extends ClearCaseJenkinsTestCase {
   
@@ -531,7 +542,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		Run build = null;
 		//Project setup done. Now attempt to poll for changes.
 		System.out.println(debugLine + "Polling project.");
-		project.schedulePolling();
+		System.out.println(debugLine + "Has changes?: " +project.poll(TaskListener.NULL).hasChanges());
 		
 		build = project.getLastBuild();
 		
@@ -543,34 +554,36 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		}
 		
 		System.out.println( "Action: " + action );
-		System.out.println( "Logfile: " + build.getLogFile() );
 		
-		BufferedReader br = new BufferedReader( new FileReader( build.getLogFile() ) );
-		String line = "";
-		while( ( line = br.readLine() ) != null ) {
-			System.out.println( "[JENKINS] " + line );
+		if(build!=null) {		
+			System.out.println( "Logfile: " + build.getLogFile());
+
+			BufferedReader br = new BufferedReader( new FileReader( build.getLogFile() ) );
+			String line = "";
+			while( ( line = br.readLine() ) != null ) {
+				System.out.println( "[JENKINS] " + line );
+			}
+
+			// this test plan to iterate one baseline at a time
+			// ... for now, just printing stuff out to se what I get
+			if( action != null ) {
+				System.out.println( "Action: " + action.getResult() );
+				ClearCaseUCMConfiguration test = (ClearCaseUCMConfiguration) action.getConfiguration();
+				System.out.println( "getShortname()" + test.getList().get(0).getBaseline().getShortname());
+				System.out.println( "getComment()" + test.getList().get(0).getBaseline().getComment());
+				System.out.println( "getPVob()" + test.getList().get(0).getBaseline().getPVob());
+			} else {
+				System.out.println( "ACTION IS NULL" );
+			}
+			// NOTICE - this is very IMPORTANT to avoid Jenkins error on cleaning 
+			// temporary dirs after jobs completes meaning test fails
+			br.close();
+
+			// waiting is important to ensure unique timestamps and let Jenkins clean
+			// workspace after each test
+			waiting(watingSeconds);
 		}
-		
-    // this test plan to iterate one baseline at a time
-    // ... for now, just printing stuff out to se what I get
-		if( action != null ) {
-			System.out.println( "Action: " + action.getResult() );
-      ClearCaseUCMConfiguration test = (ClearCaseUCMConfiguration) action.getConfiguration();
-      System.out.println( "getShortname()" + test.getList().get(0).getBaseline().getShortname());
-      System.out.println( "getComment()" + test.getList().get(0).getBaseline().getComment());
-      System.out.println( "getPVob()" + test.getList().get(0).getBaseline().getPVob());
-		} else {
-			System.out.println( "ACTION IS NULL" );
-		}
-    // NOTICE - this is very IMPORTANT to avoid Jenkins error on cleaning 
-    // temporary dirs after jobs completes meaning test fails
-    br.close();
-		
-    // waiting is important to ensure unique timestamps and let Jenkins clean
-    // workspace after each test
-    waiting(watingSeconds);
-        
-    // Build action should not be null
+		// Build action should not be null
 		assertNotNull( action );
 	}
 }
