@@ -158,16 +158,13 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		// action expected to be null
 		assertNull(action);
 		
-		System.out.println( debugLine + "action.isCompatible: " + action.isCompatible() );
-		assertFalse(action.isCompatible());
-		
 		System.out.println( debugLine + "Printing logfile: " + b.getLogFile() );
 		BufferedReader br = new BufferedReader( new FileReader( b.getLogFile() ) );
 		String line = "";
 		while( ( line = br.readLine() ) != null ) {
 			System.out.println( "[JENKINS] " + line );
 		}
-		System.out.println( debugLine + "... done printing logfile: " + b.getLogFile() );
+		System.out.println(debugLine + "... done printing logfile");
 		
     // waiting is important to ensure unique timestamps and let Jenkins clean
     // workspace after each test
@@ -178,6 +175,9 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 	 * Tests planned to also:
 	 * - try reconfigure
 	 * - try failing build, to check if configuration renders incompatible
+	 * - setting up a real job, that runs - Mads is trying (goal, is possible, is
+	 * to make a job, setup polling and let it runs by itself as if were a user how
+	 * made the job. How to we set up polling? how do we follow the job?
 	 */ 
 	
   // Note a test must include the string "test" somehow, else 
