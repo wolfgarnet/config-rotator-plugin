@@ -60,6 +60,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 	
 		// schedule a build, just to see if the config-rotator setup works
 		FreeStyleBuild b = project.scheduleBuild2( 0 ).get();
+		assertNotNull( b );
 		
     // now investigate result and print debug out
 		System.out.println( debugLine + "Workspace: " + b.getWorkspace() );
@@ -202,289 +203,58 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
     targets.add( new ClearCaseUCMTarget( "client-1@" + coolTest.getPVob() + ", INITIAL, false" ) );
 		ccucm.targets = targets;
     // create config-rotator, and set it as SCM
+		System.out.println( debugLine + "Create configurationRotator." );
 		ConfigurationRotator cr = new ConfigurationRotator( ccucm, true );
+		System.out.println( debugLine + "cr.supportsPolling: " + cr.supportsPolling() );
+		System.out.println( debugLine + "Set ConfigurationRotator as SCM" );
 		project.setScm( cr );
-
 		
-		/* ************************************************* */
-		
-		// schedule a build, just to see if the config-rotator setup works
+		// Try to build model-1 and client-1 to se if they are compatible
+		System.out.println( debugLine + "Scheduling a build..." );
 		FreeStyleBuild b = project.scheduleBuild2( 0 ).get();
-		
-    // now investigate result and print debug out
-		System.out.println( debugLine + "Workspace: " + b.getWorkspace() );
-		// get build actions
+		System.out.println( debugLine + "After scheduling build IS DONE!" );
+		// now investigate result and print debug out
+		System.out.println( debugLine + "build.getResult():" + b.getResult().toString());
+		// build should fail for wrong targets
+		assertEquals(b.getResult(), Result.SUCCESS);
+				
 		ConfigurationRotatorBuildAction action = b.getAction( ConfigurationRotatorBuildAction.class );
+		System.out.println( debugLine + "action: " + action );
+		// action expected to be null
+		assertNull(action);
 		
-		System.out.println( debugLine + "Action: " + action );
-		System.out.println( debugLine + "Logfile: " + b.getLogFile() );
-		
+		// this test plan to iterate one baseline at a time
+    // ... for now, just printing stuff out to se what I get
+		if( action != null ) {
+			ClearCaseUCMConfiguration test = (ClearCaseUCMConfiguration) action.getConfiguration();
+			System.out.println( debugLine + "action.getResult(): " + action.getResult() );
+			System.out.println( debugLine + "action.getResult().name: " + action.getResult().name() );
+			System.out.println( debugLine + "getView(): " + test.getView() );
+						
+			System.out.println( debugLine + "getShortname(): " + test.getList().get(0).getBaseline().getShortname() );
+			System.out.println( debugLine + "getComment(): " + test.getList().get(0).getBaseline().getComment() );
+			System.out.println( debugLine + "getPVob(): " + test.getList().get(0).getBaseline().getPVob() );
+			System.out.println( debugLine + "action.isCompatible: " + action.isCompatible() );
+			
+
+		} else {
+			System.out.println( debugLine + "ACTION IS NULL" );
+		}
+				
+		System.out.println( debugLine + "Printing logfile: " + b.getLogFile() );
 		BufferedReader br = new BufferedReader( new FileReader( b.getLogFile() ) );
 		String line = "";
 		while( ( line = br.readLine() ) != null ) {
 			System.out.println( "[JENKINS] " + line );
 		}
+		br.close();
+		System.out.println(debugLine + "... done printing logfile");
+    
 		
-    // this test plan to iterate one baseline at a time
-    // ... for now, just printing stuff out to se what I get
-		if( action != null ) {
-			ClearCaseUCMConfiguration test = (ClearCaseUCMConfiguration) action.getConfiguration();
-			System.out.println( debugLine + "action.getResult(): " + action.getResult() );
-			System.out.println( debugLine + "action.getResult().name: " + action.getResult().name() );
-			System.out.println( debugLine + "getView(): " + test.getView() );
-						
-			System.out.println( debugLine + "getShortname(): " + test.getList().get(0).getBaseline().getShortname() );
-			System.out.println( debugLine + "getComment(): " + test.getList().get(0).getBaseline().getComment() );
-			System.out.println( debugLine + "getPVob(): " + test.getList().get(0).getBaseline().getPVob() );
-			System.out.println( debugLine + "action.isCompatible: " + action.isCompatible() );
-			
-
-		} else {
-			System.out.println( debugLine + "ACTION IS NULL" );
-		}
-    // NOTICE - this is very IMPORTANT to avoid Jenkins error on cleaning 
-    // temporary dirs after jobs completes meaning test fails
-    br.close();
+		/* ************************************************
+		 * 
+		 */
 		
-		
-		/* ************************************************* */
-		// schedule a build, just to see if the config-rotator setup works
-		b = project.scheduleBuild2( 0 ).get();
-		
-    // now investigate result and print debug out
-		System.out.println( debugLine + "Workspace: " + b.getWorkspace() );
-		// get build actions
-		action = b.getAction( ConfigurationRotatorBuildAction.class );
-		
-		System.out.println( debugLine + "Action: " + action );
-		System.out.println( debugLine + "Logfile: " + b.getLogFile() );
-		
-		br = new BufferedReader( new FileReader( b.getLogFile() ) );
-		line = "";
-		while( ( line = br.readLine() ) != null ) {
-			System.out.println( "[JENKINS] " + line );
-		}
-		
-    // this test plan to iterate one baseline at a time
-    // ... for now, just printing stuff out to se what I get
-		if( action != null ) {
-			ClearCaseUCMConfiguration test = (ClearCaseUCMConfiguration) action.getConfiguration();
-			System.out.println( debugLine + "action.getResult(): " + action.getResult() );
-			System.out.println( debugLine + "action.getResult().name: " + action.getResult().name() );
-			System.out.println( debugLine + "getView(): " + test.getView() );
-						
-			System.out.println( debugLine + "getShortname(): " + test.getList().get(0).getBaseline().getShortname() );
-			System.out.println( debugLine + "getComment(): " + test.getList().get(0).getBaseline().getComment() );
-			System.out.println( debugLine + "getPVob(): " + test.getList().get(0).getBaseline().getPVob() );
-			System.out.println( debugLine + "action.isCompatible: " + action.isCompatible() );
-			
-
-		} else {
-			System.out.println( debugLine + "ACTION IS NULL" );
-		}
-    // NOTICE - this is very IMPORTANT to avoid Jenkins error on cleaning 
-    // temporary dirs after jobs completes meaning test fails
-    br.close();
-		
-		/* ************************************************* */
-		// schedule a build, just to see if the config-rotator setup works
-		b = project.scheduleBuild2( 0 ).get();
-		
-    // now investigate result and print debug out
-		System.out.println( debugLine + "Workspace: " + b.getWorkspace() );
-		// get build actions
-		action = b.getAction( ConfigurationRotatorBuildAction.class );
-		
-		System.out.println( debugLine + "Action: " + action );
-		System.out.println( debugLine + "Logfile: " + b.getLogFile() );
-		
-		br = new BufferedReader( new FileReader( b.getLogFile() ) );
-		line = "";
-		while( ( line = br.readLine() ) != null ) {
-			System.out.println( "[JENKINS] " + line );
-		}
-		
-    // this test plan to iterate one baseline at a time
-    // ... for now, just printing stuff out to se what I get
-		if( action != null ) {
-			ClearCaseUCMConfiguration test = (ClearCaseUCMConfiguration) action.getConfiguration();
-			System.out.println( debugLine + "action.getResult(): " + action.getResult() );
-			System.out.println( debugLine + "action.getResult().name: " + action.getResult().name() );
-			System.out.println( debugLine + "getView(): " + test.getView() );
-						
-			System.out.println( debugLine + "getShortname(): " + test.getList().get(0).getBaseline().getShortname() );
-			System.out.println( debugLine + "getComment(): " + test.getList().get(0).getBaseline().getComment() );
-			System.out.println( debugLine + "getPVob(): " + test.getList().get(0).getBaseline().getPVob() );
-			System.out.println( debugLine + "action.isCompatible: " + action.isCompatible() );
-			
-
-		} else {
-			System.out.println( debugLine + "ACTION IS NULL" );
-		}
-    // NOTICE - this is very IMPORTANT to avoid Jenkins error on cleaning 
-    // temporary dirs after jobs completes meaning test fails
-    br.close();
-		/* ************************************************* */
-		// schedule a build, just to see if the config-rotator setup works
-		b = project.scheduleBuild2( 0 ).get();
-		
-    // now investigate result and print debug out
-		System.out.println( debugLine + "Workspace: " + b.getWorkspace() );
-		// get build actions
-		action = b.getAction( ConfigurationRotatorBuildAction.class );
-		
-		System.out.println( debugLine + "Action: " + action );
-		System.out.println( debugLine + "Logfile: " + b.getLogFile() );
-		
-		br = new BufferedReader( new FileReader( b.getLogFile() ) );
-		line = "";
-		while( ( line = br.readLine() ) != null ) {
-			System.out.println( "[JENKINS] " + line );
-		}
-		
-    // this test plan to iterate one baseline at a time
-    // ... for now, just printing stuff out to se what I get
-		if( action != null ) {
-			ClearCaseUCMConfiguration test = (ClearCaseUCMConfiguration) action.getConfiguration();
-			System.out.println( debugLine + "action.getResult(): " + action.getResult() );
-			System.out.println( debugLine + "action.getResult().name: " + action.getResult().name() );
-			System.out.println( debugLine + "getView(): " + test.getView() );
-						
-			System.out.println( debugLine + "getShortname(): " + test.getList().get(0).getBaseline().getShortname() );
-			System.out.println( debugLine + "getComment(): " + test.getList().get(0).getBaseline().getComment() );
-			System.out.println( debugLine + "getPVob(): " + test.getList().get(0).getBaseline().getPVob() );
-			System.out.println( debugLine + "action.isCompatible: " + action.isCompatible() );
-			
-
-		} else {
-			System.out.println( debugLine + "ACTION IS NULL" );
-		}
-    // NOTICE - this is very IMPORTANT to avoid Jenkins error on cleaning 
-    // temporary dirs after jobs completes meaning test fails
-    br.close();
-				/* ************************************************* */
-		// schedule a build, just to see if the config-rotator setup works
-		b = project.scheduleBuild2( 0 ).get();
-		
-    // now investigate result and print debug out
-		System.out.println( debugLine + "Workspace: " + b.getWorkspace() );
-		// get build actions
-		action = b.getAction( ConfigurationRotatorBuildAction.class );
-		
-		System.out.println( debugLine + "Action: " + action );
-		System.out.println( debugLine + "Logfile: " + b.getLogFile() );
-		
-		br = new BufferedReader( new FileReader( b.getLogFile() ) );
-		line = "";
-		while( ( line = br.readLine() ) != null ) {
-			System.out.println( "[JENKINS] " + line );
-		}
-		
-    // this test plan to iterate one baseline at a time
-    // ... for now, just printing stuff out to se what I get
-		if( action != null ) {
-			ClearCaseUCMConfiguration test = (ClearCaseUCMConfiguration) action.getConfiguration();
-			System.out.println( debugLine + "action.getResult(): " + action.getResult() );
-			System.out.println( debugLine + "action.getResult().name: " + action.getResult().name() );
-			System.out.println( debugLine + "getView(): " + test.getView() );
-						
-			System.out.println( debugLine + "getShortname(): " + test.getList().get(0).getBaseline().getShortname() );
-			System.out.println( debugLine + "getComment(): " + test.getList().get(0).getBaseline().getComment() );
-			System.out.println( debugLine + "getPVob(): " + test.getList().get(0).getBaseline().getPVob() );
-			System.out.println( debugLine + "action.isCompatible: " + action.isCompatible() );
-			
-
-		} else {
-			System.out.println( debugLine + "ACTION IS NULL" );
-		}
-    // NOTICE - this is very IMPORTANT to avoid Jenkins error on cleaning 
-    // temporary dirs after jobs completes meaning test fails
-    br.close();
-				/* ************************************************* */
-		// schedule a build, just to see if the config-rotator setup works
-		b = project.scheduleBuild2( 0 ).get();
-		
-    // now investigate result and print debug out
-		System.out.println( debugLine + "Workspace: " + b.getWorkspace() );
-		// get build actions
-		action = b.getAction( ConfigurationRotatorBuildAction.class );
-		
-		System.out.println( debugLine + "Action: " + action );
-		System.out.println( debugLine + "Logfile: " + b.getLogFile() );
-		
-		br = new BufferedReader( new FileReader( b.getLogFile() ) );
-		line = "";
-		while( ( line = br.readLine() ) != null ) {
-			System.out.println( "[JENKINS] " + line );
-		}
-		
-    // this test plan to iterate one baseline at a time
-    // ... for now, just printing stuff out to se what I get
-		if( action != null ) {
-			ClearCaseUCMConfiguration test = (ClearCaseUCMConfiguration) action.getConfiguration();
-			System.out.println( debugLine + "action.getResult(): " + action.getResult() );
-			System.out.println( debugLine + "action.getResult().name: " + action.getResult().name() );
-			System.out.println( debugLine + "getView(): " + test.getView() );
-						
-			System.out.println( debugLine + "getShortname(): " + test.getList().get(0).getBaseline().getShortname() );
-			System.out.println( debugLine + "getComment(): " + test.getList().get(0).getBaseline().getComment() );
-			System.out.println( debugLine + "getPVob(): " + test.getList().get(0).getBaseline().getPVob() );
-			System.out.println( debugLine + "action.isCompatible: " + action.isCompatible() );
-			
-
-		} else {
-			System.out.println( debugLine + "ACTION IS NULL" );
-		}
-    // NOTICE - this is very IMPORTANT to avoid Jenkins error on cleaning 
-    // temporary dirs after jobs completes meaning test fails
-    br.close();
-				/* ************************************************* */
-		// schedule a build, just to see if the config-rotator setup works
-		b = project.scheduleBuild2( 0 ).get();
-		
-    // now investigate result and print debug out
-		System.out.println( debugLine + "Workspace: " + b.getWorkspace() );
-		// get build actions
-		action = b.getAction( ConfigurationRotatorBuildAction.class );
-		
-		System.out.println( debugLine + "Action: " + action );
-		System.out.println( debugLine + "Logfile: " + b.getLogFile() );
-		
-		br = new BufferedReader( new FileReader( b.getLogFile() ) );
-		line = "";
-		while( ( line = br.readLine() ) != null ) {
-			System.out.println( "[JENKINS] " + line );
-		}
-		
-    // this test plan to iterate one baseline at a time
-    // ... for now, just printing stuff out to se what I get
-		if( action != null ) {
-			ClearCaseUCMConfiguration test = (ClearCaseUCMConfiguration) action.getConfiguration();
-			System.out.println( debugLine + "action.getResult(): " + action.getResult() );
-			System.out.println( debugLine + "action.getResult().name: " + action.getResult().name() );
-			System.out.println( debugLine + "getView(): " + test.getView() );
-						
-			System.out.println( debugLine + "getShortname(): " + test.getList().get(0).getBaseline().getShortname() );
-			System.out.println( debugLine + "getComment(): " + test.getList().get(0).getBaseline().getComment() );
-			System.out.println( debugLine + "getPVob(): " + test.getList().get(0).getBaseline().getPVob() );
-			System.out.println( debugLine + "action.isCompatible: " + action.isCompatible() );
-			
-
-		} else {
-			System.out.println( debugLine + "ACTION IS NULL" );
-		}
-    // NOTICE - this is very IMPORTANT to avoid Jenkins error on cleaning 
-    // temporary dirs after jobs completes meaning test fails
-    br.close();
-		
-		
-    // waiting is important to ensure unique timestamps and let Jenkins clean
-    // workspace after each test
-    waiting(watingSeconds);
-        
-    // Build action should not be null
-		assertTrue( true );
-		//assertNotNull( action );
 	}
     
 
