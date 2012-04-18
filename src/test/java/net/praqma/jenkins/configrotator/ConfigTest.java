@@ -169,15 +169,19 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		System.out.println( debugLine + "cr.justConfigured: " + cr.justConfigured);
 		assertFalse(cr.justConfigured);
 		
-		// trying to change configuration, and then see status
-		ccucm.targets.add( new ClearCaseUCMTarget( "client-1@" + coolTest.getPVob() + ", INITIAL, false" ) );
-		System.out.println( debugLine + "Changed targets adding client-1." );
+		// trying to change configuration to what happens....
+		targets.add( new ClearCaseUCMTarget( "client-1@" + coolTest.getPVob() + ", INITIAL, false" ) );
+		ccucm.targets = targets;
 		cr.setReconfigure(true);
+		cr.doReconfigure();
+		System.out.println( debugLine + "Changed targets adding client-1." );
 		System.out.println( debugLine + "cr.justConfigured: " + cr.justConfigured);
+		System.out.println( debugLine + "cr.reconfigure: " + cr.reconfigure);
 		//assertTrue(cr.justConfigured);
+		//assertTrue(cr.reconfigure);
 		
 		// Try to build
-		System.out.println( debugLine + "Scheduling a build for model-1 and client-1..." );
+		System.out.println( debugLine + "Scheduling a build that should be for model-1 and client-1..." );
 		b = project.scheduleBuild2( 0 ).get();
 		// now investigate result and print debug out
 		assertNotNull(b);
@@ -209,9 +213,12 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		configuration = (ClearCaseUCMConfiguration) action.getConfiguration();
 		System.out.println( debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname() );
 		//assertEquals("model-1", configuration.getList().get(0).getBaseline().getShortname());
-		System.out.println( debugLine + "getShortname(): " + configuration.getList().get(1).getBaseline().getShortname() );
+		//System.out.println( debugLine + "getShortname(): " + configuration.getList().get(1).getBaseline().getShortname() );
 		//assertEquals("client-1", configuration.getList().get(1).getBaseline().getShortname());
-		System.out.println( debugLine + "cr.justConfigured: " + cr.justConfigured);				
+		System.out.println( debugLine + "cr.justConfigured: " + cr.justConfigured);
+		System.out.println( debugLine + "cr.reconfigure: " + cr.reconfigure);
+		//assertTrue(cr.justConfigured);
+		//assertTrue(cr.reconfigure);
 
 		
     // waiting is important to ensure unique timestamps and let Jenkins clean
