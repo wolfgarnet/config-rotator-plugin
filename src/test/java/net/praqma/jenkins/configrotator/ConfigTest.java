@@ -210,11 +210,11 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		project.setScm( cr );
 		
 		// Try to build model-1 and client-1 to se if they are compatible
-		System.out.println( debugLine + "Scheduling a build..." );
+		System.out.println( debugLine + "Scheduling a build for model-1 and client-1..." );
 		FreeStyleBuild b = project.scheduleBuild2( 0 ).get();
 		// now investigate result and print debug out
 		assertNotNull(b);
-		System.out.println( debugLine + "Now first build is done" );
+		System.out.println( debugLine + "... build is done" );
 		System.out.println( debugLine + "Printing logfile: " + b.getLogFile() );
 		BufferedReader br = new BufferedReader( new FileReader( b.getLogFile() ) );
 		String line = "";
@@ -252,12 +252,11 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		 * Now doing a new build, and expect to find baseline
 		 * model-2, and that is compatible with client-1
 		 */
-		// Try to build model-1 and client-1 to se if they are compatible
-		System.out.println( debugLine + "Scheduling a build..." );
+		System.out.println( debugLine + "Scheduling a build for model-2 and client-1..." );
 		b = project.scheduleBuild2( 0 ).get();
 		// now investigate result and print debug out
 		assertNotNull(b);
-		System.out.println( debugLine + "Now first build is done" );
+		System.out.println( debugLine + "... build is done" );
 		System.out.println( debugLine + "Printing logfile: " + b.getLogFile() );
 		br = new BufferedReader( new FileReader( b.getLogFile() ) );
 		line = "";
@@ -294,12 +293,11 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		 * Now doing a new build, and expect to find baseline
 		 * model-3, and that is compatible with client-1
 		 */
-		// Try to build model-1 and client-1 to se if they are compatible
-		System.out.println( debugLine + "Scheduling a build..." );
+		System.out.println( debugLine + "Scheduling a build for model-3 and client-1..." );
 		b = project.scheduleBuild2( 0 ).get();
 		// now investigate result and print debug out
 		assertNotNull(b);
-		System.out.println( debugLine + "Now first build is done" );
+		System.out.println( debugLine + "... build is done" );
 		System.out.println( debugLine + "Printing logfile: " + b.getLogFile() );
 		br = new BufferedReader( new FileReader( b.getLogFile() ) );
 		line = "";
@@ -336,12 +334,11 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		 * Now doing a new build, and expect to find baseline
 		 * model-3, and that is compatible with client-2
 		 */
-		// Try to build model-1 and client-1 to se if they are compatible
-		System.out.println( debugLine + "Scheduling a build..." );
+		System.out.println( debugLine + "Scheduling a build for model-3 and client-2..." );
 		b = project.scheduleBuild2( 0 ).get();
 		// now investigate result and print debug out
 		assertNotNull(b);
-		System.out.println( debugLine + "Now first build is done" );
+		System.out.println( debugLine + "... build is done" );
 		System.out.println( debugLine + "Printing logfile: " + b.getLogFile() );
 		br = new BufferedReader( new FileReader( b.getLogFile() ) );
 		line = "";
@@ -376,12 +373,11 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		 * Now doing a new build, and expect to find baseline
 		 * model-3, and that is compatible with client-3
 		 */
-		// Try to build model-1 and client-1 to se if they are compatible
-		System.out.println( debugLine + "Scheduling a build..." );
+		System.out.println( debugLine + "Scheduling a build for model-3 and client-3..." );
 		b = project.scheduleBuild2( 0 ).get();
 		// now investigate result and print debug out
 		assertNotNull(b);
-		System.out.println( debugLine + "Now first build is done" );
+		System.out.println( debugLine + "... build is done" );
 		System.out.println( debugLine + "Printing logfile: " + b.getLogFile() );
 		br = new BufferedReader( new FileReader( b.getLogFile() ) );
 		line = "";
@@ -417,12 +413,11 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		/* ******************************************************
 		 * Now doing to do a new build but there will be NO new baselines
 		 */
-		// Try to build model-1 and client-1 to se if they are compatible
-		System.out.println( debugLine + "Scheduling a build..." );
+		System.out.println( debugLine + "Scheduling a build but expect no new baselines..." );
 		b = project.scheduleBuild2( 0 ).get();
 		// now investigate result and print debug out
 		assertNotNull(b);
-		System.out.println( debugLine + "Now first build is done" );
+		System.out.println( debugLine + "... build is done" );
 		System.out.println( debugLine + "Printing logfile: " + b.getLogFile() );
 		br = new BufferedReader( new FileReader( b.getLogFile() ) );
 		line = "";
@@ -433,6 +428,8 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		System.out.println(debugLine + "... done printing logfile");
 		// build should be good
 		System.out.println( debugLine + "build.getResult():" + b.getResult().toString());
+		
+		// a build finding no new baseline should still be a success, or at least not a fail
 		assertEquals(b.getResult(), Result.SUCCESS);
 				
 		action = b.getAction( ConfigurationRotatorBuildAction.class );
