@@ -225,7 +225,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		
 		// check config rotator result
 		System.out.println( debugLine + "action.getResult(): " + action.getResult() );
-		assertEquals(action.getResult(), Result.SUCCESS);
+		assertEquals(action.getResult(), net.praqma.jenkins.configrotator.ConfigurationRotator.ResultType.COMPATIBLE);
 		System.out.println( debugLine + "action.isCompatible: " + action.isCompatible() );
 		assertTrue(action.isCompatible());
 			
