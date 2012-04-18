@@ -172,7 +172,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		// trying to change configuration, and then see status
 		ccucm.targets.add( new ClearCaseUCMTarget( "client-1@" + coolTest.getPVob() + ", INITIAL, false" ) );
 		System.out.println( debugLine + "Changed targets adding client-1." );
-		cr.doReconfigure();
+		cr.setReconfigure(true);
 		System.out.println( debugLine + "cr.justConfigured: " + cr.justConfigured);
 		//assertTrue(cr.justConfigured);
 		
