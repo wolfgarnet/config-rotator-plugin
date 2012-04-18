@@ -223,23 +223,15 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		// action expected to be null
 		assertNotNull(action);
 		
-		// this test plan to iterate one baseline at a time
-    // ... for now, just printing stuff out to se what I get
-		if( action != null ) {
-			ClearCaseUCMConfiguration test = (ClearCaseUCMConfiguration) action.getConfiguration();
-			System.out.println( debugLine + "action.getResult(): " + action.getResult() );
-			System.out.println( debugLine + "action.getResult().name: " + action.getResult().name() );
-			System.out.println( debugLine + "getView(): " + test.getView() );
-						
-			System.out.println( debugLine + "getShortname(): " + test.getList().get(0).getBaseline().getShortname() );
-			System.out.println( debugLine + "getComment(): " + test.getList().get(0).getBaseline().getComment() );
-			System.out.println( debugLine + "getPVob(): " + test.getList().get(0).getBaseline().getPVob() );
-			System.out.println( debugLine + "action.isCompatible: " + action.isCompatible() );
+		// check config rotator result
+		System.out.println( debugLine + "action.getResult(): " + action.getResult() );
+		assertEquals(action.getResult(), Result.SUCCESS);
+		System.out.println( debugLine + "action.isCompatible: " + action.isCompatible() );
+		assertTrue(action.isCompatible());
 			
-
-		} else {
-			System.out.println( debugLine + "ACTION IS NULL" );
-		}
+		ClearCaseUCMConfiguration configuration = (ClearCaseUCMConfiguration) action.getConfiguration();
+		System.out.println( debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname() );
+		System.out.println( debugLine + "getShortname(): " + configuration.getList().get(1).getBaseline().getShortname() );
 				
 		System.out.println( debugLine + "Printing logfile: " + b.getLogFile() );
 		BufferedReader br = new BufferedReader( new FileReader( b.getLogFile() ) );
@@ -251,8 +243,9 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		System.out.println(debugLine + "... done printing logfile");
     
 		
-		/* ************************************************
-		 * 
+		/* ******************************************************
+		 * Now doing a new build, and expect to find baseline
+		 * model-2, and that is compatible with client-1
 		 */
 		
 	}
@@ -274,7 +267,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 	@Test
 	public void testPollSCMChange() throws Exception {
     String testName = "PollSCMChange";
-    String debugLine = "'" + testName + "': ";
+    String debugLine = "**************************************** '" + testName + "': ";
     System.out.println( debugLine + "Starting" );
     // ONLY alphanumeric chars
 		String uniqueTestVobName = testName + uniqueTimeStamp;
