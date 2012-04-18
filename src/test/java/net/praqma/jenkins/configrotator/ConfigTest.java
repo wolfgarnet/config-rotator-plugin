@@ -595,6 +595,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		System.out.println( debugLine + "Comparing target1 with target2" );
 		assertFalse(target1.equals(target2));
 		
+		System.out.println( debugLine + "Done this test!" );
 		
 		// waiting is important to ensure unique timestamps and let Jenkins clean
     // workspace after each test
@@ -688,8 +689,101 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		assertTrue(ccucm.wasReconfigured(project)); // still, should be same result ?
 		
 		
+		System.out.println( debugLine + "Done this test!" );
+		
+		// waiting is important to ensure unique timestamps and let Jenkins clean
+    // workspace after each test
+    waiting(watingSeconds);
+		
 		assertTrue(false); // fail test, to avoid disturbing covere yet...
 }
+	
+	
+	@Test
+	public void testFailBuildToBeIncompatible() throws Exception {
+		// If a build fails, components should be incompatible
+    String testName = "FailBuildToBeIncompatible";
+    String debugLine = "**************************************** '" + testName + "': ";
+    System.out.println( debugLine + "Starting" );
+    // ONLY alphanumeric chars
+		String uniqueTestVobName = testName + uniqueTimeStamp;
+    
+    // set up cool to run tests with ClearCase environment
+    // variables overwrite cool test case setup.xml setting
+    // Unique names for each test is used to avoid all sort of clear case 
+    // complications - but leaves as mess...
+    coolTest.variables.put("vobname", uniqueTestVobName );
+    coolTest.variables.put("pvobname", uniqueTestVobName );
+		coolTest.bootStrap();
+		System.out.println( debugLine + "Cool test case setup done." );
+		
+    // create Jenkins job - also use unique name
+		FreeStyleProject project = createFreeStyleProject( uniqueTestVobName );
+		// Setup ClearCase UCM as SCM and to use with config-rotator
+		ClearCaseUCM ccucm = new ClearCaseUCM( coolTest.getPVob().toString() );
+		List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
+		// A first configuration added as targets: model-1 and client-1 that we 
+		// would know to be compatible.
+		targets.add( new ClearCaseUCMTarget( "model-1@" + coolTest.getPVob() + ", INITIAL, false" ) );
+    targets.add( new ClearCaseUCMTarget( "client-1@" + coolTest.getPVob() + ", INITIAL, false" ) );
+		ccucm.targets = targets;
+    // create config-rotator, and set it as SCM
+		System.out.println( debugLine + "Create configurationRotator." );
+		ConfigurationRotator cr = new ConfigurationRotator( ccucm, true );
+		System.out.println( debugLine + "cr.supportsPolling: " + cr.supportsPolling() );
+		System.out.println( debugLine + "Set ConfigurationRotator as SCM" );
+		project.setScm( cr );
+		
+		// Try to build model-1 and client-1 to se if they are compatible
+		System.out.println( debugLine + "Scheduling a build for model-1 and client-1..." );
+		FreeStyleBuild b = project.scheduleBuild2( 0 ).get();
+		// now investigate result and print debug out
+		assertNotNull(b);
+		System.out.println( debugLine + "... build is done" );
+		System.out.println( debugLine + "Printing logfile: " + b.getLogFile() );
+		BufferedReader br = new BufferedReader( new FileReader( b.getLogFile() ) );
+		String line = "";
+		while( ( line = br.readLine() ) != null ) {
+			System.out.println( "[JENKINS] " + line );
+		}
+		br.close();
+		System.out.println(debugLine + "... done printing logfile");
+		// build should be good
+		System.out.println( debugLine + "build.getResult():" + b.getResult().toString());
+		assertEquals(b.getResult(), Result.SUCCESS);
+		
+		// now failing the build !
+		System.out.println(debugLine + "Now failing the build to make components incompatible");
+		b.setResult(Result.FAILURE);
+		System.out.println( debugLine + "build.getResult():" + b.getResult().toString());
+		
+				
+		ConfigurationRotatorBuildAction action = b.getAction( ConfigurationRotatorBuildAction.class );
+		System.out.println( debugLine + "action: " + action );
+		// action expected not to be null
+		assertNotNull(action);
+		
+		// check config rotator result
+		System.out.println( debugLine + "action.getResult(): " + action.getResult() );
+		assertEquals(action.getResult(), net.praqma.jenkins.configrotator.ConfigurationRotator.ResultType.INCOMPATIBLE);
+		System.out.println( debugLine + "action.isCompatible: " + action.isCompatible() );
+		assertFalse(action.isCompatible());
+			
+		ClearCaseUCMConfiguration configuration = (ClearCaseUCMConfiguration) action.getConfiguration();
+		System.out.println( debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname() );
+		System.out.println( debugLine + "getShortname(): " + configuration.getList().get(1).getBaseline().getShortname() );
+		assertEquals("model-1", configuration.getList().get(0).getBaseline().getShortname());
+		assertEquals("client-1", configuration.getList().get(1).getBaseline().getShortname());
+		
+		
+		System.out.println( debugLine + "Done this test!" );
+		// waiting is important to ensure unique timestamps and let Jenkins clean
+    // workspace after each test
+    waiting(watingSeconds);
+		
+		assertTrue(false); // fail test, to avoid disturbing covere yet...
+	}
+	
 	
 	/* ************************************************************************ 
 	 * Tests planned to also:
