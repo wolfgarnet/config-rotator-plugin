@@ -232,6 +232,8 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		ClearCaseUCMConfiguration configuration = (ClearCaseUCMConfiguration) action.getConfiguration();
 		System.out.println( debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname() );
 		System.out.println( debugLine + "getShortname(): " + configuration.getList().get(1).getBaseline().getShortname() );
+		assertEquals(configuration.getList().get(0).getBaseline().getShortname(), "model-1");
+		assertEquals(configuration.getList().get(0).getBaseline().getShortname(), "client-1");
 				
 		System.out.println( debugLine + "Printing logfile: " + b.getLogFile() );
 		BufferedReader br = new BufferedReader( new FileReader( b.getLogFile() ) );
@@ -247,6 +249,46 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		 * Now doing a new build, and expect to find baseline
 		 * model-2, and that is compatible with client-1
 		 */
+		// Try to build model-1 and client-1 to se if they are compatible
+		System.out.println( debugLine + "Scheduling a build..." );
+		b = project.scheduleBuild2( 0 ).get();
+		System.out.println( debugLine + "After scheduling build IS DONE!" );
+		// now investigate result and print debug out
+		System.out.println( debugLine + "build.getResult():" + b.getResult().toString());
+		// build should fail for wrong targets
+		assertEquals(b.getResult(), Result.SUCCESS);
+				
+		action = b.getAction( ConfigurationRotatorBuildAction.class );
+		System.out.println( debugLine + "action: " + action );
+		// action expected to be null
+		assertNotNull(action);
+		
+		// check config rotator result
+		System.out.println( debugLine + "action.getResult(): " + action.getResult() );
+		assertEquals(action.getResult(), net.praqma.jenkins.configrotator.ConfigurationRotator.ResultType.COMPATIBLE);
+		System.out.println( debugLine + "action.isCompatible: " + action.isCompatible() );
+		assertTrue(action.isCompatible());
+			
+		configuration = (ClearCaseUCMConfiguration) action.getConfiguration();
+		System.out.println( debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname() );
+		System.out.println( debugLine + "getShortname(): " + configuration.getList().get(1).getBaseline().getShortname() );
+		assertEquals(configuration.getList().get(0).getBaseline().getShortname(), "model-2");
+		assertEquals(configuration.getList().get(0).getBaseline().getShortname(), "client-1");
+				
+		System.out.println( debugLine + "Printing logfile: " + b.getLogFile() );
+		br = new BufferedReader( new FileReader( b.getLogFile() ) );
+		line = "";
+		while( ( line = br.readLine() ) != null ) {
+			System.out.println( "[JENKINS] " + line );
+		}
+		br.close();
+		System.out.println(debugLine + "... done printing logfile");
+		
+		
+		
+		// waiting is important to ensure unique timestamps and let Jenkins clean
+    // workspace after each test
+    waiting(watingSeconds);
 		
 	}
     
