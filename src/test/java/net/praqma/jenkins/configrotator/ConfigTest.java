@@ -131,7 +131,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		project.setScm( cr );
 		
 		// Try to build
-		System.out.println( debugLine + "Scheduling a build for model-1 and client-1..." );
+		System.out.println( debugLine + "Scheduling a build for ONLY model-1" );
 		FreeStyleBuild b = project.scheduleBuild2( 0 ).get();
 		// now investigate result and print debug out
 		assertNotNull(b);
@@ -172,6 +172,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		// trying to change configuration, and then see status
 		ccucm.targets.add( new ClearCaseUCMTarget( "client-1@" + coolTest.getPVob() + ", INITIAL, false" ) );
 		System.out.println( debugLine + "Changed targets adding client-1." );
+		cr.doReconfigure();
 		System.out.println( debugLine + "cr.justConfigured: " + cr.justConfigured);
 		//assertTrue(cr.justConfigured);
 		
@@ -180,6 +181,37 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		b = project.scheduleBuild2( 0 ).get();
 		// now investigate result and print debug out
 		assertNotNull(b);
+		System.out.println( debugLine + "... build is done" );
+		System.out.println( debugLine + "Printing logfile: " + b.getLogFile() );
+		br = new BufferedReader( new FileReader( b.getLogFile() ) );
+		line = "";
+		while( ( line = br.readLine() ) != null ) {
+			System.out.println( "[JENKINS] " + line );
+		}
+		br.close();
+		System.out.println(debugLine + "... done printing logfile");
+		// build should be good
+		System.out.println( debugLine + "build.getResult():" + b.getResult().toString());
+		//assertEquals(b.getResult(), Result.SUCCESS);
+		
+				
+		action = b.getAction( ConfigurationRotatorBuildAction.class );
+		System.out.println( debugLine + "action: " + action );
+		// action expected not to be null
+		assertNotNull(action);
+		
+		// check config rotator result
+		System.out.println( debugLine + "action.getResult(): " + action.getResult() );
+		//assertEquals(action.getResult(), net.praqma.jenkins.configrotator.ConfigurationRotator.ResultType.COMPATIBLE);
+		System.out.println( debugLine + "action.isCompatible: " + action.isCompatible() );
+		//assertTrue(action.isCompatible());
+			
+		configuration = (ClearCaseUCMConfiguration) action.getConfiguration();
+		System.out.println( debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname() );
+		//assertEquals("model-1", configuration.getList().get(0).getBaseline().getShortname());
+		System.out.println( debugLine + "getShortname(): " + configuration.getList().get(1).getBaseline().getShortname() );
+		//assertEquals("client-1", configuration.getList().get(1).getBaseline().getShortname());
+		System.out.println( debugLine + "cr.justConfigured: " + cr.justConfigured);				
 
 		
     // waiting is important to ensure unique timestamps and let Jenkins clean
