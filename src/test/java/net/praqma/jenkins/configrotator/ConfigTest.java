@@ -141,7 +141,10 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		System.out.println( debugLine + "cr.reconfigure: " + cr.reconfigure);
 		assertTrue(cr.reconfigure); //should initially be false, but now true
 		
-
+		
+    // waiting is important to ensure unique timestamps and let Jenkins clean
+    // workspace after each test
+    waiting(watingSeconds);
 	}
 		
 	
@@ -241,11 +244,14 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
     waiting(watingSeconds);
         
 	}
+	
+	
+	
 	// Note a test must include the string "test" somehow, else 
 	// surefire will not find the test-method.
 	@Test
 	public void testRevertToConfiguration() throws Exception {
-		// FIXME
+		// Tests if we can revert to another configuration from an old build
     String testName = "RevertToConfiguration";
     String debugLine = "**************************************** '" + testName + "': ";
     System.out.println( debugLine + "Starting" );
@@ -343,10 +349,45 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		System.out.println(debugLine + "Setting configuration from last action.");
 		cr.setConfigurationByAction(project, action);
 		System.out.println( debugLine + "cr.justConfigured: " + cr.justConfigured);
-		//assertTrue(cr.justConfigured); //justconfigured should initially be true
+		assertFalse(cr.justConfigured); // dit not just configure...
 		System.out.println( debugLine + "cr.reconfigure: " + cr.reconfigure);
-		//assertFalse(cr.reconfigure); //should initially be false
-
+		assertTrue(cr.reconfigure); //but RECONFIGURED ....
+		
+		// seems configuration worked, not trying to build to see if it is the old one
+		System.out.println( debugLine + "Scheduling a build 3, that should be for old config model-1 and client-1..." );
+		FreeStyleBuild b3 = project.scheduleBuild2( 0 ).get();
+		// now investigate result and print debug out
+		assertNotNull(b3);
+		System.out.println( debugLine + "... build is done" );
+		System.out.println( debugLine + "Printing logfile: " + b3.getLogFile() );
+		br = new BufferedReader( new FileReader( b3.getLogFile() ) );
+		line = "";
+		while( ( line = br.readLine() ) != null ) {
+			System.out.println( "[JENKINS] " + line );
+		}
+		br.close();
+		System.out.println(debugLine + "... done printing logfile");
+		// build should be good
+		System.out.println( debugLine + "build.getResult():" + b3.getResult().toString());
+		assertEquals(b3.getResult(), Result.SUCCESS);
+		
+				
+		ConfigurationRotatorBuildAction action3 = b3.getAction( ConfigurationRotatorBuildAction.class );
+		System.out.println( debugLine + "action: " + action3 );
+		// action expected not to be null
+		assertNotNull(action3);
+		
+		// check config rotator result
+		System.out.println( debugLine + "action.getResult(): " + action3.getResult() );
+		assertEquals(action3.getResult(), net.praqma.jenkins.configrotator.ConfigurationRotator.ResultType.COMPATIBLE);
+		System.out.println( debugLine + "action.isCompatible: " + action3.isCompatible() );
+		assertTrue(action3.isCompatible());
+			
+		ClearCaseUCMConfiguration configuration3 = (ClearCaseUCMConfiguration) action3.getConfiguration();
+		System.out.println( debugLine + "getShortname(): " + configuration3.getList().get(0).getBaseline().getShortname() );
+		System.out.println( debugLine + "getShortname(): " + configuration3.getList().get(1).getBaseline().getShortname() );
+		assertEquals("model-1", configuration3.getList().get(0).getBaseline().getShortname());
+		assertEquals("client-1", configuration3.getList().get(1).getBaseline().getShortname());
 		
 		// waiting is important to ensure unique timestamps and let Jenkins clean
     // workspace after each test
