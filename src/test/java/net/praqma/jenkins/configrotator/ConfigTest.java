@@ -18,7 +18,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
   
   // Controls how many seconds a test as minimum takes by
   // waiting before asserting on the test.
-	Integer watingSeconds = 10;
+	Integer watingSeconds = 30;
   // A time stamp added to ClearCase Vob names to make them unique for each
   // test. They also include the test name.
   // Division by 60000, giving milis to minute precission asuming all tests do
@@ -318,8 +318,11 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		assertEquals("client-1", configuration.getList().get(1).getBaseline().getShortname());
 		
 		System.out.println( debugLine + "action.isFresh(): " + action.isFresh() );
+		//assertTrue(action.isFresh()); // would expect isFresh to be true if just builded?
 		System.out.println( debugLine + "action.isDetermined(): " + action.isDetermined() );
+		assertTrue(action.isDetermined());
 		System.out.println( debugLine + "action.isCompatible(): " + action.isCompatible() );
+		assertTrue(action.isCompatible());
 		
 		System.out.println( debugLine + "action.getIconFileName(): " + action.getIconFileName() );
 		assertEquals("/plugin/config-rotator/images/rotate.png", action.getIconFileName());
