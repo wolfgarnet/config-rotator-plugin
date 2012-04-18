@@ -272,8 +272,8 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		configuration = (ClearCaseUCMConfiguration) action.getConfiguration();
 		System.out.println( debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname() );
 		System.out.println( debugLine + "getShortname(): " + configuration.getList().get(1).getBaseline().getShortname() );
-		assertEquals(configuration.getList().get(0).getBaseline().getShortname(), "model-2");
-		assertEquals(configuration.getList().get(0).getBaseline().getShortname(), "client-1");
+		assertEquals("model-2", configuration.getList().get(0).getBaseline().getShortname());
+		assertEquals("client-1", configuration.getList().get(1).getBaseline().getShortname());
 				
 		System.out.println( debugLine + "Printing logfile: " + b.getLogFile() );
 		br = new BufferedReader( new FileReader( b.getLogFile() ) );
