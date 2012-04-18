@@ -162,9 +162,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 			
 		ClearCaseUCMConfiguration configuration = (ClearCaseUCMConfiguration) action.getConfiguration();
 		System.out.println( debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname() );
-		System.out.println( debugLine + "getShortname(): " + configuration.getList().get(1).getBaseline().getShortname() );
 		assertEquals("model-1", configuration.getList().get(0).getBaseline().getShortname());
-		assertEquals("client-1", configuration.getList().get(1).getBaseline().getShortname());
 				
     
 		// now after one successfull build, justconfigured should be false
