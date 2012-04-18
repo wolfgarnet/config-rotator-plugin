@@ -212,15 +212,25 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		// Try to build model-1 and client-1 to se if they are compatible
 		System.out.println( debugLine + "Scheduling a build..." );
 		FreeStyleBuild b = project.scheduleBuild2( 0 ).get();
-		System.out.println( debugLine + "Now first build is done" );
 		// now investigate result and print debug out
+		assertNotNull(b);
+		System.out.println( debugLine + "Now first build is done" );
+		System.out.println( debugLine + "Printing logfile: " + b.getLogFile() );
+		BufferedReader br = new BufferedReader( new FileReader( b.getLogFile() ) );
+		String line = "";
+		while( ( line = br.readLine() ) != null ) {
+			System.out.println( "[JENKINS] " + line );
+		}
+		br.close();
+		System.out.println(debugLine + "... done printing logfile");
+		// build should be good
 		System.out.println( debugLine + "build.getResult():" + b.getResult().toString());
-		// build should fail for wrong targets
 		assertEquals(b.getResult(), Result.SUCCESS);
+		
 				
 		ConfigurationRotatorBuildAction action = b.getAction( ConfigurationRotatorBuildAction.class );
 		System.out.println( debugLine + "action: " + action );
-		// action expected to be null
+		// action expected not to be null
 		assertNotNull(action);
 		
 		// check config rotator result
@@ -235,14 +245,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		assertEquals("model-1", configuration.getList().get(0).getBaseline().getShortname());
 		assertEquals("client-1", configuration.getList().get(1).getBaseline().getShortname());
 				
-		System.out.println( debugLine + "Printing logfile: " + b.getLogFile() );
-		BufferedReader br = new BufferedReader( new FileReader( b.getLogFile() ) );
-		String line = "";
-		while( ( line = br.readLine() ) != null ) {
-			System.out.println( "[JENKINS] " + line );
-		}
-		br.close();
-		System.out.println(debugLine + "... done printing logfile");
+
     
 		
 		/* ******************************************************
@@ -252,15 +255,24 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		// Try to build model-1 and client-1 to se if they are compatible
 		System.out.println( debugLine + "Scheduling a build..." );
 		b = project.scheduleBuild2( 0 ).get();
-		System.out.println( debugLine + "Now second build is done." );
 		// now investigate result and print debug out
+		assertNotNull(b);
+		System.out.println( debugLine + "Now first build is done" );
+		System.out.println( debugLine + "Printing logfile: " + b.getLogFile() );
+		br = new BufferedReader( new FileReader( b.getLogFile() ) );
+		line = "";
+		while( ( line = br.readLine() ) != null ) {
+			System.out.println( "[JENKINS] " + line );
+		}
+		br.close();
+		System.out.println(debugLine + "... done printing logfile");
+		// build should be good
 		System.out.println( debugLine + "build.getResult():" + b.getResult().toString());
-		// build should fail for wrong targets
 		assertEquals(b.getResult(), Result.SUCCESS);
 				
 		action = b.getAction( ConfigurationRotatorBuildAction.class );
 		System.out.println( debugLine + "action: " + action );
-		// action expected to be null
+		// action expected not to be null
 		assertNotNull(action);
 		
 		// check config rotator result
@@ -275,6 +287,19 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		assertEquals("model-2", configuration.getList().get(0).getBaseline().getShortname());
 		assertEquals("client-1", configuration.getList().get(1).getBaseline().getShortname());
 				
+
+		
+		
+		/* ******************************************************
+		 * Now doing a new build, and expect to find baseline
+		 * model-3, and that is compatible with client-1
+		 */
+		// Try to build model-1 and client-1 to se if they are compatible
+		System.out.println( debugLine + "Scheduling a build..." );
+		b = project.scheduleBuild2( 0 ).get();
+		// now investigate result and print debug out
+		assertNotNull(b);
+		System.out.println( debugLine + "Now first build is done" );
 		System.out.println( debugLine + "Printing logfile: " + b.getLogFile() );
 		br = new BufferedReader( new FileReader( b.getLogFile() ) );
 		line = "";
@@ -283,6 +308,149 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		}
 		br.close();
 		System.out.println(debugLine + "... done printing logfile");
+		// build should be good
+		System.out.println( debugLine + "build.getResult():" + b.getResult().toString());
+		assertEquals(b.getResult(), Result.SUCCESS);
+				
+		action = b.getAction( ConfigurationRotatorBuildAction.class );
+		System.out.println( debugLine + "action: " + action );
+		// action expected not to be null
+		assertNotNull(action);
+		
+		// check config rotator result
+		System.out.println( debugLine + "action.getResult(): " + action.getResult() );
+		assertEquals(action.getResult(), net.praqma.jenkins.configrotator.ConfigurationRotator.ResultType.COMPATIBLE);
+		System.out.println( debugLine + "action.isCompatible: " + action.isCompatible() );
+		assertTrue(action.isCompatible());
+			
+		configuration = (ClearCaseUCMConfiguration) action.getConfiguration();
+		System.out.println( debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname() );
+		System.out.println( debugLine + "getShortname(): " + configuration.getList().get(1).getBaseline().getShortname() );
+		assertEquals("model-3", configuration.getList().get(0).getBaseline().getShortname());
+		assertEquals("client-1", configuration.getList().get(1).getBaseline().getShortname());
+		
+		
+		
+		
+		/* ******************************************************
+		 * Now doing a new build, and expect to find baseline
+		 * model-3, and that is compatible with client-2
+		 */
+		// Try to build model-1 and client-1 to se if they are compatible
+		System.out.println( debugLine + "Scheduling a build..." );
+		b = project.scheduleBuild2( 0 ).get();
+		// now investigate result and print debug out
+		assertNotNull(b);
+		System.out.println( debugLine + "Now first build is done" );
+		System.out.println( debugLine + "Printing logfile: " + b.getLogFile() );
+		br = new BufferedReader( new FileReader( b.getLogFile() ) );
+		line = "";
+		while( ( line = br.readLine() ) != null ) {
+			System.out.println( "[JENKINS] " + line );
+		}
+		br.close();
+		System.out.println(debugLine + "... done printing logfile");
+		// build should be good
+		System.out.println( debugLine + "build.getResult():" + b.getResult().toString());
+		assertEquals(b.getResult(), Result.SUCCESS);
+				
+		action = b.getAction( ConfigurationRotatorBuildAction.class );
+		System.out.println( debugLine + "action: " + action );
+		// action expected not to be null
+		assertNotNull(action);
+		
+		// check config rotator result
+		System.out.println( debugLine + "action.getResult(): " + action.getResult() );
+		assertEquals(action.getResult(), net.praqma.jenkins.configrotator.ConfigurationRotator.ResultType.COMPATIBLE);
+		System.out.println( debugLine + "action.isCompatible: " + action.isCompatible() );
+		assertTrue(action.isCompatible());
+			
+		configuration = (ClearCaseUCMConfiguration) action.getConfiguration();
+		System.out.println( debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname() );
+		System.out.println( debugLine + "getShortname(): " + configuration.getList().get(1).getBaseline().getShortname() );
+		assertEquals("model-3", configuration.getList().get(0).getBaseline().getShortname());
+		assertEquals("client-2", configuration.getList().get(1).getBaseline().getShortname());
+		
+		
+		/* ******************************************************
+		 * Now doing a new build, and expect to find baseline
+		 * model-3, and that is compatible with client-3
+		 */
+		// Try to build model-1 and client-1 to se if they are compatible
+		System.out.println( debugLine + "Scheduling a build..." );
+		b = project.scheduleBuild2( 0 ).get();
+		// now investigate result and print debug out
+		assertNotNull(b);
+		System.out.println( debugLine + "Now first build is done" );
+		System.out.println( debugLine + "Printing logfile: " + b.getLogFile() );
+		br = new BufferedReader( new FileReader( b.getLogFile() ) );
+		line = "";
+		while( ( line = br.readLine() ) != null ) {
+			System.out.println( "[JENKINS] " + line );
+		}
+		br.close();
+		System.out.println(debugLine + "... done printing logfile");
+		// build should be good
+		System.out.println( debugLine + "build.getResult():" + b.getResult().toString());
+		assertEquals(b.getResult(), Result.SUCCESS);
+				
+		action = b.getAction( ConfigurationRotatorBuildAction.class );
+		System.out.println( debugLine + "action: " + action );
+		// action expected not to be null
+		assertNotNull(action);
+		
+		// check config rotator result
+		System.out.println( debugLine + "action.getResult(): " + action.getResult() );
+		assertEquals(action.getResult(), net.praqma.jenkins.configrotator.ConfigurationRotator.ResultType.COMPATIBLE);
+		System.out.println( debugLine + "action.isCompatible: " + action.isCompatible() );
+		assertTrue(action.isCompatible());
+			
+		configuration = (ClearCaseUCMConfiguration) action.getConfiguration();
+		System.out.println( debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname() );
+		System.out.println( debugLine + "getShortname(): " + configuration.getList().get(1).getBaseline().getShortname() );
+		assertEquals("model-3", configuration.getList().get(0).getBaseline().getShortname());
+		assertEquals("client-3", configuration.getList().get(1).getBaseline().getShortname());
+		
+		
+		
+		
+		/* ******************************************************
+		 * Now doing to do a new build but there will be NO new baselines
+		 */
+		// Try to build model-1 and client-1 to se if they are compatible
+		System.out.println( debugLine + "Scheduling a build..." );
+		b = project.scheduleBuild2( 0 ).get();
+		// now investigate result and print debug out
+		assertNotNull(b);
+		System.out.println( debugLine + "Now first build is done" );
+		System.out.println( debugLine + "Printing logfile: " + b.getLogFile() );
+		br = new BufferedReader( new FileReader( b.getLogFile() ) );
+		line = "";
+		while( ( line = br.readLine() ) != null ) {
+			System.out.println( "[JENKINS] " + line );
+		}
+		br.close();
+		System.out.println(debugLine + "... done printing logfile");
+		// build should be good
+		System.out.println( debugLine + "build.getResult():" + b.getResult().toString());
+		assertEquals(b.getResult(), Result.SUCCESS);
+				
+		action = b.getAction( ConfigurationRotatorBuildAction.class );
+		System.out.println( debugLine + "action: " + action );
+		// action expected not to be null
+		assertNotNull(action);
+		
+		// check config rotator result
+		System.out.println( debugLine + "action.getResult(): " + action.getResult() );
+		assertEquals(action.getResult(), net.praqma.jenkins.configrotator.ConfigurationRotator.ResultType.COMPATIBLE);
+		System.out.println( debugLine + "action.isCompatible: " + action.isCompatible() );
+		assertTrue(action.isCompatible());
+			
+		configuration = (ClearCaseUCMConfiguration) action.getConfiguration();
+		System.out.println( debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname() );
+		System.out.println( debugLine + "getShortname(): " + configuration.getList().get(1).getBaseline().getShortname() );
+		assertEquals("model-3", configuration.getList().get(0).getBaseline().getShortname());
+		assertEquals("client-3", configuration.getList().get(1).getBaseline().getShortname());
 		
 		
 		
