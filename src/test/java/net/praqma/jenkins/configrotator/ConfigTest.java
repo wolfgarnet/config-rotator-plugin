@@ -641,7 +641,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		assertEquals("ClearCase UCM", ccucm.getName());
 		
 		System.out.println( debugLine + "ccucm.wasReconfigured(project):" + ccucm.wasReconfigured(project));
-		ccucm.wasReconfigured(project);
+		assertTrue(ccucm.wasReconfigured(project)); // because targets just added
 				
     // create config-rotator, and set it as SCM
 		System.out.println( debugLine + "Create configurationRotator." );
@@ -651,7 +651,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		project.setScm( cr );
 		
 		System.out.println( debugLine + "ccucm.wasReconfigured(project):" + ccucm.wasReconfigured(project));
-		ccucm.wasReconfigured(project);
+		assertTrue(ccucm.wasReconfigured(project)); // still not builded yet
 		
 		// Try to build
 		System.out.println( debugLine + "Scheduling a build ..." );
@@ -671,19 +671,21 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		System.out.println( debugLine + "build.getResult():" + b.getResult().toString());
 		assertEquals(b.getResult(), Result.SUCCESS);
 		
+		System.out.println( debugLine + "ccucm.wasReconfigured(project):" + ccucm.wasReconfigured(project));
+		assertFalse(ccucm.wasReconfigured(project)); // now it should not just be reconfigured
+		
 		// change targets
 		System.out.println( debugLine + "clearing targets on ccucm" );
 		ccucm.targets.clear();
 		System.out.println( debugLine + "ccucm.wasReconfigured(project):" + ccucm.wasReconfigured(project));
-		ccucm.wasReconfigured(project);
+		assertTrue(ccucm.wasReconfigured(project)); // true, just removed targets
 		
 		System.out.println( debugLine + "adding one target to ccucm" );
 		ccucm.targets.add(new ClearCaseUCMTarget( "model-1@" + coolTest.getPVob() + ", INITIAL, false" ));
 		System.out.println( debugLine + "ccucm.wasReconfigured(project):" + ccucm.wasReconfigured(project));
-		ccucm.wasReconfigured(project);
-				
+		assertTrue(ccucm.wasReconfigured(project)); // true, just added a target
 		System.out.println( debugLine + "ccucm.wasReconfigured(project):" + ccucm.wasReconfigured(project));
-		ccucm.wasReconfigured(project);
+		assertTrue(ccucm.wasReconfigured(project)); // still, should be same result ?
 		
 		
 		assertTrue(false); // fail test, to avoid disturbing covere yet...
@@ -696,7 +698,6 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 	 * - setting up a real job, that runs - Mads is trying (goal, is possible, is
 	 * to make a job, setup polling and let it runs by itself as if were a user how
 	 * made the job. How to we set up polling? how do we follow the job?
-	 * - test stuff with cr.*
 	 */ 
 	
   // Note a test must include the string "test" somehow, else 
