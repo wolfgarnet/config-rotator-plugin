@@ -576,25 +576,23 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
     coolTest.variables.put("pvobname", uniqueTestVobName );
 		coolTest.bootStrap();
 		System.out.println( debugLine + "Cool test case setup done." );
-		
-    // create Jenkins job - also use unique name
-		FreeStyleProject project = createFreeStyleProject( uniqueTestVobName );
-		
-		// Setup ClearCase UCM as SCM and to use with config-rotator
-		ClearCaseUCM ccucm = new ClearCaseUCM( coolTest.getPVob().toString() );
-		
+			
 		// Make targets.... and test on those
-		
 		// try constructor 
+		System.out.println( debugLine + "Trying CCUCMtarget constructor - plain" );
 		ClearCaseUCMTarget target1 = new ClearCaseUCMTarget();
 		// set component on it
+		System.out.println( debugLine + "Setting component" );
 		target1.setComponent("model-1@" + coolTest.getPVob() + ", INITIAL, false");
 		// test getComponent - should be the same
+		System.out.println( debugLine + "Getting component and checking equality" );
 		assertEquals("model-1@" + coolTest.getPVob() + ", INITIAL, false", target1.getComponent());
 		// test equals
+		System.out.println( debugLine + "Comparing target1 with target1" );
 		assertTrue(target1.equals(target1));
+		System.out.println( debugLine + "Creating a target2" );
 		ClearCaseUCMTarget target2 = new ClearCaseUCMTarget( "client-1@" + coolTest.getPVob() + ", INITIAL, false" );
-		target2.setComponent("client-1@" + coolTest.getPVob() + ", INITIAL, false");
+		System.out.println( debugLine + "Comparing target1 with target2" );
 		assertFalse(target1.equals(target2));
 		
 		
@@ -637,7 +635,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		System.out.println( debugLine + "Usual ccucm target set on ccucm" );
 		
 		System.out.println( debugLine + "ccucm.getPvobName():" + ccucm.getPvobName());
-		assertEquals(uniqueTestVobName, ccucm.getPvobName());
+		assertEquals("\\" + uniqueTestVobName, ccucm.getPvobName());
 		
 		System.out.println( debugLine + "ccucm.getName():" + ccucm.getName());
 		assertEquals("ClearCase UCM", ccucm.getName());
