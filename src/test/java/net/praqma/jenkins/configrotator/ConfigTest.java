@@ -221,7 +221,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		ConfigurationRotatorBuildAction action = b.getAction( ConfigurationRotatorBuildAction.class );
 		System.out.println( debugLine + "action: " + action );
 		// action expected to be null
-		assertNull(action);
+		assertNotNull(action);
 		
 		// this test plan to iterate one baseline at a time
     // ... for now, just printing stuff out to se what I get
