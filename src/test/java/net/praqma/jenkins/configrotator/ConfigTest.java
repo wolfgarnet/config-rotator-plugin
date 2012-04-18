@@ -93,13 +93,64 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 //		assertNotNull( action );
 //	}
   
+	  @Test
+	public void testStuffOnConfigRotatorObject() throws Exception {
+		// Testing getting stuff and info from config rotator
+    String testName = "StuffOnConfigRotatorObject";
+    String debugLine = "**************************************** '" + testName + "': ";
+    System.out.println( debugLine + "Starting" );
+    // ONLY alphanumeric chars
+		String uniqueTestVobName = testName + uniqueTimeStamp;
+    
+    // set up cool to run tests with ClearCase environment
+    // variables overwrite cool test case setup.xml setting
+    // Unique names for each test is used to avoid all sort of clear case 
+    // complications - but leaves as mess...
+    coolTest.variables.put("vobname", uniqueTestVobName );
+    coolTest.variables.put("pvobname", uniqueTestVobName );
+		coolTest.bootStrap();
+		System.out.println( debugLine + "Cool test case setup done." );
+
+		// Setup ClearCase UCM as SCM and to use with config-rotator
+		ClearCaseUCM ccucm = new ClearCaseUCM( coolTest.getPVob().toString() );
+		List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
+		targets.add( new ClearCaseUCMTarget( "model-1@" + coolTest.getPVob() + ", INITIAL, false" ) );
+    ccucm.targets = targets;
+    // create config-rotator, and set it as SCM
+		System.out.println( debugLine + "Creating configurationRotator." );
+		ConfigurationRotator cr = new ConfigurationRotator( ccucm, true );
+		
+		/* *** now getting and testing a lot of stuff */
+		System.out.println( debugLine + "cr.supportsPolling: " + cr.supportsPolling() );
+		assertTrue(cr.supportsPolling());
+		
+		System.out.println( debugLine + "cr.justConfigured: " + cr.justConfigured);
+		assertTrue(cr.justConfigured); //justconfigured should initially be true
+		
+		System.out.println( debugLine + "cr.reconfigure: " + cr.reconfigure);
+		assertFalse(cr.reconfigure); //should initially be false
+		
+		System.out.println( debugLine + "cr.createChangeLogParser(): " + cr.createChangeLogParser());
+		assertNotNull(cr.createChangeLogParser());
+		
+		System.out.println( debugLine + "cr.getAcrs(): " + cr.getAcrs());
+		assertNotNull(cr.getAcrs());
+		
+		System.out.println( debugLine + "Doing cr.setReconfigure(true), now testing for it"); 
+		System.out.println( debugLine + "cr.setReconfigure(true), now testing for it"); 
+		System.out.println( debugLine + "cr.reconfigure: " + cr.reconfigure);
+		assertTrue(cr.reconfigure); //should initially be false, but now true
+		
+
+	}
+		
 	
   // Note a test must include the string "test" somehow, else 
   // surefire will not find the test-method.
   @Test
-	public void testAddRemoveTargets() throws Exception {
-		// Testing config-rotator plugin setup methods, eg. add/remove targets
-    String testName = "AddRemoveTargets";
+	public void testTryReconfigure() throws Exception {
+		// Testing reconfigure
+    String testName = "TryReconfigure";
     String debugLine = "**************************************** '" + testName + "': ";
     System.out.println( debugLine + "Starting" );
     // ONLY alphanumeric chars
@@ -172,7 +223,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		// trying to change configuration to what happens....
 		targets.add( new ClearCaseUCMTarget( "client-1@" + coolTest.getPVob() + ", INITIAL, false" ) );
 		ccucm.targets = targets;
-		cr.setReconfigure(true);
+		//cr.setReconfigure(true);
 		cr.doReconfigure();
 		System.out.println( debugLine + "Changed targets adding client-1." );
 		System.out.println( debugLine + "cr.justConfigured: " + cr.justConfigured);
@@ -181,44 +232,8 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		//assertTrue(cr.reconfigure);
 		
 		// Try to build
-		System.out.println( debugLine + "Scheduling a build that should be for model-1 and client-1..." );
-		b = project.scheduleBuild2( 0 ).get();
-		// now investigate result and print debug out
-		assertNotNull(b);
-		System.out.println( debugLine + "... build is done" );
-		System.out.println( debugLine + "Printing logfile: " + b.getLogFile() );
-		br = new BufferedReader( new FileReader( b.getLogFile() ) );
-		line = "";
-		while( ( line = br.readLine() ) != null ) {
-			System.out.println( "[JENKINS] " + line );
-		}
-		br.close();
-		System.out.println(debugLine + "... done printing logfile");
-		// build should be good
-		System.out.println( debugLine + "build.getResult():" + b.getResult().toString());
-		//assertEquals(b.getResult(), Result.SUCCESS);
-		
-				
-		action = b.getAction( ConfigurationRotatorBuildAction.class );
-		System.out.println( debugLine + "action: " + action );
-		// action expected not to be null
-		assertNotNull(action);
-		
-		// check config rotator result
-		System.out.println( debugLine + "action.getResult(): " + action.getResult() );
-		//assertEquals(action.getResult(), net.praqma.jenkins.configrotator.ConfigurationRotator.ResultType.COMPATIBLE);
-		System.out.println( debugLine + "action.isCompatible: " + action.isCompatible() );
-		//assertTrue(action.isCompatible());
-			
-		configuration = (ClearCaseUCMConfiguration) action.getConfiguration();
-		System.out.println( debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname() );
-		//assertEquals("model-1", configuration.getList().get(0).getBaseline().getShortname());
-		//System.out.println( debugLine + "getShortname(): " + configuration.getList().get(1).getBaseline().getShortname() );
-		//assertEquals("client-1", configuration.getList().get(1).getBaseline().getShortname());
-		System.out.println( debugLine + "cr.justConfigured: " + cr.justConfigured);
-		System.out.println( debugLine + "cr.reconfigure: " + cr.reconfigure);
-		//assertTrue(cr.justConfigured);
-		//assertTrue(cr.reconfigure);
+//		assertTrue(false);
+		// ...
 
 		
     // waiting is important to ensure unique timestamps and let Jenkins clean
