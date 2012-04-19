@@ -166,8 +166,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		assertFalse(cr.justConfigured);
 		
 		// trying to change configuration to what happens....
-		targets.add( new ClearCaseUCMTarget( "client-1@" + coolTest.getPVob() + ", INITIAL, false" ) );
-		ccucm.targets = targets;
+		ccucm.targets.add( new ClearCaseUCMTarget( "client-1@" + coolTest.getPVob() + ", INITIAL, false" ) );
 		System.out.println( debugLine + "Changed targets adding client-1 on ccucm.targets." );
 		System.out.println( debugLine + "cr.justConfigured: " + cr.justConfigured);
 		System.out.println( debugLine + "cr.reconfigure: " + cr.reconfigure);
@@ -538,51 +537,6 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		}
 		br.close();
 		System.out.println(debugLine + "... done printing logfile");
-		
-		
-		
-		
-		// create Jenkins job - also use unique name
-		FreeStyleProject project2 = createFreeStyleProject( uniqueTestVobName+"_" );
-		// Setup ClearCase UCM as SCM and to use with config-rotator
-		ClearCaseUCM ccucm2 = new ClearCaseUCM( coolTest.getPVob().toString() );
-		List<ClearCaseUCMTarget> targets2 = new ArrayList<ClearCaseUCMTarget>();
-		System.out.println( debugLine + "Adding two targets with wrong name..." );
-		targets2.add( new ClearCaseUCMTarget( "model-1@" + coolTest.getPVob() + ", INITIAL, true" ) );
-		ccucm2.targets = targets2;
-    // create config-rotator, and set it as SCM
-		System.out.println( debugLine + "Create configurationRotator." );
-		ConfigurationRotator cr2 = new ConfigurationRotator( ccucm2, true );
-		System.out.println( debugLine + "cr2.supportsPolling: " + cr2.supportsPolling() );
-		System.out.println( debugLine + "Set ConfigurationRotator as SCM" );
-		project2.setScm( cr2 );
-		
-		// Try to build
-		System.out.println( debugLine + "Scheduling a build..." );
-		FreeStyleBuild b2 = project2.scheduleBuild2( 0 ).get();
-		System.out.println( debugLine + "After scheduling build IS DONE!" );
-		// now investigate result and print debug out
-		System.out.println( debugLine + "build2.getResult():" + b2.getResult().toString());
-		// build should fail for wrong targets
-		assertEquals(b2.getResult(), Result.FAILURE);
-				
-		ConfigurationRotatorBuildAction action2 = b2.getAction( ConfigurationRotatorBuildAction.class );
-		System.out.println( debugLine + "action2: " + action2 );
-		// action expected to be null
-		assertNull(action2);
-		
-		System.out.println( debugLine + "Printing logfile: " + b2.getLogFile() );
-		BufferedReader br2 = new BufferedReader( new FileReader( b2.getLogFile() ) );
-		String line2 = "";
-		while( ( line2 = br2.readLine() ) != null ) {
-			System.out.println( "[JENKINS] " + line2 );
-		}
-		br2.close();
-		System.out.println(debugLine + "... done printing logfile");
-		
-		
-		
-		
 		
 		
 		System.out.println( debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error"); 
