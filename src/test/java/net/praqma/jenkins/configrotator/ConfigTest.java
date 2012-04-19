@@ -27,9 +27,9 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 
   
 	  @Test
-	public void testStuffOnConfigRotatorObject() throws Exception {
+	public void testConfigRotatorObject() throws Exception {
 		// Testing getting stuff and info from config rotator
-    String testName = "StuffOnConfigRotatorObject";
+    String testName = "ConfigRotatorObject";
     String debugLine = "**************************************** '" + testName + "': ";
     System.out.println( debugLine + "Starting" );
     // ONLY alphanumeric chars
@@ -69,12 +69,14 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		System.out.println( debugLine + "cr.getAcrs(): " + cr.getAcrs());
 		assertNotNull(cr.getAcrs());
 		
-		System.out.println( debugLine + "Doing cr.setReconfigure(true), now testing for it"); 
-		System.out.println( debugLine + "cr.setReconfigure(true), now testing for it"); 
 		System.out.println( debugLine + "cr.reconfigure: " + cr.reconfigure);
-		//assertTrue(cr.reconfigure); //should initially be false, but now true
+		System.out.println( debugLine + "Doing cr.setReconfigure(true), now testing for it"); 
+		cr.setReconfigure(true);
+		System.out.println( debugLine + "cr.reconfigure: " + cr.reconfigure);
+		assertTrue(cr.reconfigure); //should initially be false, but now true
 		
 		
+		System.out.println( debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error"); 
     // waiting is important to ensure unique timestamps and let Jenkins clean
     // workspace after each test
     waiting(watingSeconds);
@@ -159,9 +161,9 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		// trying to change configuration to what happens....
 		targets.add( new ClearCaseUCMTarget( "client-1@" + coolTest.getPVob() + ", INITIAL, false" ) );
 		ccucm.targets = targets;
-		//cr.setReconfigure(true);
+		System.out.println( debugLine + "Changed targets adding client-1 on ccucm.targets." );
 		cr.doReconfigure();
-		System.out.println( debugLine + "Changed targets adding client-1." );
+		System.out.println( debugLine + "Called cr.doReconfigure()" );
 		System.out.println( debugLine + "cr.justConfigured: " + cr.justConfigured);
 		System.out.println( debugLine + "cr.reconfigure: " + cr.reconfigure);
 		//assertTrue(cr.justConfigured);
@@ -171,7 +173,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		//assertTrue(false);
 		// ...
 
-		
+		System.out.println( debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error"); 
     // waiting is important to ensure unique timestamps and let Jenkins clean
     // workspace after each test
     waiting(watingSeconds);
@@ -181,9 +183,9 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		// Note a test must include the string "test" somehow, else 
 	// surefire will not find the test-method.
 	@Test
-	public void testGettingStuffOnAction() throws Exception {
+	public void testConfigurationRotatorBuildAction() throws Exception {
 		// Just boosting coverage getting stuff on action object
-    String testName = "GettingStuffOnAction";
+    String testName = "ConfigurationRotatorBuildAction()";
     String debugLine = "**************************************** '" + testName + "': ";
     System.out.println( debugLine + "Starting" );
     // ONLY alphanumeric chars
@@ -275,6 +277,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		assertEquals(action.getResult(), ConfigurationRotator.ResultType.FAILED);
 		
 	
+		System.out.println( debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error"); 
 		// waiting is important to ensure unique timestamps and let Jenkins clean
     // workspace after each test
     waiting(watingSeconds);
@@ -422,6 +425,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		assertEquals("model-1", configuration3.getList().get(0).getBaseline().getShortname());
 		assertEquals("client-1", configuration3.getList().get(1).getBaseline().getShortname());
 		
+		System.out.println( debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error"); 
 		// waiting is important to ensure unique timestamps and let Jenkins clean
     // workspace after each test
     waiting(watingSeconds);
@@ -486,6 +490,53 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		br.close();
 		System.out.println(debugLine + "... done printing logfile");
 		
+		
+		
+		
+		// create Jenkins job - also use unique name
+		FreeStyleProject project2 = createFreeStyleProject( uniqueTestVobName );
+		// Setup ClearCase UCM as SCM and to use with config-rotator
+		ClearCaseUCM ccucm2 = new ClearCaseUCM( coolTest.getPVob().toString() );
+		List<ClearCaseUCMTarget> targets2 = new ArrayList<ClearCaseUCMTarget>();
+		System.out.println( debugLine + "Adding two targets with wrong name..." );
+		targets2.add( new ClearCaseUCMTarget( "model-1@" + coolTest.getPVob() + ", INITIAL, true" ) );
+		ccucm2.targets = targets2;
+    // create config-rotator, and set it as SCM
+		System.out.println( debugLine + "Create configurationRotator." );
+		ConfigurationRotator cr2 = new ConfigurationRotator( ccucm2, true );
+		System.out.println( debugLine + "cr2.supportsPolling: " + cr2.supportsPolling() );
+		System.out.println( debugLine + "Set ConfigurationRotator as SCM" );
+		project2.setScm( cr2 );
+		
+		// Try to build
+		System.out.println( debugLine + "Scheduling a build..." );
+		FreeStyleBuild b2 = project2.scheduleBuild2( 0 ).get();
+		System.out.println( debugLine + "After scheduling build IS DONE!" );
+		// now investigate result and print debug out
+		System.out.println( debugLine + "build2.getResult():" + b2.getResult().toString());
+		// build should fail for wrong targets
+		assertEquals(b2.getResult(), Result.FAILURE);
+				
+		ConfigurationRotatorBuildAction action2 = b2.getAction( ConfigurationRotatorBuildAction.class );
+		System.out.println( debugLine + "action2: " + action2 );
+		// action expected to be null
+		assertNull(action2);
+		
+		System.out.println( debugLine + "Printing logfile: " + b2.getLogFile() );
+		BufferedReader br2 = new BufferedReader( new FileReader( b2.getLogFile() ) );
+		String line2 = "";
+		while( ( line2 = br2.readLine() ) != null ) {
+			System.out.println( "[JENKINS] " + line2 );
+		}
+		br2.close();
+		System.out.println(debugLine + "... done printing logfile");
+		
+		
+		
+		
+		
+		
+		System.out.println( debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error"); 
     // waiting is important to ensure unique timestamps and let Jenkins clean
     // workspace after each test
     waiting(watingSeconds);
@@ -531,17 +582,16 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		System.out.println( debugLine + "Comparing target1 with target2" );
 		assertFalse(target1.equals(target2));
 		
-		System.out.println( debugLine + "Done this test!" );
-		
+		System.out.println( debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error"); 
 		// waiting is important to ensure unique timestamps and let Jenkins clean
     // workspace after each test
     waiting(watingSeconds);
 	}
 	
 	@Test
-	public void testClearCaseUCM() throws Exception {
+	public void testClearCaseUCMObject() throws Exception {
 		// Boosting coverage
-    String testName = "ClearCaseUCM";
+    String testName = "CClearCaseUCMObject";
     String debugLine = "**************************************** '" + testName + "': ";
     System.out.println( debugLine + "Starting" );
     // ONLY alphanumeric chars
@@ -622,8 +672,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		assertTrue(ccucm.wasReconfigured(project)); // still, should be same result ?
 		
 		
-		System.out.println( debugLine + "Done this test!" );
-		
+		System.out.println( debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error"); 
 		// waiting is important to ensure unique timestamps and let Jenkins clean
     // workspace after each test
     waiting(watingSeconds);
@@ -631,9 +680,9 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 	
 		
 	@Test
-	public void testStuff() throws Exception {
+	public void testMiscObjects() throws Exception {
 		// is this cheating ?
-    String testName = "Stuff";
+    String testName = "MiscObjects";
     String debugLine = "**************************************** '" + testName + "': ";
     System.out.println( debugLine + "Starting" );
     // ONLY alphanumeric chars
@@ -721,6 +770,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		assertEquals("config-rotator", crpa.getUrlName());
 		
     
+		System.out.println( debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error"); 
 		// waiting is important to ensure unique timestamps and let Jenkins clean
     // workspace after each test
     waiting(watingSeconds);
@@ -1024,7 +1074,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 //		assertEquals("client-3", configuration.getList().get(1).getBaseline().getShortname());
 		
 		
-		
+		System.out.println( debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error"); 
 		// waiting is important to ensure unique timestamps and let Jenkins clean
     // workspace after each test
     waiting(watingSeconds);
