@@ -236,7 +236,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 	@Test
 	public void testConfigurationRotatorBuildAction() throws Exception {
 		// Just boosting coverage getting stuff on action object
-    String testName = "ConfigurationRotatorBuildAction()";
+    String testName = "ConfigurationRotatorBuildAction";
     String debugLine = "**************************************** '" + testName + "': ";
     System.out.println( debugLine + "Starting" );
     // ONLY alphanumeric chars
