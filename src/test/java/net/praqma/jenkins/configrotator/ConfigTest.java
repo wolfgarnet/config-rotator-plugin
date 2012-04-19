@@ -494,7 +494,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		
 		
 		// create Jenkins job - also use unique name
-		FreeStyleProject project2 = createFreeStyleProject( uniqueTestVobName );
+		FreeStyleProject project2 = createFreeStyleProject( uniqueTestVobName+"_" );
 		// Setup ClearCase UCM as SCM and to use with config-rotator
 		ClearCaseUCM ccucm2 = new ClearCaseUCM( coolTest.getPVob().toString() );
 		List<ClearCaseUCMTarget> targets2 = new ArrayList<ClearCaseUCMTarget>();
