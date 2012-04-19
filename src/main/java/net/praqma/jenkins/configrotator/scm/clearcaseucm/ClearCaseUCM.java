@@ -45,7 +45,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	
 	private static Logger logger = Logger.getLogger();
 	
-	private ClearCaseUCMConfiguration projectConfiguration;
+	public ClearCaseUCMConfiguration projectConfiguration;
 	
 	public List<ClearCaseUCMTarget> targets;
 	
