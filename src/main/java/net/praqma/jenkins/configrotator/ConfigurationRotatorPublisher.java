@@ -95,6 +95,25 @@ public class ConfigurationRotatorPublisher extends Notifier {
 			return "Configuration Rotator Publisher";
 		}
 
+        /**
+         * Fix for save issues.
+         * @param req
+         * @param json
+         * @return
+         * @throws hudson.model.Descriptor.FormException 
+         */
+        
+        @Override
+        public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
+            save();
+            return super.configure(req, json);
+        }
+        
+        public DescriptorImpl() {
+            super(ConfigurationRotatorPublisher.class);
+            load();
+        }
+        
 	}
 
 }
