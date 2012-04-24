@@ -24,9 +24,22 @@
                 <tbody>
 			 		<tr>
                         <td align="left">
-                        	<f:textbox name="cc.target.component" value="${targets.component}"/>
-						</td>
-                        <td align="right">
+                            ${%Baseline}
+                        	<f:textbox name="cc.target.baselineName" value="${targets.baselineName}"/>                            
+                        </td>
+                        <td align="left">
+                            ${%Promotion level}
+                            <select name="cc.target.level">
+                                <j:forEach var="availableLevel" items="${descriptor.getPromotionLevels()}">
+                                   <f:option selected="${targets.level.equals(availableLevel)}" value="${availableLevel}">${availableLevel}</f:option>
+                                </j:forEach>
+                            </select>
+                        </td>
+                        <td align="left">
+                            ${%Fixed}
+                            <f:checkbox name="cc.target.fixed" checked="${targets.fixed}"/>                    
+                        </td>
+                        <td>
                             <f:repeatableDeleteButton/>
                         </td>
 					</tr>

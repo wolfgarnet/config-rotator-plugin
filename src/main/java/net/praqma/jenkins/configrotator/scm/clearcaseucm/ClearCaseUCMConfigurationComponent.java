@@ -50,6 +50,7 @@ public class ClearCaseUCMConfigurationComponent extends AbstractConfigurationCom
 		return fixed;
 	}
 	
+    @Override
 	public String toString() {
 		return baseline.getNormalizedName() + "@" + plevel + "(" + fixed + ")";
 	}

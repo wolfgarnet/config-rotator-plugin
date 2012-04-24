@@ -39,6 +39,7 @@ import net.praqma.jenkins.configrotator.ConfigurationRotatorSCMDescriptor;
 import net.praqma.jenkins.utils.remoting.DetermineProject;
 import net.praqma.jenkins.utils.remoting.GetBaselines;
 import net.praqma.util.debug.Logger;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Serializable {
@@ -246,13 +247,14 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 			return targets;
 		}
 	}
-	
+    
 	private List<ClearCaseUCMTarget> getConfigurationAsTargets( ClearCaseUCMConfiguration config ) {
 		List<ClearCaseUCMTarget> list = new ArrayList<ClearCaseUCMTarget>();
 		if( config.getList() != null && config.getList().size() > 0 ) {
 			for( ClearCaseUCMConfigurationComponent c : config.getList() ) {
 				if( c != null ) {
-					list.add( new ClearCaseUCMTarget( c.getBaseline().getNormalizedName() + ", " + c.getPlevel().toString() + ", " + c.isFixed() ) );
+					//list.add( new ClearCaseUCMTarget( c.getBaseline().getNormalizedName() + ", " + c.getPlevel().toString() + ", " + c.isFixed() ) );
+                    list.add(new ClearCaseUCMTarget(c.getBaseline().getNormalizedName(), c.getPlevel(), c.isFixed()));
 				} else {
 					/* A null!? The list is corrupted, return targets */
 					return targets;
@@ -264,7 +266,8 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 			return targets;
 		}
 	}
-
+    
+    @Override
 	public void setConfigurationByAction( AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action ) throws IOException {
 		if( action.getConfiguration() instanceof ClearCaseUCMConfiguration ) {
 			ClearCaseUCMConfiguration c = (ClearCaseUCMConfiguration)action.getConfiguration();
@@ -328,13 +331,29 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		public FormValidation doTest(  ) throws IOException, ServletException {
 			return FormValidation.ok();
 		}
-
-		
+         
 		@Override
 		public AbstractConfigurationRotatorSCM newInstance( StaplerRequest req, JSONObject formData, AbstractConfigurationRotatorSCM i ) throws FormException {
 			ClearCaseUCM instance = (ClearCaseUCM)i;
-			
-			List<ClearCaseUCMTarget> targets = req.bindJSONToList( ClearCaseUCMTarget.class, formData.getJSONObject( "acrs" ).getJSONArray( "targets" ) );
+            //Default to an empty configuration. When the plugin is first started this should be an empty list
+            List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
+            
+            
+            try {
+                
+                JSONArray obj = formData.getJSONObject( "acrs" ).getJSONArray( "targets" );
+                targets = req.bindJSONToList( ClearCaseUCMTarget.class, obj );
+            } catch (net.sf.json.JSONException jasonEx) {
+                //This happens if the targets is not an array!
+                JSONObject obj = formData.getJSONObject( "acrs" ).getJSONObject( "targets" );
+                if(obj != null) {
+                    ClearCaseUCMTarget target = req.bindJSON(ClearCaseUCMTarget.class, obj);
+                    if(target != null && target.getBaselineName() != null && !target.getBaselineName().equals("")) {
+                        targets.add(target);
+                    }
+                }
+                
+            }
 			instance.targets = targets;
 			
 			save();
@@ -348,6 +367,11 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 				return instance.getTargets();
 			}
 		}
+        
+        public Project.PromotionLevel[] getPromotionLevels() {
+            return Project.PromotionLevel.values();
+        }
+	
 		
 	}
 }
