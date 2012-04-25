@@ -1291,10 +1291,11 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		System.out.println( debugLine + "Scheduling a build but expect no new baselines..." );
 		try {
             b= project.scheduleBuild2( 0 ).get();
+            System.out.println(debugLine + "... build is done");
+            System.out.println(debugLine + "Checking for build is not null.");
             assertNotNull("Build check for null", b);
             // now investigate result and print debug out
 
-            System.out.println(debugLine + "... build is done");
             System.out.println(debugLine + "Printing logfile: " + b.getLogFile());
             br = new BufferedReader(new FileReader(b.getLogFile()));
             line = "";
@@ -1305,43 +1306,17 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
             System.out.println(debugLine + "... done printing logfile");
             // build should be good
             System.out.println(debugLine + "build.getResult():" + b.getResult().toString());
-            //assertEquals(b.getResult(), Result.SUCCESS);
+            assertEquals(Result.FAILURE, b.getResult());
 
             action = b.getAction(ConfigurationRotatorBuildAction.class);
             System.out.println(debugLine + "action: " + action);
             // action expected not to be null
-            assertNotNull(action);
+            assertNull(action);
 
-            // check config rotator result
-            System.out.println(debugLine + "action.getResult(): " + action.getResult());
-            //assertEquals(action.getResult(), net.praqma.jenkins.configrotator.ConfigurationRotator.ResultType.COMPATIBLE);
-            System.out.println(debugLine + "action.isCompatible: " + action.isCompatible());
-            //assertTrue(action.isCompatible());
-
-            configuration = (ClearCaseUCMConfiguration) action.getConfiguration();
-            System.out.println(debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname());
-            System.out.println(debugLine + "getShortname(): " + configuration.getList().get(1).getBaseline().getShortname());
-            //assertEquals("model-3", configuration.getList().get(0).getBaseline().getShortname());
-            //assertEquals("client-3", configuration.getList().get(1).getBaseline().getShortname());
         } catch (Exception ex) {
-            assertTrue("Abort exception thrown as expected when no new baselines: " + ex.getClass().getName(), true);
+            System.out.println(debugLine + "Abort exception thrown as expected when no new baselines: " + ex.getClass().getName());
         }
-        
-		System.out.println( debugLine + "... build is done" );
-		System.out.println( debugLine + "Printing logfile: " + b.getLogFile() );
-		br = new BufferedReader( new FileReader( b.getLogFile() ) );
-		line = "";
-		while( ( line = br.readLine() ) != null ) {
-			System.out.println( "[JENKINS] " + line );
-		}
-		br.close();
-		System.out.println(debugLine + "... done printing logfile");
-		// build should be good
-		System.out.println( debugLine + "build.getResult():" + b.getResult().toString());
-		
-		// If there is no new baseline Result should be fail and exception thrown
-		assertEquals(Result.FAILURE, b.getResult());
-		
+	
 		
 		System.out.println( debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error"); 
 		// waiting is important to ensure unique timestamps and let Jenkins clean
