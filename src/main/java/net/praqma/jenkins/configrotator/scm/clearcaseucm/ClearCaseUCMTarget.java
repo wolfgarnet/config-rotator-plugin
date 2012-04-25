@@ -72,7 +72,7 @@ public class ClearCaseUCMTarget {
     
     @Override
 	public String toString() {
-		return String.format("%s,%s,%s", baselineName,level,fixed);
+		return String.format("%s",component);
 	}
 	
     @Override
