@@ -765,7 +765,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		System.out.println( debugLine + "crr.getDisplayName(): " + crr.getDisplayName() );
 		System.out.println( debugLine + "crr.getUrlName(): " + crr.getUrlName() );
 		System.out.println( debugLine + "crr.getSearchUrl(): " + crr.getSearchUrl() );
-		System.out.println( debugLine + "crr.getSearchUrl(): " + crr.doFeed("model-1@" + coolTest.getPVob() + ", INITIAL, false", "text/plain") );
+//		System.out.println( debugLine + "crr.getSearchUrl(): " + crr.doFeed("model-1@" + coolTest.getPVob() + ", INITIAL, false", "text/plain") );
 		
 		ConfigurationRotatorProjectAction crpa = new ConfigurationRotatorProjectAction(project);
 		assertEquals("Config Rotator", crpa.getDisplayName());

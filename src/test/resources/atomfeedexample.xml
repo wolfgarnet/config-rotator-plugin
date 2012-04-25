@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://purl.org/rss/1.0/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel rdf:about="http://rome.dev.java.net">
+    <title>Sample Feed (created with ROME)</title>
+    <link>http://rome.dev.java.net</link>
+    <description>This feed has been created using ROME (Java syndication utilities</description>
+    <items>
+      <rdf:Seq>
+        <rdf:li />
+        <rdf:li />
+        <rdf:li />
+      </rdf:Seq>
+    </items>
+  </channel>
+  <item rdf:about="http://wiki.java.net/bin/view/Javawsxml/Rome01">
+    <title>ROME v1.0</title>
+    <link>http://wiki.java.net/bin/view/Javawsxml/Rome01</link>
+    <description>Initial release of ROME</description>
+    <dc:date>2004-06-07T22:00:00Z</dc:date>
+  </item>
+  <item rdf:about="http://wiki.java.net/bin/view/Javawsxml/Rome02">
+    <title>ROME v2.0</title>
+    <link>http://wiki.java.net/bin/view/Javawsxml/Rome02</link>
+    <description>Bug fixes, minor API changes and some new features</description>
+    <dc:date>2004-06-15T22:00:00Z</dc:date>
+  </item>
+  <item rdf:about="http://wiki.java.net/bin/view/Javawsxml/Rome03">
+    <title>ROME v3.0</title>
+    <link>http://wiki.java.net/bin/view/Javawsxml/Rome03</link>
+    <description>&lt;p&gt;More Bug fixes, mor API changes, some new features and some Unit testing&lt;/p&gt;&lt;p&gt;For details check the &lt;a href="http://wiki.java.net/bin/view/Javawsxml/RomeChangesLog#RomeV03"&gt;Changes Log&lt;/a&gt;&lt;/p&gt;</description>
+    <dc:date>2004-07-26T22:00:00Z</dc:date>
+  </item>
+</rdf:RDF>
+

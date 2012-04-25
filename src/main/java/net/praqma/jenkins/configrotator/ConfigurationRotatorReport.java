@@ -13,7 +13,9 @@ import org.kohsuke.stapler.StaplerResponse;
 import hudson.Extension;
 import hudson.model.UnprotectedRootAction;
 import hudson.model.AbstractModelObject;
+import hudson.model.listeners.RunListener;
 
+// FIXME - RootAction - needs login ? Should it be public?
 @Extension
 public class ConfigurationRotatorReport extends AbstractModelObject implements UnprotectedRootAction {
 
@@ -27,9 +29,7 @@ public class ConfigurationRotatorReport extends AbstractModelObject implements U
 		return "Config Rotator";
 	}
 
-	@Override
-	public String getUrlName() {
-		return "config-rotator";
+	@Override	public String getUrlName() {		return "config-rotator";
 	}
 
 	@Override
@@ -37,8 +37,13 @@ public class ConfigurationRotatorReport extends AbstractModelObject implements U
 		return getUrlName();
 	}
 
-	public HttpResponse doFeed( @QueryParameter( required = true ) String component, @QueryParameter( required = false ) String type ) throws ServletException, IOException {
+	// yourhost/config-rotator/feed/
+	// eg. http://localhost:8080/config-rotator/feed/?component=hest2
+  // TODO: input parameter check and validation
+	public HttpResponse doFeed( @QueryParameter( required = true ) String component) throws ServletException, IOException {
+	//	public HttpResponse doFeed( @QueryParameter( required = true ) String component, @QueryParameter( required = false ) String type ) throws ServletException, IOException {
 
+		final String mycomp = component; 
 		return new HttpResponse() {
 
 			@Override
@@ -48,9 +53,11 @@ public class ConfigurationRotatorReport extends AbstractModelObject implements U
 				
 				PrintWriter writer = rsp.getWriter();
 				
-				writer.write( "Was here!" );
+				writer.write( "Was here!: paramater was: " + mycomp);
+				writer.close();
+		
 			}
-
+			
 		};
 	}
 
