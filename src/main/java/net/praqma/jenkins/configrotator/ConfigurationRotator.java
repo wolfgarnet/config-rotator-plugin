@@ -28,6 +28,7 @@ import hudson.scm.SCMDescriptor;
 import hudson.scm.SCMRevisionState;
 import hudson.scm.SCM;
 import hudson.tasks.Publisher;
+import jenkins.model.Jenkins;
 
 public class ConfigurationRotator extends SCM {
 	
@@ -45,6 +46,10 @@ public class ConfigurationRotator extends SCM {
 	
 	public static final String NAME = "ConfigRotator";
 	public static final String LOGGERNAME = "[" + NAME + "] ";
+    
+    public static final String SEPARATOR = System.getProperty("file.separator");
+    public static final String FEED_DIR = "config-rotator-feeds"+SEPARATOR;
+    public static final String FEED_FULL_PATH = Jenkins.getInstance().getRootDir()+SEPARATOR+FEED_DIR;
 	
 	public boolean justConfigured = false;
 	

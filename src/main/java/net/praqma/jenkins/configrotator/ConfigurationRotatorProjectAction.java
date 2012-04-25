@@ -1,11 +1,5 @@
 package net.praqma.jenkins.configrotator;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
-
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
 
 import hudson.model.AbstractProject;
 import hudson.model.Actionable;
