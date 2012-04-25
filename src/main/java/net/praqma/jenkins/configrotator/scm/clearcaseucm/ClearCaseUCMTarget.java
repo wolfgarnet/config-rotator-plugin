@@ -31,7 +31,7 @@ public class ClearCaseUCMTarget {
      */
     @DataBoundConstructor
     public ClearCaseUCMTarget(String baselineName, Project.PromotionLevel level, boolean fixed) {
-        this.component = baselineName+","+level+","+fixed;
+        this.component = baselineName+", "+level+", "+fixed;
         this.baselineName = baselineName;
         this.level = level;
         this.fixed = fixed;

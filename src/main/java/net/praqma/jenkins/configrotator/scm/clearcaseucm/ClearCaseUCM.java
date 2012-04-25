@@ -339,8 +339,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
             List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
             
             
-            try {
-                
+            try {                
                 JSONArray obj = formData.getJSONObject( "acrs" ).getJSONArray( "targets" );
                 targets = req.bindJSONToList( ClearCaseUCMTarget.class, obj );
             } catch (net.sf.json.JSONException jasonEx) {
@@ -351,8 +350,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
                     if(target != null && target.getBaselineName() != null && !target.getBaselineName().equals("")) {
                         targets.add(target);
                     }
-                }
-                
+                }              
             }
 			instance.targets = targets;
 			
