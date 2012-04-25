@@ -123,6 +123,9 @@ public class ConfigurationRotator extends SCM {
 
         if (!performResult) {
             // ConfigurationRotator.perform will return false only if no new baselines found
+            // We fail build if there is now new baseline.
+            // An alternative would be to do like the CCUCM plugin and make the
+            // build result "grey" with an comment "nothing to do".
             throw new AbortException("No new baselines found!");
         } else {
 
