@@ -1,5 +1,6 @@
 package net.praqma.jenkins.configrotator;
 
+import hudson.AbortException;
 import hudson.Launcher;
 import hudson.model.*;
 import java.io.BufferedReader;
@@ -1288,7 +1289,13 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		 * Now doing to do a new build but there will be NO new baselines
 		 */
 		System.out.println( debugLine + "Scheduling a build but expect no new baselines..." );
-		b = project.scheduleBuild2( 0 ).get();
+		try {
+            project.scheduleBuild2( 0 ).get();
+        } catch (Exception ex)
+        {
+          assertTrue("Abort exception thrown as expected when no new baselines: " + ex.getClass().getName(), true);
+        }
+        
 		// now investigate result and print debug out
 		assertNotNull(b);
 		System.out.println( debugLine + "... build is done" );
@@ -1303,15 +1310,9 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		// build should be good
 		System.out.println( debugLine + "build.getResult():" + b.getResult().toString());
 		
-		// a build finding no new baseline should still be a success, or at least not a fail
-		assertEquals(b.getResult(), Result.SUCCESS);
-				
-		action = b.getAction( ConfigurationRotatorBuildAction.class );
-		System.out.println( debugLine + "action: " + action );
-
-		// if there are no new baselines, build still success, but action will be null
-		// as there is no new conifguration.
-		assertNull(action);		
+		// If there is no new baseline Result should be fail and exception thrown
+		assertEquals(b.getResult(), Result.FAILURE);
+		
 		
 		System.out.println( debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error"); 
 		// waiting is important to ensure unique timestamps and let Jenkins clean
