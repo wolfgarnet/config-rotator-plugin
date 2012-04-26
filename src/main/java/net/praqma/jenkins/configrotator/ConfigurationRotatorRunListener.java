@@ -190,9 +190,10 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
         } catch (IOException ex) {
             if(writer != null) {
                 try {
+                    localListener.getLogger().print("writeFeedToFile runlistener - write failed caught IOException meaning feed may not have been written "+" Exception was: " + ex.getMessage());
                     writer.close();
                 } catch (IOException ex1) {
-                    localListener.getLogger().print("writeFeedToFile runlistener - caught IOException meaning feed may not have been written "+" Exception was: " + ex1.getMessage());
+                    localListener.getLogger().print("writeFeedToFile runlistener - write.close failed too caught IOException meaning feed may not have been written "+" Exception was: " + ex1.getMessage());
                 }
             }
         } 
