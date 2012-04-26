@@ -6,6 +6,9 @@
         <table>
             <thead>
                 <th>
+                    <span style="font-size:15px;">Component vob</span>
+                </th>
+                <th>
                     <span style="font-size:15px;">Component name</span>
                 </th>
                 <th>
@@ -13,11 +16,14 @@
                 </th>
             </thead>
             <tbody>
-                <j:forEach var="link" items="${it.listAvailableFeeds()}">
-                    <tr>
-                        <td>${it.getComponentName(link)}</td>
-                        <td><a href="${it.getFeedUrl(link)}">${it.getComponentName(link)}</a></td>
-                    </tr>
+                <j:forEach var="folder" items="${it.listVobs()}">
+                    <j:forEach var="file" items="${it.listComponents(folder)}">
+                        <tr>
+                            <td>${it.getVobName(folder)}</td>
+                            <td>${it.getComponentName(file)}</td>
+                            <td><a href="${it.getFeedUrl(it.getVobName(folder),it.getComponentName(file))}">${it.getComponentName(file)}</a></td> 
+                        </tr>
+                    </j:forEach>
                 </j:forEach>
             </tbody>
         </table>
