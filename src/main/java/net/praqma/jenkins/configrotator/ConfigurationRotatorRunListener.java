@@ -159,18 +159,26 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
      */
     private Feed getFeedFromFile(String feedFileNameURI, String componentName, String feedId, Date feedUpdated) throws FeedException {
 
+        localListener.getLogger().println(String.format("getFeedFromFile called"));
         File feedFile = new File(feedFileNameURI);
         // initial feed
         Feed feed = new Feed(componentName, feedId, feedUpdated);
         // if component already have a feed, use that one
         if (feedFile.exists()) {
+            localListener.getLogger().println(String.format("getFeedFromFile called - file exits"));
             try {
                 feed = Feed.getFeed(new AtomPublisher(), feedFile);
+                localListener.getLogger().println(String.format("getFeedFromFile got file"));
             } catch (IOException ex) {
                 localListener.getLogger().println(String.format("Failed to get feed from file: %s. Exception is: ", feedFileNameURI, ex.getMessage()));                
             }
         }
+        else
+        {
+            localListener.getLogger().println(String.format("Feed-file did not exist."));
+        }
 
+        localListener.getLogger().println("onCompleted runlistener getFeedFromFile returnsfeed - feed.getXML" + feed.getXML( new AtomPublisher() ) );
         return feed;
     }
 
@@ -188,7 +196,7 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
         localListener.getLogger().println("onCompleted runlistener, writeFeedToFile - feed.getXML" + feed.getXML( new AtomPublisher() ) );
         Writer writer = null;
         try {
-            boolean feedFileGood = new File(componentFileName).mkdirs();
+            boolean feedFileGood = new File(componentFileName.substring(0, componentFileName.indexOf(".xml"))).mkdirs();
             if (!feedFileGood)
             {
                 throw new IOException("writeFeedToFile runListener: failed to make dirs");
