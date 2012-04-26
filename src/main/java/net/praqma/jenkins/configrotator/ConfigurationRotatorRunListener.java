@@ -101,7 +101,7 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                         localListener.getLogger().println("onCompleted runlistener - REAL componentFileName: " + feedFile.toString());
                         
                         // required feed element - need to create feed
-                        String feedId = "http://google.dk"; // feed URL
+                        String feedId = ConfigurationRotatorReport.CreateFeedUrl(componentPVob, componentName); // feed URL
                         String feedTitle = componentName;
                         Date updated = new Date();
                         Feed feed = getFeedFromFile(feedFile,
