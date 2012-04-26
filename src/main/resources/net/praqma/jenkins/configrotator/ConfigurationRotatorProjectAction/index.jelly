@@ -1,0 +1,35 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
+	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+ <l:layout title="Config Rotator">
+     <l:main-panel>
+        <h1>Configurations</h1>
+        <j:forEach var="action" items="${it.getLastActions(5)}">
+            <!--
+            <table>
+            <thead>
+                <th>Component</th>
+                <th>Stream</th>
+                <th>Baseline</th>
+                <th>Level</th>
+                <th>Fixed</th>
+            </thead> 
+            <tbody>
+            -->
+                <j:set var="class" value="${action.getConfiguration().getClass()}" />
+                <st:include it="${from.getConfiguration()}" page="/${action.getConfiguration().getView(class)}" />
+                <!--
+                <j:forEach var="component" items="${action.getConfiguration(class).getList()}">
+                    <tr>
+                        <td>${component.getBaseline().getComponent().getNormalizedName()}</td>
+                        <td>${component.getBaseline().getStream().getNormalizedName()}</td>
+                        <td>${component.getBaseline().getNormalizedName()}</td>
+                        <td>${component.getPlevel()}</td>
+                        <td>${component.isFixed()}</td>                            
+                    </tr>
+                </j:forEach>
+               -->
+           <!-- </tbody> -->
+        </j:forEach>                                        
+     </l:main-panel>
+ </l:layout>
+</j:jelly>

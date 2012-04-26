@@ -82,7 +82,12 @@ public class ConfigurationRotatorBuildAction implements Action {
 	public AbstractConfiguration getConfiguration() {
 		return configuration;
 	}
-	
+    
+    public <T extends AbstractConfiguration> T getConfiguration(Class<T> clazz) {
+        return (T)configuration;
+    }
+    
+	@Override
 	public String toString() {
 		return "BUILD ACTION: " + configuration.toString();
 	}

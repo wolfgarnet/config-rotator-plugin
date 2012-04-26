@@ -5,6 +5,7 @@ import hudson.model.AbstractProject;
 import hudson.model.Actionable;
 import hudson.model.ProminentProjectAction;
 import hudson.scm.SCM;
+import java.util.ArrayList;
 
 public class ConfigurationRotatorProjectAction extends Actionable implements ProminentProjectAction {
 
@@ -45,6 +46,20 @@ public class ConfigurationRotatorProjectAction extends Actionable implements Pro
 		}
 	}
 	*/
+    
+    /**
+     * New method extracts the latest builds.
+     * @param number
+     * @return 
+     */
+    public ArrayList<ConfigurationRotatorBuildAction> getLastActions(int number) {
+        SCM scm = project.getScm();
+        if( scm instanceof ConfigurationRotator ) {
+			return ((ConfigurationRotator)scm).getAcrs().getLastResults( project, null, number );
+		} else {
+			return null;
+		}
+    }
 	
 	public ConfigurationRotatorBuildAction getLastAction() {
 		SCM scm = project.getScm();
