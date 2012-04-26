@@ -49,12 +49,12 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
         AbstractBuild<?, ?> build = (AbstractBuild<?, ?>) run;
 
         if (build.getProject().getScm() instanceof ConfigurationRotator) {
-            localListener.getLogger().print("onCompleted runlistener - we should write xml here");
+            localListener.getLogger().println("onCompleted runlistener - we should write xml here");
             // FIXME explain
             ConfigurationRotatorBuildAction action = build.getAction(ConfigurationRotatorBuildAction.class);
             // if no action, build failed someway to set ConfigurationRotatorBuildAction, thus we can not 
             // say anything about configuration.
-            localListener.getLogger().print("onCompleted runlistener - action: " + action);
+            localListener.getLogger().println("onCompleted runlistener - action: " + action);
             if (action != null) {
                 ClearCaseUCMConfiguration configuration = (ClearCaseUCMConfiguration) action.getConfiguration();
                 List<ClearCaseUCMConfigurationComponent> components = configuration.getList();
@@ -80,7 +80,7 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                         String componentFileName = ConfigurationRotator.FEED_FULL_PATH + 
                                 "defaultRunListenerError" + ConfigurationRotator.SEPARATOR 
                                 + "defaultRunListenerError" + ".xml";
-                        localListener.getLogger().print("onCompleted runlistener - componentFileName: " + componentFileName);
+                        localListener.getLogger().println("onCompleted runlistener - DEFAULT componentFileName: " + componentFileName);
                         try
                         {
                             String componentPVob = component.getBaseline().getComponent().load().getPVob().getName();
@@ -91,12 +91,12 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                         {
                             // if we can not load PVob name, the correct feed can not be written
                             // so we use a default one.
-                            localListener.getLogger().print("onCompleted runlistener - caught Exception, trying to load PVob name. build: "
+                            localListener.getLogger().println("onCompleted runlistener - caught Exception, trying to load PVob name. build: "
                             + build.getDisplayName() + ", #" + build.getNumber()
                             + ". Exception was: " + ex.getMessage());
                         }
                       
-                        localListener.getLogger().print("nCompleted runlistener - componentFileName: " + componentFileName);
+                        localListener.getLogger().println("onCompleted runlistener - REAL componentFileName: " + componentFileName);
                         
                         Date currentTime = new Date();
 
@@ -113,19 +113,19 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                                 + "found the following components to be " + action.getResult().toString()
                                 + componentNameList;
                         feed.addEntry(e);
-                        localListener.getLogger().print("nCompleted runlistener - done adding entry.");
+                        localListener.getLogger().println("onCompleted runlistener - done adding entry.");
                         writeFeedToFile(feed, componentFileName);
-                        localListener.getLogger().print("nCompleted runlistener - done writing to file");
+                        localListener.getLogger().println("onCompleted runlistener - done writing to file");
                     }
                 }  catch (FeedException fe) {
-                    localListener.getLogger().print("onCompleted runlistener - caught FeedException, not feeding anything for build: "
+                    localListener.getLogger().println("onCompleted runlistener - caught FeedException, not feeding anything for build: "
                             + build.getDisplayName() + ", #" + build.getNumber()
                             + ". Exception was: " + fe.getMessage());
                 }
-                localListener.getLogger().print("nCompleted runlistener - runListener ending");
+                localListener.getLogger().println("onCompleted runlistener - runListener ending");
             }
         } else {
-            localListener.getLogger().print("onCompleted runlistener - was not a ConfigurationRotator");
+            localListener.getLogger().println("onCompleted runlistener - was not a ConfigurationRotator");
         }
     }
 
@@ -164,7 +164,7 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
             try {
                 feed = Feed.getFeed(new AtomPublisher(), feedFile);
             } catch (IOException ex) {
-                localListener.getLogger().print(String.format("Failed to get feed from file: %s", feedFileNameURI));                
+                localListener.getLogger().println(String.format("Failed to get feed from file: %s. Exception is: ", feedFileNameURI, ex.getMessage()));                
             }
         }
 
@@ -185,15 +185,15 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
         Writer writer = null;
         try {
             writer = new FileWriter(componentFileName);
-            writer.write(feed.getXML(new AtomPublisher()));
+            writer.write(feed.getXML(new AtomPublisher()) + "Testing output");
             writer.close();
         } catch (IOException ex) {
             if(writer != null) {
                 try {
-                    localListener.getLogger().print("writeFeedToFile runlistener - write failed caught IOException meaning feed may not have been written "+" Exception was: " + ex.getMessage());
+                    localListener.getLogger().println("writeFeedToFile runlistener - write failed caught IOException meaning feed may not have been written "+" Exception was: " + ex.getMessage());
                     writer.close();
                 } catch (IOException ex1) {
-                    localListener.getLogger().print("writeFeedToFile runlistener - write.close failed too caught IOException meaning feed may not have been written "+" Exception was: " + ex1.getMessage());
+                    localListener.getLogger().println("writeFeedToFile runlistener - write.close failed too caught IOException meaning feed may not have been written "+" Exception was: " + ex1.getMessage());
                 }
             }
         } 
