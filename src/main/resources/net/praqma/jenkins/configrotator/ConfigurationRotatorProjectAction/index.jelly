@@ -4,31 +4,30 @@
      <l:main-panel>
         <h1>Configurations</h1>
         <j:forEach var="action" items="${it.getLastActions(5)}">
-            <!--
-            <table>
-            <thead>
-                <th>Component</th>
-                <th>Stream</th>
-                <th>Baseline</th>
-                <th>Level</th>
-                <th>Fixed</th>
-            </thead> 
-            <tbody>
-            -->
-                <j:set var="class" value="${action.getConfiguration().getClass()}" />
-                <st:include it="${from.getConfiguration()}" page="/${action.getConfiguration().getView(class)}" />
-                <!--
-                <j:forEach var="component" items="${action.getConfiguration(class).getList()}">
+            <j:if test="${action != null}">
+
+                <table>
                     <tr>
-                        <td>${component.getBaseline().getComponent().getNormalizedName()}</td>
-                        <td>${component.getBaseline().getStream().getNormalizedName()}</td>
-                        <td>${component.getBaseline().getNormalizedName()}</td>
-                        <td>${component.getPlevel()}</td>
-                        <td>${component.isFixed()}</td>                            
+                        <td rowspan="2" style="padding:10px"><img src="/plugin/config-rotator/images/rotate.png" /></td>
+                        <td style="font-weight:bold;font-size:18px;text-align:left">
+                        <j:choose>
+                            <j:when test="${action.isCompatible()}">
+                                <b>${%This configuration is compatible}</b>
+                            </j:when>
+                            <j:otherwise>
+                                <b>${%This configuration is not compatible}</b>
+                            </j:otherwise>
+                        </j:choose>
+                        </td>
                     </tr>
-                </j:forEach>
-               -->
-           <!-- </tbody> -->
+                    <tr>
+                        <td valign="top">
+                        <j:set var="class" value="${action.getConfiguration().getClass()}" />
+                        <st:include it="${action.getConfiguration()}" page="/${action.getConfiguration().getView(class)}" />
+                        </td>
+                    </tr>
+                </table>
+            </j:if>
         </j:forEach>                                        
      </l:main-panel>
  </l:layout>
