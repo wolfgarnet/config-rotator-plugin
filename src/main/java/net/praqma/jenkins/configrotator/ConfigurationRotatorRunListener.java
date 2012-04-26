@@ -102,6 +102,7 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
 
                         Feed feed = getFeedFromFile(componentFileName,
                                 componentName, id, currentTime);
+                        localListener.getLogger().println("onCompleted runlistener - feed.getXML" + feed.getXML( new AtomPublisher() ) );
                         Entry e = new Entry(componentName + ": " + action.getResult().toString(),
                                 id, currentTime);
                         e.summary = componentName + "found to be " + action.getResult().toString() + "with "
@@ -112,7 +113,9 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                                 + "finished at: " + buildFinishTime.toString()
                                 + "found the following components to be " + action.getResult().toString()
                                 + componentNameList;
+                        localListener.getLogger().println("onCompleted runlistener - entry added: " + e.toString());
                         feed.addEntry(e);
+                        localListener.getLogger().println("onCompleted runlistener - feed.getXML after entry add" + feed.getXML( new AtomPublisher() ) );
                         localListener.getLogger().println("onCompleted runlistener - done adding entry.");
                         writeFeedToFile(feed, componentFileName);
                         localListener.getLogger().println("onCompleted runlistener - done writing to file");
@@ -182,9 +185,16 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
      * @throws FeedException
      */
     private void writeFeedToFile(Feed feed, String componentFileName) throws FeedException {
+        localListener.getLogger().println("onCompleted runlistener, writeFeedToFile - feed.getXML" + feed.getXML( new AtomPublisher() ) );
         Writer writer = null;
         try {
-            writer = new FileWriter(componentFileName);
+            boolean feedFileGood = new File(componentFileName).mkdirs();
+            if (!feedFileGood)
+            {
+                throw new IOException("writeFeedToFile runListener: failed to make dirs");
+            }
+            File feedFile = new File(componentFileName);
+            writer = new FileWriter(feedFile);
             writer.write(feed.getXML(new AtomPublisher()) + "Testing output");
             writer.close();
         } catch (IOException ex) {
