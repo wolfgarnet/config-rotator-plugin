@@ -54,6 +54,7 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
             ConfigurationRotatorBuildAction action = build.getAction(ConfigurationRotatorBuildAction.class);
             // if no action, build failed someway to set ConfigurationRotatorBuildAction, thus we can not 
             // say anything about configuration.
+            localListener.getLogger().print("onCompleted runlistener - action: " + action);
             if (action != null) {
                 ClearCaseUCMConfiguration configuration = (ClearCaseUCMConfiguration) action.getConfiguration();
                 List<ClearCaseUCMConfigurationComponent> components = configuration.getList();
@@ -79,6 +80,7 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                         String componentFileName = ConfigurationRotator.FEED_FULL_PATH + 
                                 "defaultRunListenerError" + ConfigurationRotator.SEPARATOR 
                                 + "defaultRunListenerError" + ".xml";
+                        localListener.getLogger().print("onCompleted runlistener - componentFileName: " + componentFileName);
                         try
                         {
                             String componentPVob = component.getBaseline().getComponent().load().getPVob().getName();
@@ -94,6 +96,7 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                             + ". Exception was: " + ex.getMessage());
                         }
                       
+                        localListener.getLogger().print("nCompleted runlistener - componentFileName: " + componentFileName);
                         
                         Date currentTime = new Date();
 
@@ -110,14 +113,16 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                                 + "found the following components to be " + action.getResult().toString()
                                 + componentNameList;
                         feed.addEntry(e);
-
+                        localListener.getLogger().print("nCompleted runlistener - done adding entry.");
                         writeFeedToFile(feed, componentFileName);
+                        localListener.getLogger().print("nCompleted runlistener - done writing to file");
                     }
                 }  catch (FeedException fe) {
                     localListener.getLogger().print("onCompleted runlistener - caught FeedException, not feeding anything for build: "
                             + build.getDisplayName() + ", #" + build.getNumber()
                             + ". Exception was: " + fe.getMessage());
-                } 
+                }
+                localListener.getLogger().print("nCompleted runlistener - runListener ending");
             }
         } else {
             localListener.getLogger().print("onCompleted runlistener - was not a ConfigurationRotator");
