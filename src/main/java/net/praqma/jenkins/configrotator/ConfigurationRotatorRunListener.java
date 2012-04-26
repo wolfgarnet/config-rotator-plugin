@@ -23,7 +23,8 @@ import net.praqma.util.xml.feed.*;
 
 @Extension
 public class ConfigurationRotatorRunListener extends RunListener<Run> {
-   
+    
+    private TaskListener localListener;
     
     public ConfigurationRotatorRunListener() {
         super(Run.class);
@@ -42,10 +43,11 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
         /*
          * FIXME Test for MatrixBuild and add to context
          */
+        localListener = listener;
         AbstractBuild<?, ?> build = (AbstractBuild<?, ?>) run;
 
         if (build.getProject().getScm() instanceof ConfigurationRotator) {
-            System.out.println("onCompleted runlistener - we should write xml here");
+            localListener.getLogger().print("onCompleted runlistener - we should write xml here");
             // FIXME explain
             ConfigurationRotatorBuildAction action = build.getAction(ConfigurationRotatorBuildAction.class);
             // if no action, build failed someway to set ConfigurationRotatorBuildAction, thus we can not 
@@ -89,13 +91,13 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                         writeFeedToFile(feed, componentFileName);
                     }
                 }  catch (FeedException fe) {
-                    System.out.println("onCompleted runlistener - caught FeedException, not feeding anything for build: "
+                    localListener.getLogger().print("onCompleted runlistener - caught FeedException, not feeding anything for build: "
                             + build.getDisplayName() + ", #" + build.getNumber()
                             + ". Exception was: " + fe.getMessage());
                 } 
             }
         } else {
-            System.out.println("onCompleted runlistener - was not a ConfigurationRotator");
+            localListener.getLogger().print("onCompleted runlistener - was not a ConfigurationRotator");
         }
     }
 
@@ -134,7 +136,7 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
             try {
                 feed = Feed.getFeed(new AtomPublisher(), feedFile);
             } catch (IOException ex) {
-                System.out.println(String.format("Failed to get feed from file: %s", feedFileNameURI));                
+                localListener.getLogger().print(String.format("Failed to get feed from file: %s", feedFileNameURI));                
             }
         }
 
@@ -162,7 +164,7 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                 try {
                     writer.close();
                 } catch (IOException ex1) {
-                    System.out.println("writeFeedToFile runlistener - caught IOException meaning feed may not have been written "+" Exception was: " + ex1.getMessage());
+                    localListener.getLogger().print("writeFeedToFile runlistener - caught IOException meaning feed may not have been written "+" Exception was: " + ex1.getMessage());
                 }
             }
         } 
