@@ -51,7 +51,7 @@ public class ConfigurationRotatorReport extends AbstractModelObject implements U
      * 
      */ 
     public static String CreateFeedUrl(String vobname, String componentName) {
-        String actionLink = "/"+ConfigurationRotator.NAME+"/feed/?component="+componentName+"&pvob="+vobname;
+        String actionLink = Jenkins.getInstance().getRootUrl()+"/"+ConfigurationRotator.NAME+"/feed/?component="+componentName+"&pvob="+vobname;
         return actionLink;
     }
     
