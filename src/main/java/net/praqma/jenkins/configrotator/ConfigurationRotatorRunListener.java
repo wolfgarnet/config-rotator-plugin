@@ -17,6 +17,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.praqma.clearcase.exceptions.UCMEntityNotFoundException;
+import net.praqma.clearcase.exceptions.UnableToLoadEntityException;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigurationComponent;
 import net.praqma.util.xml.feed.*;
@@ -70,8 +72,29 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
 
                 try {
                     for (Iterator<ClearCaseUCMConfigurationComponent> comp = components.iterator(); comp.hasNext();) {
-                        String componentName = comp.next().getBaseline().getShortname();
-                        String componentFileName = ConfigurationRotator.FEED_FULL_PATH + componentName + ".xml";
+                        
+                        ClearCaseUCMConfigurationComponent component = comp.next();
+                        String componentName = component.getBaseline().getComponent().getShortname();
+                        // default feed!
+                        String componentFileName = ConfigurationRotator.FEED_FULL_PATH + 
+                                "defaultRunListenerError" + ConfigurationRotator.SEPARATOR 
+                                + "defaultRunListenerError" + ".xml";
+                        try
+                        {
+                            String componentPVob = component.getBaseline().getComponent().load().getPVob().getName();
+                            // FIXME pvob folder name!
+                            componentFileName = ConfigurationRotator.FEED_FULL_PATH + componentPVob +
+                                    ConfigurationRotator.SEPARATOR + componentName + ".xml";
+                        } catch (Exception ex) // will handle all exception the same way
+                        {
+                            // if we can not load PVob name, the correct feed can not be written
+                            // so we use a default one.
+                            localListener.getLogger().print("onCompleted runlistener - caught Exception, trying to load PVob name. build: "
+                            + build.getDisplayName() + ", #" + build.getNumber()
+                            + ". Exception was: " + ex.getMessage());
+                        }
+                      
+                        
                         Date currentTime = new Date();
 
                         Feed feed = getFeedFromFile(componentFileName,
