@@ -27,7 +27,8 @@ public class ClearCaseUCMConfigurationComponent extends AbstractConfigurationCom
 			this.fixed = false;
 		}
 	}
-	
+    
+	@Override
 	public ClearCaseUCMConfigurationComponent clone() {
 		ClearCaseUCMConfigurationComponent cc = new ClearCaseUCMConfigurationComponent( this.baseline, this.plevel, this.fixed );
 		

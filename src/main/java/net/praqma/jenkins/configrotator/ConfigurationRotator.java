@@ -57,6 +57,11 @@ public class ConfigurationRotator extends SCM {
     public static final String FEED_FULL_PATH = Jenkins.getInstance().getRootDir()+SEPARATOR+FEED_DIR;
     
     /**
+     * Added file to feed.
+     */ 
+    public static final File FEED_DIRFILE = new File(FEED_FULL_PATH);
+    
+    /**
      * Determines whether a new configuration has been entered. If true, the
      * input is new.
      */

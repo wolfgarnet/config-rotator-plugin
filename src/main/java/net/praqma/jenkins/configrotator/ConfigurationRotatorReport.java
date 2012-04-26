@@ -60,7 +60,7 @@ public class ConfigurationRotatorReport extends AbstractModelObject implements U
      */
     public ArrayList<String> listAvailableFeeds() {
         ArrayList<String> list = new ArrayList<String>();
-        list.addAll(Arrays.asList(new File(ConfigurationRotator.FEED_FULL_PATH).list()));
+        list.addAll(Arrays.asList(ConfigurationRotator.FEED_DIRFILE.list()));
         return list;
     }
     
@@ -87,14 +87,19 @@ public class ConfigurationRotatorReport extends AbstractModelObject implements U
 				
                 //Open file to begin reading file. 
                 try {
-                    fis = new FileInputStream(new File(fullComponentFeedPath));
-                    isr = new InputStreamReader(fis);
-                
-                    reader = new BufferedReader(isr);
-                    writer = rsp.getWriter();
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        writer.write(line);
+                    File feedFile = new File(fullComponentFeedPath);
+                    if(feedFile.exists()) {
+                        fis = new FileInputStream(new File(fullComponentFeedPath));
+                        isr = new InputStreamReader(fis);
+
+                        reader = new BufferedReader(isr);
+                        writer = rsp.getWriter();
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            writer.write(line);
+                        }
+                    } else {
+                        writer.write("No such feed");
                     }
                     } catch (IOException ex) {
                         throw ex;
