@@ -22,6 +22,7 @@ import net.praqma.clearcase.exceptions.UnableToLoadEntityException;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigurationComponent;
 import net.praqma.util.xml.feed.*;
+import org.apache.tools.ant.types.FileList;
 
 @Extension
 public class ConfigurationRotatorRunListener extends RunListener<Run> {
@@ -59,7 +60,8 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                 ClearCaseUCMConfiguration configuration = (ClearCaseUCMConfiguration) action.getConfiguration();
                 List<ClearCaseUCMConfigurationComponent> components = configuration.getList();
 
-                String id = build.getDisplayName() + "#" + build.getNumber();
+                String id = build.getParent().getDisplayName() + "#" + build.getNumber();
+                localListener.getLogger().println("onCompleted runlistener - feed id is: " + id);
 
                 String componentNameList = "";
                 for (Iterator<ClearCaseUCMConfigurationComponent> comp = components.iterator(); comp.hasNext();) {
@@ -68,6 +70,7 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                         componentNameList += ", ";
                     }
                 }
+                localListener.getLogger().println("onCompleted runlistener - componentNameList: " + componentNameList);
 
                 Date buildFinishTime = getDateTimeFromMilis(build.getTimeInMillis() + build.getDuration());
 
@@ -77,16 +80,17 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                         ClearCaseUCMConfigurationComponent component = comp.next();
                         String componentName = component.getBaseline().getComponent().getShortname();
                         // default feed!
-                        String componentFileName = ConfigurationRotator.FEED_FULL_PATH + 
+                     
+                        File componentFile = new File(ConfigurationRotator.FEED_FULL_PATH + 
                                 "defaultRunListenerError" + ConfigurationRotator.SEPARATOR 
-                                + "defaultRunListenerError" + ".xml";
-                        localListener.getLogger().println("onCompleted runlistener - DEFAULT componentFileName: " + componentFileName);
+                                + "defaultRunListenerError" + ".xml");
+                        localListener.getLogger().println("onCompleted runlistener - DEFAULT componentFileName: " + componentFile.toString());
                         try
                         {
-                            String componentPVob = component.getBaseline().getComponent().load().getPVob().getName();
+                            String componentPVob = component.getBaseline().getComponent().getPVob().getName();
                             // FIXME pvob folder name!
-                            componentFileName = ConfigurationRotator.FEED_FULL_PATH + componentPVob +
-                                    ConfigurationRotator.SEPARATOR + componentName + ".xml";
+                            componentFile = new File(ConfigurationRotator.FEED_FULL_PATH + componentPVob +
+                                    ConfigurationRotator.SEPARATOR + componentName + ".xml");
                         } catch (Exception ex) // will handle all exception the same way
                         {
                             // if we can not load PVob name, the correct feed can not be written
@@ -96,31 +100,40 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                             + ". Exception was: " + ex.getMessage());
                         }
                       
-                        localListener.getLogger().println("onCompleted runlistener - REAL componentFileName: " + componentFileName);
+                        localListener.getLogger().println("onCompleted runlistener - REAL componentFileName: " + componentFile.toString());
                         
                         Date currentTime = new Date();
 
-                        Feed feed = getFeedFromFile(componentFileName,
+                        Feed feed = getFeedFromFile(componentFile,
                                 componentName, id, currentTime);
                         localListener.getLogger().println("onCompleted runlistener - feed.getXML" + feed.getXML( new AtomPublisher() ) );
                         Entry e = new Entry(componentName + ": " + action.getResult().toString(),
                                 id, currentTime);
+                        localListener.getLogger().println("onCompleted runlistener - entry created");
                         e.summary = componentName + "found to be " + action.getResult().toString() + "with "
                                 + components.size() + "other components";
+                        localListener.getLogger().println("onCompleted runlistener - entry summary added");
+                        localListener.getLogger().println("onCompleted runlistener - entry summary :" + e.summary);
                         e.author = new Person("Jenkins ConfigurationRotator-plugin, job: "
                                 + build.getDisplayName() + ", build: #" + build.getNumber());
+                        localListener.getLogger().println("onCompleted runlistener - entry author added");
+                        localListener.getLogger().println("onCompleted runlistener - entry author:" + e.author);
                         e.content = "Job: " + build.getDisplayName() + ", build #" + build.getNumber()
                                 + "finished at: " + buildFinishTime.toString()
                                 + "found the following components to be " + action.getResult().toString()
                                 + componentNameList;
+                        localListener.getLogger().println("onCompleted runlistener - entry content added");
+                        localListener.getLogger().println("onCompleted runlistener - entry content:" + e.content);
+                        localListener.getLogger().println("onCompleted runlistener - entry done");
                         localListener.getLogger().println("onCompleted runlistener - entry added: " + e.toString());
                         feed.addEntry(e);
+                        localListener.getLogger().println("onCompleted runlistener - entry added done");
                         localListener.getLogger().println("onCompleted runlistener - feed.getXML after entry add" + feed.getXML( new AtomPublisher() ) );
                         localListener.getLogger().println("onCompleted runlistener - done adding entry.");
-                        writeFeedToFile(feed, componentFileName);
+                        writeFeedToFile(feed, componentFile);
                         localListener.getLogger().println("onCompleted runlistener - done writing to file");
                     }
-                }  catch (FeedException fe) {
+                }  catch (Exception fe) {
                     localListener.getLogger().println("onCompleted runlistener - caught FeedException, not feeding anything for build: "
                             + build.getDisplayName() + ", #" + build.getNumber()
                             + ". Exception was: " + fe.getMessage());
@@ -157,10 +170,10 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
      * @throws FeedException
      * @throws IOException
      */
-    private Feed getFeedFromFile(String feedFileNameURI, String componentName, String feedId, Date feedUpdated) throws FeedException {
+    private Feed getFeedFromFile(File feedFile, String componentName, String feedId, Date feedUpdated) throws FeedException {
 
         localListener.getLogger().println(String.format("getFeedFromFile called"));
-        File feedFile = new File(feedFileNameURI);
+        //File feedFile = new File(feedFileNameURI);
         // initial feed
         Feed feed = new Feed(componentName, feedId, feedUpdated);
         // if component already have a feed, use that one
@@ -170,7 +183,7 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                 feed = Feed.getFeed(new AtomPublisher(), feedFile);
                 localListener.getLogger().println(String.format("getFeedFromFile got file"));
             } catch (IOException ex) {
-                localListener.getLogger().println(String.format("Failed to get feed from file: %s. Exception is: ", feedFileNameURI, ex.getMessage()));                
+                localListener.getLogger().println(String.format("Failed to get feed from file: %s. Exception is: ", feedFile.toString(), ex.getMessage()));                
             }
         }
         else
@@ -192,17 +205,18 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
      * @throws IOException
      * @throws FeedException
      */
-    private void writeFeedToFile(Feed feed, String componentFileName) throws FeedException {
+    private void writeFeedToFile(Feed feed, File componentFile) throws FeedException {
         localListener.getLogger().println("onCompleted runlistener, writeFeedToFile - feed.getXML" + feed.getXML( new AtomPublisher() ) );
         Writer writer = null;
         try {
-            boolean feedFileGood = new File(componentFileName.substring(0, componentFileName.indexOf(".xml"))).mkdirs();
+            localListener.getLogger().println("onCompleted runlistener, writeFeedToFile - " + componentFile.toString().substring(0, componentFile.toString().indexOf(".xml")));
+            boolean feedFileGood = new File(componentFile.toString().substring(0, componentFile.toString().indexOf(".xml"))).mkdirs();
             if (!feedFileGood)
             {
                 throw new IOException("writeFeedToFile runListener: failed to make dirs");
             }
-            File feedFile = new File(componentFileName);
-            writer = new FileWriter(feedFile);
+            //File feedFile = new File(componentFile);
+            writer = new FileWriter(componentFile);
             writer.write(feed.getXML(new AtomPublisher()) + "Testing output");
             writer.close();
         } catch (IOException ex) {
