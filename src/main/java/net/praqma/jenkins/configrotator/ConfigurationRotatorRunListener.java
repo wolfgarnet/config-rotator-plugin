@@ -43,15 +43,11 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
      */
     @Override
     public void onCompleted(Run run, TaskListener listener) {
-        /*
-         * FIXME Test for MatrixBuild and add to context
-         */
         localListener = listener;
         AbstractBuild<?, ?> build = (AbstractBuild<?, ?>) run;
 
         if (build.getProject().getScm() instanceof ConfigurationRotator) {
             localListener.getLogger().println("onCompleted runlistener - we should write xml here");
-            // FIXME explain
             ConfigurationRotatorBuildAction action = build.getAction(ConfigurationRotatorBuildAction.class);
             // if no action, build failed someway to set ConfigurationRotatorBuildAction, thus we can not 
             // say anything about configuration.
@@ -59,10 +55,7 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
             if (action != null) {
                 ClearCaseUCMConfiguration configuration = (ClearCaseUCMConfiguration) action.getConfiguration();
                 List<ClearCaseUCMConfigurationComponent> components = configuration.getList();
-
-                String id = build.getParent().getDisplayName() + "#" + build.getNumber();
-                localListener.getLogger().println("onCompleted runlistener - feed id is: " + id);
-
+                
                 String componentNameList = "";
                 for (Iterator<ClearCaseUCMConfigurationComponent> comp = components.iterator(); comp.hasNext();) {
                     componentNameList += comp.next().getBaseline().getShortname();
@@ -81,17 +74,22 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                         String componentName = component.getBaseline().getComponent().getShortname();
                         // default feed!
                      
-                        File componentFile = new File(ConfigurationRotator.FEED_FULL_PATH + 
+                        File feedFile = new File(ConfigurationRotator.FEED_FULL_PATH + 
                                 "defaultRunListenerError" + ConfigurationRotator.SEPARATOR 
                                 + "defaultRunListenerError" + ".xml");
-                        localListener.getLogger().println("onCompleted runlistener - DEFAULT componentFileName: " + componentFile.toString());
+                        File feedFileDir = new File(ConfigurationRotator.FEED_FULL_PATH + 
+                                "defaultRunListenerError" + ConfigurationRotator.SEPARATOR);
+                        localListener.getLogger().println("onCompleted runlistener - DEFAULT componentFileName: " + feedFile.toString());
+                        String componentPVob = "defaultRunlistenerErrorPvob";
                         try
                         {
-                            String componentPVob = component.getBaseline().getComponent().getPVob().getName();
+                            componentPVob = component.getBaseline().getComponent().getPVob().getName();
                             // FIXME pvob folder name!
-                            componentFile = new File(ConfigurationRotator.FEED_FULL_PATH + componentPVob +
+                            feedFile = new File(ConfigurationRotator.FEED_FULL_PATH + componentPVob +
                                     ConfigurationRotator.SEPARATOR + componentName + ".xml");
-                        } catch (Exception ex) // will handle all exception the same way
+                            feedFileDir = new File(ConfigurationRotator.FEED_FULL_PATH + componentPVob +
+                                    ConfigurationRotator.SEPARATOR);
+                        } catch (Exception ex) // we will handle all exception the same way
                         {
                             // if we can not load PVob name, the correct feed can not be written
                             // so we use a default one.
@@ -100,27 +98,32 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                             + ". Exception was: " + ex.getMessage());
                         }
                       
-                        localListener.getLogger().println("onCompleted runlistener - REAL componentFileName: " + componentFile.toString());
+                        localListener.getLogger().println("onCompleted runlistener - REAL componentFileName: " + feedFile.toString());
                         
-                        Date currentTime = new Date();
-
-                        Feed feed = getFeedFromFile(componentFile,
-                                componentName, id, currentTime);
+                        // required feed element - need to create feed
+                        String feedId = "http://google.dk"; // feed URL
+                        String feedTitle = componentName;
+                        Date updated = new Date();
+                        Feed feed = getFeedFromFile(feedFile,
+                                feedTitle, feedId, updated);
+                        
+                        String id = "'" + build.getParent().getDisplayName() + "'#" + build.getNumber() + ":" + componentName + "@" + componentPVob;
+                        localListener.getLogger().println("onCompleted runlistener - feed id is: " + id);
                         localListener.getLogger().println("onCompleted runlistener - feed.getXML" + feed.getXML( new AtomPublisher() ) );
-                        Entry e = new Entry(componentName + ": " + action.getResult().toString(),
-                                id, currentTime);
+                        Entry e = new Entry(componentName + " in new " + action.getResult().toString() + " configuration",
+                                id, updated);
                         localListener.getLogger().println("onCompleted runlistener - entry created");
-                        e.summary = componentName + "found to be " + action.getResult().toString() + "with "
-                                + components.size() + "other components";
+                        e.summary = componentName + " found to be " + action.getResult().toString() + " with "
+                                + components.size() + " other components";
                         localListener.getLogger().println("onCompleted runlistener - entry summary added");
                         localListener.getLogger().println("onCompleted runlistener - entry summary :" + e.summary);
-                        e.author = new Person("Jenkins ConfigurationRotator-plugin, job: "
-                                + build.getDisplayName() + ", build: #" + build.getNumber());
+                        e.author = new Person("Jenkins job using config-rotator. Job: "
+                                + build.getParent().getDisplayName() + ", build: #" + build.getNumber());
                         localListener.getLogger().println("onCompleted runlistener - entry author added");
                         localListener.getLogger().println("onCompleted runlistener - entry author:" + e.author);
-                        e.content = "Job: " + build.getDisplayName() + ", build #" + build.getNumber()
-                                + "finished at: " + buildFinishTime.toString()
-                                + "found the following components to be " + action.getResult().toString()
+                        e.content = "Your Jenkins Config-rotator job: " + build.getParent().getDisplayName() + ", build #" + build.getNumber()
+                                + "finished at " + buildFinishTime.toString()
+                                + " found the following components to be " + action.getResult().toString() + " :"
                                 + componentNameList;
                         localListener.getLogger().println("onCompleted runlistener - entry content added");
                         localListener.getLogger().println("onCompleted runlistener - entry content:" + e.content);
@@ -130,7 +133,7 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                         localListener.getLogger().println("onCompleted runlistener - entry added done");
                         localListener.getLogger().println("onCompleted runlistener - feed.getXML after entry add" + feed.getXML( new AtomPublisher() ) );
                         localListener.getLogger().println("onCompleted runlistener - done adding entry.");
-                        writeFeedToFile(feed, componentFile);
+                        writeFeedToFile(feed, feedFile, feedFileDir);
                         localListener.getLogger().println("onCompleted runlistener - done writing to file");
                     }
                 }  catch (Exception fe) {
@@ -138,11 +141,11 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                             + build.getDisplayName() + ", #" + build.getNumber()
                             + ". Exception was: " + fe.getMessage());
                 }
-                localListener.getLogger().println("onCompleted runlistener - runListener ending");
             }
         } else {
             localListener.getLogger().println("onCompleted runlistener - was not a ConfigurationRotator");
         }
+        localListener.getLogger().println("onCompleted runlistener - runListener ending");
     }
 
     /**
@@ -205,19 +208,52 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
      * @throws IOException
      * @throws FeedException
      */
-    private void writeFeedToFile(Feed feed, File componentFile) throws FeedException {
+    private void writeFeedToFile(Feed feed, File componentFile, File componentFileDir) throws FeedException {
         localListener.getLogger().println("onCompleted runlistener, writeFeedToFile - feed.getXML" + feed.getXML( new AtomPublisher() ) );
         Writer writer = null;
         try {
-            localListener.getLogger().println("onCompleted runlistener, writeFeedToFile - " + componentFile.toString().substring(0, componentFile.toString().indexOf(".xml")));
-            boolean feedFileGood = new File(componentFile.toString().substring(0, componentFile.toString().indexOf(".xml"))).mkdirs();
-            if (!feedFileGood)
+            //localListener.getLogger().println("onCompleted runlistener, writeFeedToFile - " 
+                    //+ componentFile.toString().substring(0, componentFile.toString().indexOf(".xml")));
+            //boolean feedFileGood = new File(componentFile.toString().substring(0, componentFile.toString().indexOf(".xml"))).mkdirs();
+            localListener.getLogger().println("onCompleted runlistener, writeFeedToFile - " 
+                    + componentFile.toString());
+            localListener.getLogger().println("onCompleted runlistener, writeFeedToFile - " 
+                    + componentFile.toURI());
+            File feedFile = componentFile;
+            localListener.getLogger().println("onCompleted runlistener, writeFeedToFile - " 
+                    + feedFile.toString());
+            if (!feedFile.exists())
             {
-                throw new IOException("writeFeedToFile runListener: failed to make dirs");
+                if (!componentFileDir.exists())
+                {
+                // create file including dirs
+                boolean feedFileGood = new File(componentFileDir.toString()).mkdirs();
+                    if (!feedFileGood)
+                    {
+                        localListener.getLogger().println("writeFeedToFile runListener: failed to make dirs");
+                        throw new IOException("writeFeedToFile runListener: failed to make dirs");
+                    }
+                    else
+                    {
+                        localListener.getLogger().println("onCompleted runlistener, created FeedToFileDIR - " 
+                        + componentFileDir.toString());                        
+                    }
+                }
+                else
+                {
+                    localListener.getLogger().println("onCompleted runlistener, FeedToFileDIR existed " 
+                        + componentFileDir.toString());                        
+                    feedFile = new File(componentFile.toString());
+                }
+                
+                localListener.getLogger().println("onCompleted runlistener, writeFeedToFile - " 
+                    + feedFile.toString());
             }
+            localListener.getLogger().println("onCompleted runlistener, writeFeedToFile - " 
+                    + feedFile.toString());
             //File feedFile = new File(componentFile);
-            writer = new FileWriter(componentFile);
-            writer.write(feed.getXML(new AtomPublisher()) + "Testing output");
+            writer = new FileWriter(feedFile);
+            writer.write(feed.getXML(new AtomPublisher()));
             writer.close();
         } catch (IOException ex) {
             if(writer != null) {
@@ -227,6 +263,9 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                 } catch (IOException ex1) {
                     localListener.getLogger().println("writeFeedToFile runlistener - write.close failed too caught IOException meaning feed may not have been written "+" Exception was: " + ex1.getMessage());
                 }
+            } else
+            {
+                localListener.getLogger().println("writeFeedToFile runlistener - write.close  WAS NULLailed too caught IOException meaning feed may not have been written "+" Exception was: " + ex.getMessage());
             }
         } 
     }
