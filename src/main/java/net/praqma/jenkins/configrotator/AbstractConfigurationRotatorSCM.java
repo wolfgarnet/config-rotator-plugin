@@ -68,6 +68,21 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
 		
 		return null;
 	}
+    
+    public ArrayList<ConfigurationRotatorBuildAction> getLastResults(AbstractProject<?, ?> project, Class<? extends AbstractConfigurationRotatorSCM> clazz, int limit) {
+        ArrayList<ConfigurationRotatorBuildAction> actions = new ArrayList<ConfigurationRotatorBuildAction>();
+        int count = 0;
+        for( AbstractBuild<?, ?> b = getLastBuildToBeConsidered( project ); b != null; b = b.getPreviousNotFailedBuild() ) {
+			ConfigurationRotatorBuildAction r = b.getAction( ConfigurationRotatorBuildAction.class );
+			if( r != null ) {
+				if( r.isDetermined() && ( (clazz == null || r.getClazz().equals( clazz )) && count <= limit ) ) {
+                    count++;
+					actions.add(r);
+				}
+			}
+		}
+        return actions;
+    }
 	
 	private AbstractBuild<?, ?> getLastBuildToBeConsidered( AbstractProject<?, ?> project ) {
 		return project.getLastCompletedBuild();
