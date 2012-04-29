@@ -1,3 +1,4 @@
 <div>
-  This plugin integrates MonKit reports to Jenkins.
+  Automatic try-out of possible configurations. 
+  Monitors the SCM for newer versions of components and tests if compliant. Only available using <a href="https://wiki.jenkins-ci.org/display/JENKINS/ClearCase+UCM+Plugin"> ClearCase UCM Plugin</a> as SCM.
 </div>
