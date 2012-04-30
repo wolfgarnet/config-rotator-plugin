@@ -129,5 +129,25 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration {
 		
 		
 	}
+    
+    public String toHtml() {
+        StringBuilder builder = new StringBuilder();
+        
+        builder.append("<table border=\"1\">");
+        builder.append("<thead>");
+        builder.append("<th>").append("Component").append("</th>");
+        builder.append("<th>").append("Stream").append("</th>");
+        builder.append("<th>").append("Baseline").append("</th>");
+        builder.append("<th>").append("Promotion level").append("</th>");
+        builder.append("<th>").append("Fixed").append("</th>");
+        
+        for(ClearCaseUCMConfigurationComponent comp : getList()) {
+            builder.append(comp.toHtml());
+        }
+        
+        builder.append("</thead>");
+        builder.append("</table>");
+        return builder.toString();
+    }
 
 }

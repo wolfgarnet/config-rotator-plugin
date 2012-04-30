@@ -10,19 +10,13 @@ import hudson.model.TaskListener;
 import hudson.model.Run;
 import hudson.model.listeners.RunListener;
 import java.io.*;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import net.praqma.clearcase.exceptions.UCMEntityNotFoundException;
-import net.praqma.clearcase.exceptions.UnableToLoadEntityException;
+import net.praqma.html.Html;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigurationComponent;
 import net.praqma.util.xml.feed.*;
-import org.apache.tools.ant.types.FileList;
 
 @Extension
 public class ConfigurationRotatorRunListener extends RunListener<Run> {
@@ -121,10 +115,13 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                                 + build.getParent().getDisplayName() + ", build: #" + build.getNumber());
                         localListener.getLogger().println("onCompleted runlistener - entry author added");
                         localListener.getLogger().println("onCompleted runlistener - entry author:" + e.author);
-                        e.content = "Your Jenkins Config-rotator job: " + build.getParent().getDisplayName() + ", build #" + build.getNumber()
+                        
+                        String originalContent = "Your Jenkins Config-rotator job: " + build.getParent().getDisplayName() + ", build #" + build.getNumber()
                                 + "finished at " + buildFinishTime.toString()
                                 + " found the following components to be " + action.getResult().toString() + " :"
                                 + componentNameList;
+                        
+                        e.content = configuration.toHtml()+new Html.Paragraph("Link to this feed: "+new Html.Anchor(ConfigurationRotatorReport.CreateFeedUrl("", componentName)));
                         localListener.getLogger().println("onCompleted runlistener - entry content added");
                         localListener.getLogger().println("onCompleted runlistener - entry content:" + e.content);
                         localListener.getLogger().println("onCompleted runlistener - entry done");

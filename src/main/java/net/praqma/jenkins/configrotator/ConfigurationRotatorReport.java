@@ -17,7 +17,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.security.auth.login.Configuration;
 import jenkins.model.Jenkins;
 
 // FIXME - RootAction - needs login ? Should it be public?
@@ -25,6 +24,7 @@ import jenkins.model.Jenkins;
 public class ConfigurationRotatorReport extends AbstractModelObject implements UnprotectedRootAction {
     
     private static final String XML_EXTENSION = ".xml";
+    private static final String DEFAULT_URL = "http://localhost";
      
 	@Override
 	public String getIconFileName() {
@@ -51,7 +51,8 @@ public class ConfigurationRotatorReport extends AbstractModelObject implements U
      * 
      */ 
     public static String CreateFeedUrl(String vobname, String componentName) {
-        String actionLink = Jenkins.getInstance().getRootUrl()+"/"+ConfigurationRotator.NAME+"/feed/?component="+componentName+"&pvob="+vobname;
+        String url = Jenkins.getInstance().getRootUrl() == null ? DEFAULT_URL : Jenkins.getInstance().getRootUrl();               
+        String actionLink = url+"/"+ConfigurationRotator.NAME+"/feed/?component="+componentName+"&pvob="+vobname;
         return actionLink;
     }
     

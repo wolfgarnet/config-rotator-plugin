@@ -28,6 +28,7 @@ import hudson.scm.SCMDescriptor;
 import hudson.scm.SCMRevisionState;
 import hudson.scm.SCM;
 import hudson.tasks.Publisher;
+import java.io.*;
 import jenkins.model.Jenkins;
 
 public class ConfigurationRotator extends SCM {
@@ -174,10 +175,30 @@ public class ConfigurationRotator extends SCM {
         return acrs.poll(project, launcher, workspace, listener);
     }
 
+    /**
+     * Delegate the change log parser to abstract subtypes.
+     * @return 
+     */
     @Override
     public ChangeLogParser createChangeLogParser() {
         // TODO Auto-generated method stub
-        return null;
+        return acrs.createChangeLogParser();
+    }
+    
+    public void writeChangeLog(File f, BuildListener listener) throws IOException {
+        PrintWriter writer = null;
+        try {
+            
+            writer = new PrintWriter(new FileWriter(f));
+            writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+            writer.println("<changelog>");        
+            writer.println("</changelog>");
+        
+        } catch (IOException e) {
+            listener.getLogger().println("Unable to create change log!" +e);
+        } finally {
+            writer.close();
+        }
     }
 
     @Extension

@@ -20,6 +20,7 @@ import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.model.TaskListener;
+import hudson.scm.ChangeLogParser;
 import hudson.scm.PollingResult;
 import hudson.util.FormValidation;
 
@@ -30,12 +31,14 @@ import net.praqma.clearcase.ucm.entities.Baseline;
 import net.praqma.clearcase.ucm.entities.Project;
 import net.praqma.clearcase.ucm.entities.Stream;
 import net.praqma.clearcase.ucm.view.SnapshotView;
+import net.praqma.clearcase.util.setup.CheckoutTask;
 import net.praqma.jenkins.configrotator.AbstractConfiguration;
 import net.praqma.jenkins.configrotator.AbstractConfigurationRotatorSCM;
 import net.praqma.jenkins.configrotator.ConfigurationRotator;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorBuildAction;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorException;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorSCMDescriptor;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
 import net.praqma.jenkins.utils.remoting.DetermineProject;
 import net.praqma.jenkins.utils.remoting.GetBaselines;
 import net.praqma.util.debug.Logger;
@@ -72,6 +75,11 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	public String getName() {
 		return "ClearCase UCM";
 	}
+
+    @Override
+    public ConfigRotatorChangeLogParser createChangeLogParser() {
+        return new ClearCaseUCMConfigRotatorChangeLogParser();
+    }
 	
 	@Override
 	public boolean wasReconfigured( AbstractProject<?, ?> project ) {
@@ -103,6 +111,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		
 		return false;
 	}
+    
 
 	@Override
 	public boolean perform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, boolean reconfigure ) throws IOException {

@@ -18,6 +18,7 @@ import hudson.model.Describable;
 import hudson.model.TaskListener;
 import hudson.model.Descriptor;
 import hudson.scm.PollingResult;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
 
 public abstract class AbstractConfigurationRotatorSCM implements Describable<AbstractConfigurationRotatorSCM>, ExtensionPoint {
 	
@@ -32,12 +33,14 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
 	public abstract void setConfigurationByAction( AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action ) throws IOException;
 	
 	public abstract boolean wasReconfigured( AbstractProject<?, ?> project );
+    
+    public abstract ConfigRotatorChangeLogParser createChangeLogParser();
 		
 	@Override
 	public Descriptor<AbstractConfigurationRotatorSCM> getDescriptor() {
 		return (ConfigurationRotatorSCMDescriptor<?>) Jenkins.getInstance().getDescriptorOrDie( getClass() );
 	}
-
+    
 	/**
 	 * All registered {@link AbstractConfigurationRotatorSCM}s.
 	 */
