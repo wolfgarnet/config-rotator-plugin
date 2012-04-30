@@ -2,6 +2,7 @@ package net.praqma.jenkins.configrotator.scm.clearcaseucm;
 
 import hudson.FilePath;
 import hudson.model.BuildListener;
+import hudson.model.TaskListener;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -56,7 +57,7 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration {
 		return list;
 	}
 	
-	public static ClearCaseUCMConfiguration getConfigurationFromTargets( List<ClearCaseUCMTarget> targets, FilePath workspace, BuildListener listener ) throws ConfigurationRotatorException, IOException {
+	public static ClearCaseUCMConfiguration getConfigurationFromTargets( List<ClearCaseUCMTarget> targets, FilePath workspace, TaskListener listener ) throws ConfigurationRotatorException, IOException {
 		PrintStream out = listener.getLogger();
 		
 		out.println( "Input: " + targets );

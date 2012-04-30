@@ -173,6 +173,29 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		return true;
 	}
 	
+	/**
+	 * Reconfigure the project configuration given the targets from the configuration page
+	 * @param workspace A FilePath
+	 * @param listener A TaskListener
+	 * @throws IOException
+	 */
+	public void reconfigure( FilePath workspace, TaskListener listener ) throws IOException {
+		logger.debug( "Getting configuration" );
+		PrintStream out = listener.getLogger();
+		
+		/* Resolve the configuration */
+		ClearCaseUCMConfiguration inputconfiguration = null;
+		try {
+			inputconfiguration = ClearCaseUCMConfiguration.getConfigurationFromTargets( getTargets(), workspace, listener );
+		} catch( ConfigurationRotatorException e ) {
+			out.println( "Unable to parse configuration: " + e.getMessage() );
+			ExceptionUtils.print( e, out, false );
+			throw new AbortException();
+		}
+		
+		projectConfiguration = inputconfiguration;
+	}
+	
 	public void printConfiguration( PrintStream out, AbstractConfiguration cfg ) {
 		out.println( "The configuration is:" );
 		if( cfg instanceof ClearCaseUCMConfiguration ) {
@@ -204,6 +227,9 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 						oldest = current;
 						chosen = config;
 					}
+					
+					/* Reset */
+					config.setChangedLast( false );
 
 				} catch( Exception e ) {
 					/* No baselines found */
@@ -218,11 +244,13 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		if( chosen != null && oldest != null ) {
 			logger.debug( "There was a baseline: " + oldest );
 			chosen.setBaseline( oldest );
+			chosen.setChangedLast( true );
 		} else {
 			listener.getLogger().println( ConfigurationRotator.LOGGERNAME + "No new baselines" );
 			return null;
 		}
 		
+		listener.getLogger().println( "CONFIGUGAUUFAUFUA: " + nconfig.toString() );
 		
 		return nconfig;
 	}
@@ -249,6 +277,10 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		return workspace.act( new PrepareWorkspace( project, selectedBaselines, viewtag, listener ) );
 	}
 	
+	/**
+	 * Get the configuration as targets. If the project configuration is null, the last targets defined by the configuration page is returned otherwise the current project configuration is returned as targets
+	 * @return A list of targets
+	 */
 	public List<ClearCaseUCMTarget> getTargets() {
 		if( projectConfiguration != null ) {
 			return getConfigurationAsTargets( projectConfiguration );
@@ -288,29 +320,38 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	}
 
 	@Override
-	public PollingResult poll( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener ) throws IOException, InterruptedException {
+	public PollingResult poll( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener, boolean reconfigure ) throws IOException, InterruptedException {
 		PrintStream out = listener.getLogger();
 		out.println( ConfigurationRotator.LOGGERNAME + "Polling" );
 		
 		ClearCaseUCMConfiguration configuration = null;
 		if( projectConfiguration == null ) {
-			out.println( ConfigurationRotator.LOGGERNAME + "Project configuration was null, finding last action" );
-			ConfigurationRotatorBuildAction action = getLastResult( project, ClearCaseUCM.class );
-			
-			if( action == null ) {
-				out.println( ConfigurationRotator.LOGGERNAME + "No previous actions, build now" );
-				return PollingResult.BUILD_NOW;
+			if( reconfigure ) {
+				try {
+					out.println( ConfigurationRotator.LOGGERNAME + "Project action was null and we need to reconfigure!" );
+					configuration = ClearCaseUCMConfiguration.getConfigurationFromTargets( getTargets(), workspace, listener );
+				} catch( ConfigurationRotatorException e ) {
+					throw new IOException( "Unable to get configurations from targets", e );
+				}
+			} else {
+				out.println( ConfigurationRotator.LOGGERNAME + "Project configuration was null, finding last action" );
+				ConfigurationRotatorBuildAction action = getLastResult( project, ClearCaseUCM.class );
+				
+				if( action == null ) {
+					out.println( ConfigurationRotator.LOGGERNAME + "No previous actions, build now" );
+					return PollingResult.BUILD_NOW;
+				}
+				
+				configuration = (ClearCaseUCMConfiguration) action.getConfiguration();
 			}
-			
-			configuration = (ClearCaseUCMConfiguration) action.getConfiguration();			
 		} else {
 			out.println( ConfigurationRotator.LOGGERNAME + "Project configuration was not null" );
 			configuration = this.projectConfiguration;
 		}	
 
-		
-		if( configuration != null ) {
-			out.println( ConfigurationRotator.LOGGERNAME + "Configuration is not null" );
+		/* Only look ahead if the build was NOT reconfigured */
+		if( configuration != null && !reconfigure ) {
+			out.println( ConfigurationRotator.LOGGERNAME + "Configuration is not null and was not reconfigured" );
 			try {
 				ClearCaseUCMConfiguration other;
 				other = nextConfiguration( listener, configuration, workspace );

@@ -53,7 +53,7 @@ public class ClearCaseUCMConfigurationComponent extends AbstractConfigurationCom
 	
     @Override
 	public String toString() {
-		return baseline.getNormalizedName() + "@" + plevel + "(" + fixed + ")";
+		return baseline.getNormalizedName() + "@" + plevel + "(" + fixed + "/" + changedLast + ")";
 	}
 	
 	@Override

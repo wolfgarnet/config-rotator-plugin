@@ -12,7 +12,8 @@
     <artifactId>config-rotator</artifactId>
     <version>0.1.2-SNAPSHOT</version>
     <name>Configuration Rotator Plugin</name>
-    <description>Enable SCM configuration rotation for Jenkins</description>
+    <description>Automatic try-out of possible configurations. 
+    Monitors the SCM for newer versions of components and tests if compliant. Only available using ClearCaseUCM as SCM</description>
     <packaging>hpi</packaging>
     <url>https://wiki.jenkins-ci.org/display/JENKINS/config+rotator+plugin</url>
 
@@ -137,7 +138,27 @@
         <developer>
             <id>wolfgarnet</id>
             <name>Christian Wolfgang</name>
-            <email>coolers@praqma.net</email>
+            <email>support@praqma.net</email>
+            <organization>Praqma A/S</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
+        <developer>
+            <id>buep</id>
+            <name>Bue Petersen</name>
+            <email>support@praqma.net</email>
+            <organization>Praqma A/S</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>+1</timezone>
+        </developer>
+                <developer>
+            <id>MadsNielsen</id>
+            <name>Mads Nielsen</name>
+            <email>support@praqma.net</email>
             <organization>Praqma A/S</organization>
             <roles>
                 <role>developer</role>
