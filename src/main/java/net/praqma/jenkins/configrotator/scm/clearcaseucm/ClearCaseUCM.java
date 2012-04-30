@@ -263,6 +263,10 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		return workspace.act( new PrepareWorkspace( project, selectedBaselines, viewtag, listener ) );
 	}
 	
+	/**
+	 * Get the configuration as targets. If the project configuration is null, the last targets defined by the configuration page is returned otherwise the current project configuration is returned as targets
+	 * @return A list of targets
+	 */
 	public List<ClearCaseUCMTarget> getTargets() {
 		if( projectConfiguration != null ) {
 			return getConfigurationAsTargets( projectConfiguration );
@@ -306,28 +310,34 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		PrintStream out = listener.getLogger();
 		out.println( ConfigurationRotator.LOGGERNAME + "Polling" );
 		
-		logger.debug( "Reconfiguring project configuration" );
-		reconfigure( workspace, listener );
-		
 		ClearCaseUCMConfiguration configuration = null;
 		if( projectConfiguration == null ) {
-			out.println( ConfigurationRotator.LOGGERNAME + "Project configuration was null, finding last action" );
-			ConfigurationRotatorBuildAction action = getLastResult( project, ClearCaseUCM.class );
-			
-			if( action == null ) {
-				out.println( ConfigurationRotator.LOGGERNAME + "No previous actions, build now" );
-				return PollingResult.BUILD_NOW;
+			if( reconfigure ) {
+				try {
+					out.println( ConfigurationRotator.LOGGERNAME + "Project action was null and we need to reconfigure!" );
+					configuration = ClearCaseUCMConfiguration.getConfigurationFromTargets( getTargets(), workspace, listener );
+				} catch( ConfigurationRotatorException e ) {
+					throw new IOException( "Unable to get configurations from targets", e );
+				}
+			} else {
+				out.println( ConfigurationRotator.LOGGERNAME + "Project configuration was null, finding last action" );
+				ConfigurationRotatorBuildAction action = getLastResult( project, ClearCaseUCM.class );
+				
+				if( action == null ) {
+					out.println( ConfigurationRotator.LOGGERNAME + "No previous actions, build now" );
+					return PollingResult.BUILD_NOW;
+				}
+				
+				configuration = (ClearCaseUCMConfiguration) action.getConfiguration();
 			}
-			
-			configuration = (ClearCaseUCMConfiguration) action.getConfiguration();			
 		} else {
 			out.println( ConfigurationRotator.LOGGERNAME + "Project configuration was not null" );
 			configuration = this.projectConfiguration;
 		}	
 
-		
-		if( configuration != null ) {
-			out.println( ConfigurationRotator.LOGGERNAME + "Configuration is not null" );
+		/* Only look ahead if the build was NOT reconfigured */
+		if( configuration != null && !reconfigure ) {
+			out.println( ConfigurationRotator.LOGGERNAME + "Configuration is not null and was not reconfigured" );
 			try {
 				ClearCaseUCMConfiguration other;
 				other = nextConfiguration( listener, configuration, workspace );

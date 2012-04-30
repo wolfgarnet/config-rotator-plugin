@@ -182,9 +182,6 @@ public class ConfigurationRotator extends SCM {
 
 		PollingResult result = acrs.poll( project, launcher, workspace, listener, reconfigure );
 		
-		reconfigure = false;
-		justConfigured = false;
-		
 		return result;
 	}
 
