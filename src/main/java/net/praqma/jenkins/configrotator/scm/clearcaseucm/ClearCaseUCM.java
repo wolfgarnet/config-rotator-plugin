@@ -241,8 +241,6 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 			return null;
 		}
 		
-		listener.getLogger().println( "CONFIGUGAUUFAUFUA: " + nconfig.toString() );
-		
 		return nconfig;
 	}
 	
