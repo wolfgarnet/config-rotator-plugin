@@ -9,5 +9,13 @@ import java.io.Serializable;
  *
  */
 public abstract class AbstractConfigurationComponent implements Serializable {
-
+	protected boolean changedLast = false;
+	
+	public boolean isChangedLast() {
+		return changedLast;
+	}
+	
+	public void setChangedLast( boolean b ) {
+		this.changedLast = b;
+	}
 }

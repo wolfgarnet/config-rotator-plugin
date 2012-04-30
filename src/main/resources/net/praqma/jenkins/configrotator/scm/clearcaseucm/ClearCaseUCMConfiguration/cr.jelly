@@ -1,7 +1,7 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
          xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt" xmlns:local="local">
-                  
-                 <table>
+
+                 <table style="padding:0px;margin:0px;border-collapse:collapse">
                  <tr>
                  	<td style="font-weight:bold">Component</td>
                  	<td style="font-weight:bold">Stream</td>
@@ -13,13 +13,17 @@
             	
                        <!-- <b>${component.getBaseline().getComponent()}, ${component.getBaseline().getStream()}, ${component.getBaseline()}</b>, ${component.getPlevel()}, <j:if test="${component.isFixed()}">Fixed</j:if><j:if test="${!component.isFixed()}">Auto</j:if><br /> -->
                        
-				<tr>
-                 	<td style="padding-right:10px">${component.getBaseline().getComponent().getNormalizedName()}</td>
-                 	<td style="padding-right:10px">${component.getBaseline().getStream().getNormalizedName()}</td>
-                 	<td style="padding-right:10px">${component.getBaseline().getNormalizedName()}</td>
-                 	<td style="padding-right:10px">${component.getPlevel()}</td>
-                 	<td>${component.isFixed()}</td>
-                 </tr>
+                    <j:set var="highlight" value="" />
+                    <j:if test="${component.isChangedLast()}">
+                    	<j:set var="highlight" value="font-weight:bold;border-bottom-style:solid;background-color:#dfdf00" />
+                    </j:if>
+					<tr>
+	                 	<td style="padding-right:10px;${highlight}">${component.getBaseline().getComponent().getNormalizedName()}</td>
+	                 	<td style="padding-right:10px;${highlight}">${component.getBaseline().getStream().getNormalizedName()}</td>
+	                 	<td style="padding-right:10px;${highlight}">${component.getBaseline().getNormalizedName()}</td>
+	                 	<td style="padding-right:10px;${highlight}">${component.getPlevel()}</td>
+	                 	<td style="${highlight}">${component.isFixed()}</td>
+	                 </tr>
                        
 	            </j:forEach>
 	            </table>

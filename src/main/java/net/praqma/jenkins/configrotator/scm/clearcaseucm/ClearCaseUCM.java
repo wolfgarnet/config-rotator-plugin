@@ -218,6 +218,9 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 						oldest = current;
 						chosen = config;
 					}
+					
+					/* Reset */
+					config.setChangedLast( false );
 
 				} catch( Exception e ) {
 					/* No baselines found */
@@ -232,11 +235,13 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		if( chosen != null && oldest != null ) {
 			logger.debug( "There was a baseline: " + oldest );
 			chosen.setBaseline( oldest );
+			chosen.setChangedLast( true );
 		} else {
 			listener.getLogger().println( ConfigurationRotator.LOGGERNAME + "No new baselines" );
 			return null;
 		}
 		
+		listener.getLogger().println( "CONFIGUGAUUFAUFUA: " + nconfig.toString() );
 		
 		return nconfig;
 	}
