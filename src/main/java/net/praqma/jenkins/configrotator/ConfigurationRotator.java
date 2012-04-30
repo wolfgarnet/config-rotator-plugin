@@ -1,10 +1,13 @@
 package net.praqma.jenkins.configrotator;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 import net.praqma.util.debug.Logger;
 import net.praqma.util.debug.Logger.LogLevel;
@@ -14,8 +17,6 @@ import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
-
-import sun.tools.jar.Manifest;
 
 import hudson.AbortException;
 import hudson.Extension;
@@ -108,15 +109,7 @@ public class ConfigurationRotator extends SCM {
 	public boolean checkout( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, File file ) throws IOException, InterruptedException {
 		PrintStream out = listener.getLogger();
 		
-		try {
-			out.println( "DIR IS=" + Jenkins.getInstance().getRootDir() );
-			File m = new File( Jenkins.getInstance().getRootDir(), "plugins/config-rotator/META-INF/MANIFEST.MF" );
-			net.praqma.util.io.Manifest mf = new net.praqma.util.io.Manifest( m );
-			out.println( "Config-rotator version: " + mf.get( "Plugin-Version" ) );
-		} catch( FileNotFoundException e ) {
-			/* This only works when not hpi:run'ning */
-		}
-		
+		out.println( "Config-rotator version: " + Jenkins.getInstance().getPlugin( "config-rotator" ).getWrapper().getVersion() );
 
 		/*
 		 * Configure debugger
