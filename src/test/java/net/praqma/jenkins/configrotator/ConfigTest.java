@@ -313,10 +313,10 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         assertTrue(action.isCompatible());
 
         System.out.println(debugLine + "action.getIconFileName(): " + action.getIconFileName());
-        assertEquals("/plugin/config-rotator/images/rotate.png", action.getIconFileName());
+        assertEquals(null, action.getIconFileName());
 
         System.out.println(debugLine + "action.getDisplayName(): " + action.getDisplayName());
-        assertEquals("Config Rotator", action.getDisplayName());
+        assertEquals(null, action.getDisplayName());
 
         System.out.println(debugLine + "action.getUrlName(): " + action.getUrlName());
         assertEquals("config-rotator", action.getUrlName());
