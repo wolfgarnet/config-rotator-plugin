@@ -22,7 +22,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 
     // Controls how many seconds a test as minimum takes by
     // waiting before asserting on the test.
-    Integer watingSeconds = 30;
+    Integer watingSeconds = 60;
     // A time stamp added to ClearCase Vob names to make them unique for each
     // test. They also include the test name.
     // Division by 60000, giving milis to minute precission asuming all tests do
