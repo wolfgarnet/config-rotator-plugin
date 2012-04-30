@@ -164,6 +164,29 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		return true;
 	}
 	
+	/**
+	 * Reconfigure the project configuration given the targets from the configuration page
+	 * @param workspace A FilePath
+	 * @param listener A TaskListener
+	 * @throws IOException
+	 */
+	public void reconfigure( FilePath workspace, TaskListener listener ) throws IOException {
+		logger.debug( "Getting configuration" );
+		PrintStream out = listener.getLogger();
+		
+		/* Resolve the configuration */
+		ClearCaseUCMConfiguration inputconfiguration = null;
+		try {
+			inputconfiguration = ClearCaseUCMConfiguration.getConfigurationFromTargets( getTargets(), workspace, listener );
+		} catch( ConfigurationRotatorException e ) {
+			out.println( "Unable to parse configuration: " + e.getMessage() );
+			ExceptionUtils.print( e, out, false );
+			throw new AbortException();
+		}
+		
+		projectConfiguration = inputconfiguration;
+	}
+	
 	public void printConfiguration( PrintStream out, AbstractConfiguration cfg ) {
 		out.println( "The configuration is:" );
 		if( cfg instanceof ClearCaseUCMConfiguration ) {
@@ -279,9 +302,12 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	}
 
 	@Override
-	public PollingResult poll( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener ) throws IOException, InterruptedException {
+	public PollingResult poll( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener, boolean reconfigure ) throws IOException, InterruptedException {
 		PrintStream out = listener.getLogger();
 		out.println( ConfigurationRotator.LOGGERNAME + "Polling" );
+		
+		logger.debug( "Reconfiguring project configuration" );
+		reconfigure( workspace, listener );
 		
 		ClearCaseUCMConfiguration configuration = null;
 		if( projectConfiguration == null ) {
