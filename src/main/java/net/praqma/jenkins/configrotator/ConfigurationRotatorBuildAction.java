@@ -62,17 +62,18 @@ public class ConfigurationRotatorBuildAction implements Action {
 
 	@Override
 	public String getIconFileName() {
-		return "/plugin/config-rotator/images/rotate.png";
+		//return "/plugin/config-rotator/images/rotate.png";
+		return null;
 	}
 
 	@Override
 	public String getDisplayName() {
-		return "Config Rotator";
+		return null;
 	}
 
 	@Override
 	public String getUrlName() {
-		return "config-rotator";
+		return null;
 	}
 
 	public AbstractBuild<?, ?> getBuild() {
