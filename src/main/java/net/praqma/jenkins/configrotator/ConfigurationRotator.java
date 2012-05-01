@@ -1,9 +1,13 @@
 package net.praqma.jenkins.configrotator;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 import net.praqma.util.debug.Logger;
 import net.praqma.util.debug.Logger.LogLevel;
@@ -112,6 +116,8 @@ public class ConfigurationRotator extends SCM {
 	@Override
 	public boolean checkout( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, File file ) throws IOException, InterruptedException {
 		PrintStream out = listener.getLogger();
+		
+		out.println( "Config-rotator version: " + Jenkins.getInstance().getPlugin( "config-rotator" ).getWrapper().getVersion() );
 
 		/*
 		 * Configure debugger

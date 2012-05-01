@@ -62,12 +62,12 @@ public class ConfigurationRotatorBuildAction implements Action {
 
 	@Override
 	public String getIconFileName() {
-		return "/plugin/config-rotator/images/rotate.png";
+		return null;
 	}
 
 	@Override
 	public String getDisplayName() {
-		return "Config Rotator";
+		return null;
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package net.praqma.jenkins.configrotator;
+package net.praqma.jenkins.configrotator.integration;
 
 import hudson.AbortException;
 import hudson.Launcher;
@@ -12,6 +12,11 @@ import java.util.List;
 
 import org.junit.Test;
 
+import net.praqma.jenkins.configrotator.ConfigurationRotator;
+import net.praqma.jenkins.configrotator.ConfigurationRotatorBuildAction;
+import net.praqma.jenkins.configrotator.ConfigurationRotatorProjectAction;
+import net.praqma.jenkins.configrotator.ConfigurationRotatorReport;
+import net.praqma.jenkins.configrotator.ConfigurationRotator.ResultType;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCM;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMTarget;
@@ -22,7 +27,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 
     // Controls how many seconds a test as minimum takes by
     // waiting before asserting on the test.
-    Integer watingSeconds = 30;
+    Integer watingSeconds = 60;
     // A time stamp added to ClearCase Vob names to make them unique for each
     // test. They also include the test name.
     // Division by 60000, giving milis to minute precission asuming all tests do
@@ -313,10 +318,10 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         assertTrue(action.isCompatible());
 
         System.out.println(debugLine + "action.getIconFileName(): " + action.getIconFileName());
-        assertEquals("/plugin/config-rotator/images/rotate.png", action.getIconFileName());
+        assertEquals(null, action.getIconFileName());
 
         System.out.println(debugLine + "action.getDisplayName(): " + action.getDisplayName());
-        assertEquals("Config Rotator", action.getDisplayName());
+        assertEquals(null, action.getDisplayName());
 
         System.out.println(debugLine + "action.getUrlName(): " + action.getUrlName());
         assertEquals("config-rotator", action.getUrlName());

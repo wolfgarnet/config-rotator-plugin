@@ -11,14 +11,14 @@
 			<tr>
 				<td rowspan="2" style="padding:10px"><img src="/plugin/config-rotator/images/rotate.png" /></td>
 				<td style="font-weight:bold;font-size:18px;text-align:left">
-				<j:choose>
-					<j:when test="${lastResult.isCompatible()}">
-						<b>${%This configuration is compatible}</b>
-					</j:when>
-					<j:otherwise>
-						<b>${%This configuration is not compatible}</b>
-					</j:otherwise>
-				</j:choose>
+                   <j:choose>
+                       <j:when test="${lastResult.isCompatible()}">
+                           <b>${%The last configuration was compatible}</b>
+                       </j:when>
+                       <j:otherwise>
+                           <b>${%The last configuration was not compatible}</b>
+                       </j:otherwise>
+                   </j:choose>
 				</td>
 			</tr>
 			<tr>

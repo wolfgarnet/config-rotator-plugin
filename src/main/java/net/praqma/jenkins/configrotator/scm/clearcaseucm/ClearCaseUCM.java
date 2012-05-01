@@ -93,11 +93,13 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		
 		/* Check if the project configuration is even set */
 		if( configuration == null ) {
+			logger.debug( "Configuration was null" );
 			return true;
 		}
 		
 		/* Check if the sizes are equal */
 		if( targets.size() != configuration.getList().size() ) {
+			logger.debug( "Size was not equal" );
 			return true;
 		}
 		
@@ -105,6 +107,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		List<ClearCaseUCMTarget> list = getConfigurationAsTargets( configuration );
 		for( int i = 0 ; i < targets.size() ; ++i ) {
 			if( !targets.get( i ).equals( list.get( i ) ) ) {
+				logger.debug( "Configuration was not equal" );
 				return true;
 			}
 		}
@@ -207,7 +210,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		}
 	}
 	
-	private ClearCaseUCMConfiguration nextConfiguration( TaskListener listener, ClearCaseUCMConfiguration configuration, FilePath workspace ) throws IOException, InterruptedException, ConfigurationRotatorException {
+	public ClearCaseUCMConfiguration nextConfiguration( TaskListener listener, ClearCaseUCMConfiguration configuration, FilePath workspace ) throws IOException, InterruptedException, ConfigurationRotatorException {
 		
 		Baseline oldest = null, current;
 		ClearCaseUCMConfigurationComponent chosen = null;
@@ -249,8 +252,6 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 			listener.getLogger().println( ConfigurationRotator.LOGGERNAME + "No new baselines" );
 			return null;
 		}
-		
-		listener.getLogger().println( "CONFIGUGAUUFAUFUA: " + nconfig.toString() );
 		
 		return nconfig;
 	}
