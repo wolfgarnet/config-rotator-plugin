@@ -1,4 +1,4 @@
-package net.praqma.jenkins.configrotator;
+package net.praqma.jenkins.configrotator.integration;
 
 import hudson.AbortException;
 import hudson.Launcher;
@@ -12,6 +12,11 @@ import java.util.List;
 
 import org.junit.Test;
 
+import net.praqma.jenkins.configrotator.ConfigurationRotator;
+import net.praqma.jenkins.configrotator.ConfigurationRotatorBuildAction;
+import net.praqma.jenkins.configrotator.ConfigurationRotatorProjectAction;
+import net.praqma.jenkins.configrotator.ConfigurationRotatorReport;
+import net.praqma.jenkins.configrotator.ConfigurationRotator.ResultType;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCM;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMTarget;
