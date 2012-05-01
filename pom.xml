@@ -87,6 +87,9 @@
 			                <includes>
 			                    <include>net/praqma/jenkins/configrotator/unit/*.java</include>
 			                </includes>
+			                <exclude>
+			                    <include>net/praqma/jenkins/configrotator/integration/*.java</include>
+			                </exclude>
 			            </configuration>
 			        </plugin>
 			    </plugins>
