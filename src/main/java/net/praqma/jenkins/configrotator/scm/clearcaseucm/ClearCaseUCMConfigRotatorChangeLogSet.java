@@ -37,5 +37,11 @@ public class ClearCaseUCMConfigRotatorChangeLogSet extends ConfigRotatorChangeLo
     public Iterator<ClearCaseUCMConfigRotatorEntry> iterator() {
         return (Iterator<ClearCaseUCMConfigRotatorEntry>) entries.iterator();
     }
-     
+    
+    @Override
+    public String toString() {
+        return entries.toString();
+    }
+    
+    
 }

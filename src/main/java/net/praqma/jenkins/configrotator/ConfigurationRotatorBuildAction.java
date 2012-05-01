@@ -79,7 +79,7 @@ public class ConfigurationRotatorBuildAction implements Action {
 		return build;
 	}
 	
-	public AbstractConfiguration getConfiguration() {
+	public AbstractConfiguration<AbstractConfigurationComponent> getConfiguration() {
 		return configuration;
 	}
     

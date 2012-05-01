@@ -47,7 +47,7 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
             // say anything about configuration.
             localListener.getLogger().println("onCompleted runlistener - action: " + action);
             if (action != null) {
-                ClearCaseUCMConfiguration configuration = (ClearCaseUCMConfiguration) action.getConfiguration();
+                ClearCaseUCMConfiguration configuration = (ClearCaseUCMConfiguration) action.getConfiguration(ClearCaseUCMConfiguration.class);
                 List<ClearCaseUCMConfigurationComponent> components = configuration.getList();
                 
                 String componentNameList = "";

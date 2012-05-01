@@ -1,4 +1,0 @@
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-  <h2>${%Summary}</h2>
-  <p>This page is used to display the detailed log on the changes page...</p>
-</j:jelly>

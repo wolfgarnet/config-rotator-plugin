@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
 import org.apache.commons.digester.Digester;
@@ -28,18 +29,34 @@ public class ClearCaseUCMConfigRotatorChangeLogParser extends ConfigRotatorChang
         Digester digester = new Digester2();
         List<ClearCaseUCMConfigRotatorEntry> changesetList = new ArrayList<ClearCaseUCMConfigRotatorEntry>();
         digester.push(changesetList);
-        
-        /**
-         * Do stuff 
-         */ 
-        
-        
+        digester.addObjectCreate("*/changelog/entry", ClearCaseUCMConfigRotatorEntry.class);
+        digester.addSetProperties("*/changelog/entry");
+        digester.addBeanPropertySetter("*/changelog/entry/owner");
+        digester.addBeanPropertySetter("*/changelog/entry/date");
+        digester.addBeanPropertySetter("*/changelog/entry/componentChange");
+        digester.addSetNext("*/changelog/entry", "add");
+                
         FileReader reader = new FileReader(changelogFile);
         digester.parse(reader);
         reader.close();
         
         ClearCaseUCMConfigRotatorChangeLogSet clogSet = new ClearCaseUCMConfigRotatorChangeLogSet(build, changesetList);
+        System.out.println(clogSet);
         return clogSet;
         
     }
 }
+
+/*
+
+ 	 Source: http://wiki.hudson-ci.org/display/HUDSON/Change+log
+
+		Digester digester = new Digester2();
+		digester.push( entries );
+		digester.addObjectCreate( "/entry/activity", ChangeLogEntryImpl.class );
+		digester.addSetProperties( "/entry/activity" );
+		digester.addBeanPropertySetter( "/entry/activity/file", "nextFilepath" );
+		digester.addBeanPropertySetter( /entry/activity/actName" );
+		digester.addBeanPropertySetter( /entry/activity/author", "myAuthor" );
+		digester.addSetNext( "/entry/activity", "add" );
+*/

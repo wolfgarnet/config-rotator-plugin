@@ -89,7 +89,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 			return true;
 		}
 		
-		ClearCaseUCMConfiguration configuration = (ClearCaseUCMConfiguration) action.getConfiguration();
+		ClearCaseUCMConfiguration configuration = action.getConfiguration(ClearCaseUCMConfiguration.class);
 		
 		/* Check if the project configuration is even set */
 		if( configuration == null ) {
@@ -137,7 +137,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		} else {
 			logger.debug( "Action was NOT null" );
 			/* Get the configuration from the action */
-			ClearCaseUCMConfiguration oldconfiguration = (ClearCaseUCMConfiguration) action.getConfiguration();
+			ClearCaseUCMConfiguration oldconfiguration = action.getConfiguration(ClearCaseUCMConfiguration.class);
 			/* Get next configuration */
 			try {
 				logger.debug( "Obtaining new configuration based on old" );
@@ -310,13 +310,13 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
     
     @Override
 	public void setConfigurationByAction( AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action ) throws IOException {
-		if( action.getConfiguration() instanceof ClearCaseUCMConfiguration ) {
-			ClearCaseUCMConfiguration c = (ClearCaseUCMConfiguration)action.getConfiguration();
-			this.projectConfiguration = c;
-			project.save();
-		} else {
-			throw new AbortException( "Not a valid configuration" );
-		}
+        ClearCaseUCMConfiguration c = action.getConfiguration(ClearCaseUCMConfiguration.class);
+        if(c == null) {
+            throw new AbortException( "Not a valid configuration" );
+        } else {
+            this.projectConfiguration = c;
+            project.save();
+        }
 	}
 
 	@Override
@@ -342,7 +342,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 					return PollingResult.BUILD_NOW;
 				}
 				
-				configuration = (ClearCaseUCMConfiguration) action.getConfiguration();
+				configuration = action.getConfiguration(ClearCaseUCMConfiguration.class);
 			}
 		} else {
 			out.println( ConfigurationRotator.LOGGERNAME + "Project configuration was not null" );

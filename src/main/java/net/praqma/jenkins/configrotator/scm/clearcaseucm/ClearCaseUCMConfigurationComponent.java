@@ -89,26 +89,3 @@ public class ClearCaseUCMConfigurationComponent extends AbstractConfigurationCom
     
     
 }
-
-/*
-                 <table>
-                 <tr>
-                 	<td style="font-weight:bold">Component</td>
-                 	<td style="font-weight:bold">Stream</td>
-                 	<td style="font-weight:bold">Baseline</td>
-                 	<td style="font-weight:bold">Level</td>
-                 	<td style="font-weight:bold">Fixed</td>
-                 </tr>
-            	<j:forEach var="component" items="${it.getList()}">
-            	
-                       <!-- <b>${component.getBaseline().getComponent()}, ${component.getBaseline().getStream()}, ${component.getBaseline()}</b>, ${component.getPlevel()}, <j:if test="${component.isFixed()}">Fixed</j:if><j:if test="${!component.isFixed()}">Auto</j:if><br /> -->
-                       
-				<tr>
-                 	<td style="padding-right:10px">${component.getBaseline().getComponent().getNormalizedName()}</td>
-                 	<td style="padding-right:10px">${component.getBaseline().getStream().getNormalizedName()}</td>
-                 	<td style="padding-right:10px">${component.getBaseline().getNormalizedName()}</td>
-                 	<td style="padding-right:10px">${component.getPlevel()}</td>
-                 	<td>${component.isFixed()}</td>
-                 </tr>
-                 * 
-                 */

@@ -4,6 +4,7 @@ import hudson.model.AbstractBuild;
 import hudson.scm.ChangeLogSet;
 import java.util.ArrayList;
 import java.util.List;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigRotatorEntry;
 
 /**
  *
@@ -12,11 +13,11 @@ import java.util.List;
 public abstract class ConfigRotatorChangeLogSet<T extends ConfigRotatorEntry> extends ChangeLogSet<T> {
     
     
-    protected List<? extends ConfigRotatorEntry> entries;
+    protected List<T> entries;
     
     public ConfigRotatorChangeLogSet(AbstractBuild<?,?> build) {
         super(build);
-        entries = new ArrayList<ConfigRotatorEntry>();
+        entries = new ArrayList<T>();
     }
 
     @Override
@@ -24,5 +25,16 @@ public abstract class ConfigRotatorChangeLogSet<T extends ConfigRotatorEntry> ex
         return entries.isEmpty();
     }
     
-    
+    /**
+     * Adds the entry to the changelogset
+     * @param entry 
+     */
+    public void add(T entry) {
+        entries.add(entry);
+    }
+
+    public List<T> getEntries() {
+        return entries;
+    }
+   
 }

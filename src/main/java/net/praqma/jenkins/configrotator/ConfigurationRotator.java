@@ -18,10 +18,7 @@ import hudson.AbortException;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
-import hudson.model.BuildListener;
-import hudson.model.TaskListener;
-import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
+import hudson.model.*;
 import hudson.scm.ChangeLogParser;
 import hudson.scm.PollingResult;
 import hudson.scm.SCMDescriptor;
@@ -29,7 +26,16 @@ import hudson.scm.SCMRevisionState;
 import hudson.scm.SCM;
 import hudson.tasks.Publisher;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.logging.Level;
+import javax.security.auth.callback.ConfirmationCallback;
 import jenkins.model.Jenkins;
+import net.praqma.clearcase.ucm.entities.Version;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseGetBaseLineCompare;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigurationComponent;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.GetConfiguration;
 
 public class ConfigurationRotator extends SCM {
 
@@ -117,7 +123,10 @@ public class ConfigurationRotator extends SCM {
 			app.lockToCurrentThread();
 			Logger.addAppender( app );
 		}
-
+        
+       
+        
+       
 		/*
 		 * Determine if the job was reconfigured
 		 */
@@ -125,10 +134,17 @@ public class ConfigurationRotator extends SCM {
 			reconfigure = acrs.wasReconfigured( build.getProject() );
 			logger.debug( "Was reconfigured: " + reconfigure );
 		}
+        
+
 
 		boolean performResult = false;
 		try {
 			performResult = acrs.perform( build, launcher, workspace, listener, reconfigure );
+            try {
+                writeChangeLog(file, listener, build);
+            } catch (ConfigurationRotatorException ex) {
+                out.println("Cleartool Checkout exception: "+ex);
+            }
 		} catch( AbortException e ) {
 			out.println( LOGGERNAME + "Failed to check out" );
 			throw e;
@@ -197,14 +213,69 @@ public class ConfigurationRotator extends SCM {
         return acrs.createChangeLogParser();
     }
     
-    public void writeChangeLog(File f, BuildListener listener) throws IOException {
+    public void writeChangeLog(File f, BuildListener listener, AbstractBuild<?, ?> build) throws IOException, ConfigurationRotatorException, InterruptedException {
         PrintWriter writer = null;
-        try {
+        String name = "NoName ";
+
+        //First obtain last succesful result
+        ConfigurationRotatorBuildAction crbac = acrs.getLastResult(build.getProject(), acrs.getClass());
+        
+        //Special case: This is the first build
+         if(crbac == null) {
             
+        } else {
+             List<AbstractConfigurationComponent> previousComponentList = crbac.getConfiguration().getList();
+             List<AbstractConfigurationComponent> currentComponentList = null;
+             ConfigurationRotatorBuildAction current = build.getAction(ConfigurationRotatorBuildAction.class);
+             if(current != null)
+                 currentComponentList = current.getConfiguration().getList();
+             
+             int compareIndex = -1;
+             
+             if(currentComponentList != null) {
+                for(AbstractConfigurationComponent acc : currentComponentList) {
+                    if(acc.isChangedLast()) {
+                        compareIndex = currentComponentList.indexOf(acc);
+                        break;
+                    }
+                }
+             }
+             
+             //The compare is totally new. Else compare the previous component
+             if(compareIndex == -1) {
+                 
+             } else {
+                 if(currentComponentList.get(compareIndex) instanceof ClearCaseUCMConfigurationComponent) {
+                    ClearCaseUCMConfigurationComponent now = (ClearCaseUCMConfigurationComponent)currentComponentList.get(compareIndex);
+                    ClearCaseUCMConfigurationComponent before = (ClearCaseUCMConfigurationComponent)previousComponentList.get(compareIndex);
+                    //Version.getBaselineDiff(now, before, reconfigure, f)
+                    name = "Was: "+before.toString()+ " Now is: "+now.toString(); 
+                    //NOW COMPARE BASELINES!
+                    List<String> changes = build.getWorkspace().act(new ClearCaseGetBaseLineCompare(listener, current.getConfiguration(ClearCaseUCMConfiguration.class), crbac.getConfiguration(ClearCaseUCMConfiguration.class)));
+                    name+= String.format(" found %s chaanges using clearcase", changes.size());
+                    if(changes != null) {
+                        
+                        for(String s : changes) {
+                            name+=s;
+                        }
+                    }
+                 }
+             }
+        }
+        
+        try {
             writer = new PrintWriter(new FileWriter(f));
             writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-            writer.println("<changelog>");        
+            writer.println("<changelog>");
+            writer.println("<entry>");
+            writer.println(String.format("<owner>%s</owner>", "TestOwner"));
+            writer.println(String.format("<componentChange>%s</componentChange>", name));
+            writer.println(String.format("<date>%s</date>", new Date().toString()));
+            
+            writer.println("</entry>");
+            
             writer.println("</changelog>");
+            listener.getLogger().println("Finished writing to change log!");
         
         } catch (IOException e) {
             listener.getLogger().println("Unable to create change log!" +e);

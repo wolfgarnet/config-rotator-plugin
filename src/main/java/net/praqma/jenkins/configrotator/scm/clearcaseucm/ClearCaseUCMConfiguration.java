@@ -1,26 +1,30 @@
 package net.praqma.jenkins.configrotator.scm.clearcaseucm;
 
 import hudson.FilePath;
-import hudson.model.BuildListener;
 import hudson.model.TaskListener;
+import hudson.remoting.VirtualChannel;
+import java.io.File;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import net.praqma.clearcase.exceptions.CleartoolException;
+import net.praqma.clearcase.exceptions.UCMEntityNotFoundException;
+import net.praqma.clearcase.exceptions.UnableToInitializeEntityException;
+import net.praqma.clearcase.exceptions.UnableToLoadEntityException;
+import net.praqma.clearcase.ucm.entities.Activity;
+import net.praqma.clearcase.ucm.entities.Version;
 
-import org.apache.tools.ant.taskdefs.Get;
-
-import net.praqma.clearcase.ucm.entities.Baseline;
 import net.praqma.clearcase.ucm.view.SnapshotView;
 import net.praqma.jenkins.configrotator.AbstractConfiguration;
-import net.praqma.jenkins.configrotator.AbstractConfigurationComponent;
 import net.praqma.jenkins.configrotator.ConfigurationRotator;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorException;
+import net.praqma.util.debug.Logger;
+import net.praqma.util.debug.PraqmaLogger;
 
-public class ClearCaseUCMConfiguration extends AbstractConfiguration {
-	
-	private List<ClearCaseUCMConfigurationComponent> list;
+public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUCMConfigurationComponent> {
+
 	private SnapshotView view;
 	
 	public ClearCaseUCMConfiguration() {
@@ -51,10 +55,6 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration {
 	
 	public SnapshotView getView() {
 		return view;
-	}
-	
-	public List<ClearCaseUCMConfigurationComponent> getList() {
-		return list;
 	}
 	
 	public static ClearCaseUCMConfiguration getConfigurationFromTargets( List<ClearCaseUCMTarget> targets, FilePath workspace, TaskListener listener ) throws ConfigurationRotatorException, IOException {
@@ -88,7 +88,8 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration {
 		
 		return configuration;
 	}
-	
+    
+	@Override
 	public String toString() {
 		return list.toString();
 	}
@@ -150,5 +151,35 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration {
         builder.append("</table>");
         return builder.toString();
     }
+    
+    @Override
+    public List<String> difference(AbstractConfiguration<ClearCaseUCMConfigurationComponent> configuration) throws ConfigurationRotatorException {
+        List<String> changes = new ArrayList<String>();
+        List<ClearCaseUCMConfigurationComponent> components = getList();
+        //Find changed component
+        for(ClearCaseUCMConfigurationComponent comp : components) {
+            if(comp.isChangedLast()) {
+                try {
+                    int index = components.indexOf(comp);
+                    
+                    List<Activity> activities = Version.getBaselineDiff(configuration.getList().get(index).getBaseline(),comp.getBaseline(), true, new File(getView().getPath()));
+                    
+                    Logger.getLogger().debug("Printing list of activities:" +activities);
+                    for(Activity a : activities) {
+                        changes.add(a.toString());
+                    }
 
+                } catch (CleartoolException ex) {
+                    throw new ConfigurationRotatorException("Cleartool error:", ex);
+                } catch (UnableToLoadEntityException ex) {
+                    throw new ConfigurationRotatorException("Cleartool error: unable to load entity", ex);
+                } catch (UCMEntityNotFoundException ex) {
+                    throw new ConfigurationRotatorException("Entity not found error:", ex);
+                } catch (UnableToInitializeEntityException ex) {
+                    throw new ConfigurationRotatorException("Unable to initalize entity error:", ex);
+                }
+            }
+        }       
+        return changes;
+    }
 }
