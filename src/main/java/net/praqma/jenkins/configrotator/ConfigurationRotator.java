@@ -41,15 +41,21 @@ public class ConfigurationRotator extends SCM {
 
 	public enum ResultType {
 
-		COMPATIBLE, /*
-					 * Tested and configuration is compatible
-					 */
-		INCOMPATIBLE, /*
-					 * Tested and configuration is NOT compatible
-					 */
-		FAILED, /*
-				 * The tests failed and was unable to determine compatibility
-				 */
+		/*
+		 * Tested and configuration is compatible
+		 */
+		COMPATIBLE,
+		
+		/*
+		 * Tested and configuration is NOT compatible
+		 */
+		INCOMPATIBLE, 
+		
+		FAILED,
+		
+		 /*
+		 * The tests failed and was unable to determine compatibility
+		 */
 		UNDETERMINED
 	}
 
