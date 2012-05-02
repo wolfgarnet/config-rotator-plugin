@@ -16,12 +16,12 @@
                            
                            <b> ${lastResult.getHeadline()}</b>
                            <br/>
-                           ${%The last configuration was compatible}
+                           <span style="font-size:12px;">${%The last configuration was compatible}</span>
                        </j:when>
                        <j:otherwise>
                            <b>${lastResult.getHeadline()}</b>   
                            <br/>
-                           ${%The last configuration was not compatible}
+                           <span style="font-size:12px;">${%The last configuration was not compatible}</span>
                        </j:otherwise>
                    </j:choose>
 				</td>

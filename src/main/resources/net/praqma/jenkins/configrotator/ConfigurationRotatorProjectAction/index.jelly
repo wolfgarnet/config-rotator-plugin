@@ -13,12 +13,12 @@
                             <j:when test="${action.isCompatible()}">
                                 <b>${action.getHeadline()}</b>
                                 <br/>
-                                ${%This configuration is compatible}
+                                <span style="font-size:12px;">${%This configuration is compatible}</span>
                             </j:when>
                             <j:otherwise>
                                 <b>${action.getHeadline()}</b>
                                 <br/>
-                                ${%This configuration is not compatible}
+                                <span style="font-size:12px;">${%This configuration is not compatible}</span>
                             </j:otherwise>
                         </j:choose>
                         </td>
