@@ -5,8 +5,6 @@
 package net.praqma.jenkins.configrotator.scm;
 
 import hudson.scm.ChangeLogParser;
-import hudson.util.Digester2;
-import org.apache.commons.digester.Digester;
 
 /**
  *

@@ -5,11 +5,11 @@
             ${%No changes.}
         </j:when>
         <j:otherwise>
-        Changes
         <ol>
+            <h4>List of changed files</h4>
             <j:forEach var="cs" items="${it.items}" varStatus="loop">
             <li>
-                ${cs.msg} - ${cs.owner} - ${cs.componentChange}
+                ${cs.componentChange}
             </li>
             </j:forEach>
         </ol>

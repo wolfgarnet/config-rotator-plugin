@@ -9,6 +9,7 @@ import hudson.model.BuildListener;
 import hudson.remoting.VirtualChannel;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorException;
 import net.praqma.util.debug.Logger;
@@ -31,10 +32,12 @@ public class ClearCaseGetBaseLineCompare implements FilePath.FileCallable<List<S
 
     @Override
     public List<String> invoke(File f, VirtualChannel channel) throws IOException, InterruptedException {
-        List<String> changes = null;
+        List<String> changes = new ArrayList<String>();
+        //TODO:REMOVE THESE BEFORE GOING LIVE//
         StreamAppender app = new StreamAppender(listener.getLogger());
         app.setMinimumLevel(Logger.LogLevel.DEBUG);
         Logger.addAppender(app);
+        ///////////////////////////////////////
         try {
             changes = current.difference(compareto);          
         } catch (ConfigurationRotatorException ex) {

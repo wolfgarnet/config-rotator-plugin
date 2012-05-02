@@ -74,16 +74,20 @@ public class ClearCaseUCMConfigurationComponent extends AbstractConfigurationCom
     /**
      * Test method...
      * 
-     * @return 
+     * @return a html'ified version of this clearcase components. In this case it is a table row.
      */
     public String toHtml() {
         StringBuilder builder = new StringBuilder();
         builder.append("<tr>");
-        builder.append("<td>").append(baseline.getComponent().getNormalizedName()).append("</td>");
-        builder.append("<td>").append(baseline.getStream().getNormalizedName()).append("</td>");
-        builder.append("<td>").append(baseline.getNormalizedName()).append("</td>");
-        builder.append("<td>").append(plevel.toString()).append("</td>");
-        builder.append("<td>").append(fixed).append("</td>").append("</tr>");
+        builder.append("<td style=\"padding:5px 10px;\">").append(baseline.getComponent().getNormalizedName()).append("</td>");
+        builder.append("<td style=\"padding:5px 10px;\">").append(baseline.getStream().getNormalizedName()).append("</td>");
+        if(isChangedLast()) {
+            builder.append("<td style=\"font-weight:bold;color:#FF6633;padding:5px 10px;\">").append(baseline.getNormalizedName()).append("</td>");
+        } else {
+            builder.append("<td style=\"padding:5px 10px;\">").append(baseline.getNormalizedName()).append("</td>");
+        }
+        builder.append("<td style=\"padding:5px 10px;\">").append(plevel.toString()).append("</td>");
+        builder.append("<td style=\"padding:5px 10px;\">").append(fixed).append("</td>").append("</tr>");
         return builder.toString();
     }
     

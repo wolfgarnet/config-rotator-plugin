@@ -22,8 +22,8 @@ import org.xml.sax.SAXException;
  *
  * @author Praqma
  */
-public class ClearCaseUCMConfigRotatorChangeLogParser extends ConfigRotatorChangeLogParser{
-
+public class ClearCaseUCMConfigRotatorChangeLogParser extends ConfigRotatorChangeLogParser {
+   
     @Override
     public ChangeLogSet<? extends Entry> parse(AbstractBuild build, File changelogFile) throws IOException, SAXException {
         Digester digester = new Digester2();
@@ -46,17 +46,3 @@ public class ClearCaseUCMConfigRotatorChangeLogParser extends ConfigRotatorChang
         
     }
 }
-
-/*
-
- 	 Source: http://wiki.hudson-ci.org/display/HUDSON/Change+log
-
-		Digester digester = new Digester2();
-		digester.push( entries );
-		digester.addObjectCreate( "/entry/activity", ChangeLogEntryImpl.class );
-		digester.addSetProperties( "/entry/activity" );
-		digester.addBeanPropertySetter( "/entry/activity/file", "nextFilepath" );
-		digester.addBeanPropertySetter( /entry/activity/actName" );
-		digester.addBeanPropertySetter( /entry/activity/author", "myAuthor" );
-		digester.addSetNext( "/entry/activity", "add" );
-*/

@@ -4,16 +4,17 @@ import hudson.model.AbstractBuild;
 import hudson.scm.ChangeLogSet;
 import java.util.ArrayList;
 import java.util.List;
-import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigRotatorEntry;
 
 /**
  *
  * @author Praqma
  */
-public abstract class ConfigRotatorChangeLogSet<T extends ConfigRotatorEntry> extends ChangeLogSet<T> {
+public abstract class ConfigRotatorChangeLogSet<T extends ConfigRotatorEntry> extends ChangeLogSet<T> implements ConfigRotatorChangeSetDescriptor{
     
     
     protected List<T> entries;
+    protected String headline;
+    public static final String EMPTY_DESCRIPTOR = "New configuration - No changes";
     
     public ConfigRotatorChangeLogSet(AbstractBuild<?,?> build) {
         super(build);
@@ -36,5 +37,14 @@ public abstract class ConfigRotatorChangeLogSet<T extends ConfigRotatorEntry> ex
     public List<T> getEntries() {
         return entries;
     }
-   
+
+    @Override
+    public String getHeadline() {
+        return headline;
+    }
+
+    @Override
+    public void setHeadline(String headline) {
+        this.headline = headline;
+    }
 }

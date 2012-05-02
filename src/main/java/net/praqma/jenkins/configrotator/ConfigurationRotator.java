@@ -61,6 +61,7 @@ public class ConfigurationRotator extends SCM {
 		UNDETERMINED
 	}
 
+    public static final String URL_NAME = "config-rotator";
 	public static final String NAME = "ConfigRotator";
 	public static final String LOGGERNAME = "[" + NAME + "] ";
 	public boolean justConfigured = false;
@@ -222,7 +223,7 @@ public class ConfigurationRotator extends SCM {
     public void writeChangeLog(File f, BuildListener listener, AbstractBuild<?, ?> build) throws IOException, ConfigurationRotatorException, InterruptedException {
         PrintWriter writer = null;
         String name = "NoName ";
-
+        List<String> changes = new ArrayList<String>();
         //First obtain last succesful result
         ConfigurationRotatorBuildAction crbac = acrs.getLastResult(build.getProject(), acrs.getClass());
         
@@ -230,6 +231,7 @@ public class ConfigurationRotator extends SCM {
          if(crbac == null) {
             
         } else {
+             
              List<AbstractConfigurationComponent> previousComponentList = crbac.getConfiguration().getList();
              List<AbstractConfigurationComponent> currentComponentList = null;
              ConfigurationRotatorBuildAction current = build.getAction(ConfigurationRotatorBuildAction.class);
@@ -252,36 +254,27 @@ public class ConfigurationRotator extends SCM {
                  
              } else {
                  if(currentComponentList.get(compareIndex) instanceof ClearCaseUCMConfigurationComponent) {
-                    ClearCaseUCMConfigurationComponent now = (ClearCaseUCMConfigurationComponent)currentComponentList.get(compareIndex);
-                    ClearCaseUCMConfigurationComponent before = (ClearCaseUCMConfigurationComponent)previousComponentList.get(compareIndex);
-                    //Version.getBaselineDiff(now, before, reconfigure, f)
-                    name = "Was: "+before.toString()+ " Now is: "+now.toString(); 
-                    //NOW COMPARE BASELINES!
-                    List<String> changes = build.getWorkspace().act(new ClearCaseGetBaseLineCompare(listener, current.getConfiguration(ClearCaseUCMConfiguration.class), crbac.getConfiguration(ClearCaseUCMConfiguration.class)));
-                    name+= String.format(" found %s chaanges using clearcase", changes.size());
-                    if(changes != null) {
-                        
-                        for(String s : changes) {
-                            name+=s;
-                        }
-                    }
+                    //ClearCaseUCMConfigurationComponent now = (ClearCaseUCMConfigurationComponent)currentComponentList.get(compareIndex);
+                    //ClearCaseUCMConfigurationComponent before = (ClearCaseUCMConfigurationComponent)previousComponentList.get(compareIndex);
+                    changes = build.getWorkspace().act(new ClearCaseGetBaseLineCompare(listener, current.getConfiguration(ClearCaseUCMConfiguration.class), crbac.getConfiguration(ClearCaseUCMConfiguration.class)));
                  }
              }
         }
         
         try {
+            
             writer = new PrintWriter(new FileWriter(f));
-            writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-            writer.println("<changelog>");
-            writer.println("<entry>");
-            writer.println(String.format("<owner>%s</owner>", "TestOwner"));
-            writer.println(String.format("<componentChange>%s</componentChange>", name));
-            writer.println(String.format("<date>%s</date>", new Date().toString()));
-            
-            writer.println("</entry>");
-            
-            writer.println("</changelog>");
-            listener.getLogger().println("Finished writing to change log!");
+            if(changes.size() > 0) {
+                writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+                writer.println("<changelog>");
+                writer.println("<entry>");
+                writer.println(String.format("<owner>%s</owner>", "TestOwner"));
+                writer.println(String.format("<componentChange>%s</componentChange>", changes.get(0)));
+                writer.println(String.format("<date>%s</date>", new Date().toString()));
+                writer.println("</entry>");      
+                writer.println("</changelog>");
+                listener.getLogger().println("Finished writing to change log!");
+            }
         
         } catch (IOException e) {
             listener.getLogger().println("Unable to create change log!" +e);

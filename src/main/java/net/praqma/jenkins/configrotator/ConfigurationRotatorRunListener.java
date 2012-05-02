@@ -13,7 +13,12 @@ import java.io.*;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 import net.praqma.html.Html;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogSet;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeSetDescriptor;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigRotatorChangeLogSet;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigRotatorEntry;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigurationComponent;
 import net.praqma.util.xml.feed.*;
@@ -38,6 +43,7 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
     @Override
     public void onCompleted(Run run, TaskListener listener) {
         localListener = listener;
+        
         AbstractBuild<?, ?> build = (AbstractBuild<?, ?>) run;
 
         if (build.getProject().getScm() instanceof ConfigurationRotator) {
@@ -47,7 +53,7 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
             // say anything about configuration.
             localListener.getLogger().println("onCompleted runlistener - action: " + action);
             if (action != null) {
-                ClearCaseUCMConfiguration configuration = (ClearCaseUCMConfiguration) action.getConfiguration(ClearCaseUCMConfiguration.class);
+                ClearCaseUCMConfiguration configuration = action.getConfiguration(ClearCaseUCMConfiguration.class);
                 List<ClearCaseUCMConfigurationComponent> components = configuration.getList();
                 
                 String componentNameList = "";
@@ -73,7 +79,7 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                                 + "defaultRunListenerError" + ".xml");
                         File feedFileDir = new File(ConfigurationRotator.FEED_FULL_PATH + 
                                 "defaultRunListenerError" + ConfigurationRotator.SEPARATOR);
-                        localListener.getLogger().println("onCompleted runlistener - DEFAULT componentFileName: " + feedFile.toString());
+                        
                         String componentPVob = "defaultRunlistenerErrorPvob";
                         try
                         {
@@ -83,8 +89,7 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                                     ConfigurationRotator.SEPARATOR + componentName + ".xml");
                             feedFileDir = new File(ConfigurationRotator.FEED_FULL_PATH + componentPVob +
                                     ConfigurationRotator.SEPARATOR);
-                        } catch (Exception ex) // we will handle all exception the same way
-                        {
+                        } catch (Exception ex) {
                             // if we can not load PVob name, the correct feed can not be written
                             // so we use a default one.
                             localListener.getLogger().println("onCompleted runlistener - caught Exception, trying to load PVob name. build: "
@@ -92,44 +97,46 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                             + ". Exception was: " + ex.getMessage());
                         }
                       
-                        localListener.getLogger().println("onCompleted runlistener - REAL componentFileName: " + feedFile.toString());
                         
                         // required feed element - need to create feed
                         String feedId = ConfigurationRotatorReport.CreateFeedUrl(componentPVob, componentName); // feed URL
                         String feedTitle = componentName;
                         Date updated = new Date();
-                        Feed feed = getFeedFromFile(feedFile,
-                                feedTitle, feedId, updated);
+                        Feed feed = getFeedFromFile(feedFile, feedTitle, feedId, updated);
+
                         
                         String id = "'" + build.getParent().getDisplayName() + "'#" + build.getNumber() + ":" + componentName + "@" + componentPVob;
-                        localListener.getLogger().println("onCompleted runlistener - feed id is: " + id);
-                        localListener.getLogger().println("onCompleted runlistener - feed.getXML" + feed.getXML( new AtomPublisher() ) );
-                        Entry e = new Entry(componentName + " in new " + action.getResult().toString() + " configuration",
-                                id, updated);
+
+                        Entry e = new Entry(componentName + " in new " + action.getResult().toString() + " configuration", id, updated);
                         localListener.getLogger().println("onCompleted runlistener - entry created");
                         e.summary = componentName + " found to be " + action.getResult().toString() + " with "
                                 + components.size() + " other components";
-                        localListener.getLogger().println("onCompleted runlistener - entry summary added");
-                        localListener.getLogger().println("onCompleted runlistener - entry summary :" + e.summary);
+ 
                         e.author = new Person("Jenkins job using config-rotator. Job: "
                                 + build.getParent().getDisplayName() + ", build: #" + build.getNumber());
-                        localListener.getLogger().println("onCompleted runlistener - entry author added");
-                        localListener.getLogger().println("onCompleted runlistener - entry author:" + e.author);
                         
-                        String originalContent = "Your Jenkins Config-rotator job: " + build.getParent().getDisplayName() + ", build #" + build.getNumber()
-                                + "finished at " + buildFinishTime.toString()
-                                + " found the following components to be " + action.getResult().toString() + " :"
-                                + componentNameList;
                         
-                        e.content = configuration.toHtml()+new Html.Paragraph("Link to this feed: "+new Html.Anchor(ConfigurationRotatorReport.CreateFeedUrl("", componentName)));
-                        localListener.getLogger().println("onCompleted runlistener - entry content added");
-                        localListener.getLogger().println("onCompleted runlistener - entry content:" + e.content);
-                        localListener.getLogger().println("onCompleted runlistener - entry done");
-                        localListener.getLogger().println("onCompleted runlistener - entry added: " + e.toString());
+                        //Now. Let's harvest the headline generated by this config change
+                        if(build.getChangeSet() instanceof ConfigRotatorChangeSetDescriptor) {
+                            ConfigRotatorChangeSetDescriptor cset = (ConfigRotatorChangeSetDescriptor)build.getChangeSet();
+                            if(cset != null) {
+                                if( cset.getHeadline() != null ) {
+                                    e.content = new Html.Paragraph(cset.getHeadline()).toString();
+                                }
+                            }
+                        } else if(build.getChangeSet().isEmptySet()) {
+                            e.content = new Html.Paragraph(ConfigRotatorChangeLogSet.EMPTY_DESCRIPTOR).toString();
+                        }
+                        
+                        Html.Break br1 = new Html.Break();
+                        Html.Anchor linkFeeds = new Html.Anchor(ConfigurationRotatorReport.FeedFrontpageUrl(), "Click here for a list of available feeds");
+                        Html.Break br2 = new Html.Break();
+                        Html.Anchor joblink = new Html.Anchor(ConfigurationRotatorReport.GenerateJobUrl(build),"Click here to go to the build that created this feed");
+                        
+                        e.content += configuration.toHtml()+br1+linkFeeds+br2+joblink;
+                        
                         feed.addEntry(e);
-                        localListener.getLogger().println("onCompleted runlistener - entry added done");
-                        localListener.getLogger().println("onCompleted runlistener - feed.getXML after entry add" + feed.getXML( new AtomPublisher() ) );
-                        localListener.getLogger().println("onCompleted runlistener - done adding entry.");
+
                         writeFeedToFile(feed, feedFile, feedFileDir);
                         localListener.getLogger().println("onCompleted runlistener - done writing to file");
                     }

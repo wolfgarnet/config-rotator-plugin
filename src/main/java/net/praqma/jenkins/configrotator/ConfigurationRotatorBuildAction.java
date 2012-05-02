@@ -11,6 +11,8 @@ import net.praqma.jenkins.configrotator.ConfigurationRotator.ResultType;
 import hudson.model.AbstractBuild;
 import hudson.model.Action;
 import hudson.scm.SCM;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogSet;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigRotatorChangeLogSet;
 
 public class ConfigurationRotatorBuildAction implements Action {
 	
@@ -43,6 +45,16 @@ public class ConfigurationRotatorBuildAction implements Action {
 		}
 	}
 	
+    /**
+     * Returs a description of the changes performed in this build.
+     */
+    public String getHeadline() {
+        String headline = ConfigRotatorChangeLogSet.EMPTY_DESCRIPTOR;
+        if(build.getChangeSet() instanceof ClearCaseUCMConfigRotatorChangeLogSet) {
+            headline = ((ClearCaseUCMConfigRotatorChangeLogSet)build.getChangeSet()).getHeadline();
+        }
+        return headline;
+    }
 	
 	public void setResult( ResultType result ) {
 		this.result = result;

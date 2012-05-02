@@ -9,7 +9,7 @@
         <ol>
             <j:forEach var="cs" items="${it.items}" varStatus="loop">
             <li>
-                ${cs.msg}
+               ${cs.msgAnnotated} (<a href="changes#detail${loop.index}">detail</a>)
             </li>
             </j:forEach>
         </ol>

@@ -11,6 +11,7 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
 import hudson.Extension;
+import hudson.model.AbstractBuild;
 import hudson.model.UnprotectedRootAction;
 import hudson.model.AbstractModelObject;
 import java.io.*;
@@ -24,7 +25,8 @@ import jenkins.model.Jenkins;
 public class ConfigurationRotatorReport extends AbstractModelObject implements UnprotectedRootAction {
     
     private static final String XML_EXTENSION = ".xml";
-    private static final String DEFAULT_URL = "http://localhost";
+    private static final int PORT = 8080;
+    private static final String DEFAULT_URL = "http://localhost:"+PORT;
      
 	@Override
 	public String getIconFileName() {
@@ -52,7 +54,24 @@ public class ConfigurationRotatorReport extends AbstractModelObject implements U
      */ 
     public static String CreateFeedUrl(String vobname, String componentName) {
         String url = Jenkins.getInstance().getRootUrl() == null ? DEFAULT_URL : Jenkins.getInstance().getRootUrl();               
-        String actionLink = url+"/"+ConfigurationRotator.NAME+"/feed/?component="+componentName+"&pvob="+vobname;
+        String actionLink = url+"/"+ConfigurationRotator.URL_NAME+"/feed/?component="+componentName+"&pvob="+vobname;
+        return actionLink;
+    }
+    
+    public static String FeedFrontpageUrl() {
+        String url = Jenkins.getInstance().getRootUrl() == null ? DEFAULT_URL : Jenkins.getInstance().getRootUrl();
+        url+= "/"+ConfigurationRotator.URL_NAME+"/";
+        return url;
+    }
+    
+    /**
+     * Factory method to create the job url for our feed.
+     * 
+     */
+    
+    public static String GenerateJobUrl(AbstractBuild<?,?> build) {
+        String url = Jenkins.getInstance().getRootUrl() == null ? DEFAULT_URL : Jenkins.getInstance().getRootUrl();
+        String actionLink = url + "/" + build.getUrl();
         return actionLink;
     }
     

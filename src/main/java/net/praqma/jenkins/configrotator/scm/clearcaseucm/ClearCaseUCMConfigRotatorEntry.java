@@ -5,7 +5,6 @@
 package net.praqma.jenkins.configrotator.scm.clearcaseucm;
 
 import java.util.Collection;
-import java.util.Date;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorEntry;
 
 /**

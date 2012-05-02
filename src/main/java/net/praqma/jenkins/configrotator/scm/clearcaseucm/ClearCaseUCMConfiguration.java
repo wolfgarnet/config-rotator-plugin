@@ -2,7 +2,6 @@ package net.praqma.jenkins.configrotator.scm.clearcaseucm;
 
 import hudson.FilePath;
 import hudson.model.TaskListener;
-import hudson.remoting.VirtualChannel;
 import java.io.File;
 
 import java.io.IOException;
@@ -18,10 +17,9 @@ import net.praqma.clearcase.ucm.entities.Version;
 
 import net.praqma.clearcase.ucm.view.SnapshotView;
 import net.praqma.jenkins.configrotator.AbstractConfiguration;
+import net.praqma.jenkins.configrotator.AbstractConfigurationComponent;
 import net.praqma.jenkins.configrotator.ConfigurationRotator;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorException;
-import net.praqma.util.debug.Logger;
-import net.praqma.util.debug.PraqmaLogger;
 
 public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUCMConfigurationComponent> {
 
@@ -30,6 +28,35 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUC
 	public ClearCaseUCMConfiguration() {
 		list = new ArrayList<ClearCaseUCMConfigurationComponent>();
 	}
+    
+    /**
+     * Gets the changed component
+     * 
+     */ 
+    public ClearCaseUCMConfigurationComponent getChangedComponent() {
+        for(AbstractConfigurationComponent configuration : this.getList()) {
+            if(configuration.isChangedLast()) {
+                return (ClearCaseUCMConfigurationComponent)configuration;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Gets the index of the changed component.
+     * @return the index of the changed component. If there is no changed component default return value is -1
+     */
+    public int getChangedComponentIndex() {
+        int index = -1;
+        
+        for(AbstractConfigurationComponent configuration : this.getList()) {
+            if(configuration.isChangedLast()) {
+                index = getList().indexOf(configuration);
+            }
+        }
+        
+        return index;
+    }
 	
 	public ClearCaseUCMConfiguration clone() {
 		ClearCaseUCMConfiguration n = new ClearCaseUCMConfiguration();
@@ -135,7 +162,7 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUC
     public String toHtml() {
         StringBuilder builder = new StringBuilder();
         
-        builder.append("<table border=\"1\">");
+        builder.append("<table border=\"0\" style=\"text-align:left;\">");
         builder.append("<thead>");
         builder.append("<th>").append("Component").append("</th>");
         builder.append("<th>").append("Stream").append("</th>");
@@ -152,6 +179,13 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUC
         return builder.toString();
     }
     
+    /**
+     * Returns a list of files affected by the recent change.
+     * @param configuration
+     * @return
+     * @throws ConfigurationRotatorException 
+     */
+    
     @Override
     public List<String> difference(AbstractConfiguration<ClearCaseUCMConfigurationComponent> configuration) throws ConfigurationRotatorException {
         List<String> changes = new ArrayList<String>();
@@ -164,9 +198,10 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUC
                     
                     List<Activity> activities = Version.getBaselineDiff(configuration.getList().get(index).getBaseline(),comp.getBaseline(), true, new File(getView().getPath()));
                     
-                    Logger.getLogger().debug("Printing list of activities:" +activities);
                     for(Activity a : activities) {
-                        changes.add(a.toString());
+                        for(Version s : a.changeset.versions) {
+                            changes.add(s.getFile().getAbsolutePath());       
+                        } 
                     }
 
                 } catch (CleartoolException ex) {
@@ -183,3 +218,11 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUC
         return changes;
     }
 }
+/*
+for( Activity a : bldiff ) {
+    c += a.changeset.versions.size();
+    for( Version version : a.changeset.versions ) {
+        changeset.addChange( version.getFullyQualifiedName(), version.getUser() );
+    }
+}
+*/
