@@ -8,7 +8,7 @@
                 <table>
                     <tr>
                         <td rowspan="2" style="padding:10px"><img src="/plugin/config-rotator/images/rotate.png" /></td>
-                        <td style="font-size:18px;text-align:left">
+                        <td style="font-size:14px;text-align:left">
                         <j:choose>
                             <j:when test="${action.isCompatible()}">
                                 <b>${action.getHeadline()}</b>
@@ -31,6 +31,7 @@
                     </tr>
                 </table>
             </j:if>
+            <br/>
         </j:forEach>                                        
      </l:main-panel>
  </l:layout>

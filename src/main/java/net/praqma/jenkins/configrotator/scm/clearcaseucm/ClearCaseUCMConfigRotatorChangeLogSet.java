@@ -38,7 +38,7 @@ public class ClearCaseUCMConfigRotatorChangeLogSet extends ConfigRotatorChangeLo
        if(index != -1) {
            prevBaseline = previous.getList().get(index).getBaseline().getNormalizedName();
        } 
-       
+
        if(curBaseline.equals(NEW_CONFIG)) {
            header = NEW_CONFIG;
        } else {
@@ -65,6 +65,5 @@ public class ClearCaseUCMConfigRotatorChangeLogSet extends ConfigRotatorChangeLo
     public String toString() {
         return entries.toString();
     }
-    
-    
+
 }
