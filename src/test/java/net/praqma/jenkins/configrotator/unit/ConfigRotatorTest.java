@@ -187,4 +187,19 @@ public class ConfigRotatorTest extends TestCase {
 		
 		assertEquals( false, b );
 	}
+    
+    @Test
+    public void testChangeSetAdditions() {
+        
+    }
+    
+    @Test 
+    public void testClearCaseConfigurationGetChangedComponent() {
+        
+    }
+    
+    @Test 
+    public void testClearCaseConfigurationGetChangedComponentIndex() {
+        
+    }
 }

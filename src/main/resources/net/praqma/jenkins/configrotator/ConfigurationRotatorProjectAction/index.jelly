@@ -8,13 +8,17 @@
                 <table>
                     <tr>
                         <td rowspan="2" style="padding:10px"><img src="/plugin/config-rotator/images/rotate.png" /></td>
-                        <td style="font-weight:bold;font-size:18px;text-align:left">
+                        <td style="font-size:18px;text-align:left">
                         <j:choose>
                             <j:when test="${action.isCompatible()}">
-                                <b>${%This configuration is compatible}</b>
+                                <b>${action.getHeadline()}</b>
+                                <br/>
+                                ${%This configuration is compatible}
                             </j:when>
                             <j:otherwise>
-                                <b>${%This configuration is not compatible}</b>
+                                <b>${action.getHeadline()}</b>
+                                <br/>
+                                ${%This configuration is not compatible}
                             </j:otherwise>
                         </j:choose>
                         </td>

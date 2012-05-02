@@ -15,7 +15,7 @@
                        
                     <j:set var="highlight" value="" />
                     <j:if test="${component.isChangedLast()}">
-                    	<j:set var="highlight" value="font-weight:bold;border-bottom-style:solid;background-color:#dfdf00" />
+                    	<j:set var="highlight" value="font-weight:bold;border-bottom-style:solid;background-color:#FF6633" />
                     </j:if>
 					<tr>
 	                 	<td style="padding-right:10px;${highlight}">${component.getBaseline().getComponent().getNormalizedName()}</td>
