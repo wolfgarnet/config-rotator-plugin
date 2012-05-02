@@ -361,4 +361,36 @@ public class ConfigRotatorTest extends TestCase {
 		
 		fail();
 	}
+	
+	@Test
+	public void testReconfigure() throws IOException, InterruptedException, ConfigurationRotatorException, UnableToInitializeEntityException {
+		ClearCaseUCM ccucm = new ClearCaseUCM( "" );
+		ClearCaseUCM spy = Mockito.spy( ccucm );
+		
+		List<ClearCaseUCMConfigurationComponent> comps = new ArrayList<ClearCaseUCMConfigurationComponent>();
+		comps.add( new ClearCaseUCMConfigurationComponent( Baseline.get( "bl2@\\pvob" ), PromotionLevel.INITIAL, false ) );
+		ClearCaseUCMConfiguration ccc = new ClearCaseUCMConfiguration( comps );
+		
+		/**/
+		PowerMockito.mockStatic( ClearCaseUCMConfiguration.class );
+		PowerMockito.when( ClearCaseUCMConfiguration.getConfigurationFromTargets( Mockito.anyListOf( ClearCaseUCMTarget.class ), Mockito.any( FilePath.class ), Mockito.any( TaskListener.class) ) ).thenReturn( ccc );
+		
+		spy.reconfigure( workspace, tasklistener );
+		
+		assertEquals( ccc, spy.projectConfiguration );
+	}
+	
+	@Test( expected=AbortException.class )
+	public void testReconfigureFails() throws IOException, InterruptedException, ConfigurationRotatorException, UnableToInitializeEntityException {
+		ClearCaseUCM ccucm = new ClearCaseUCM( "" );
+		ClearCaseUCM spy = Mockito.spy( ccucm );
+		
+		/**/
+		PowerMockito.mockStatic( ClearCaseUCMConfiguration.class );
+		PowerMockito.when( ClearCaseUCMConfiguration.getConfigurationFromTargets( Mockito.anyListOf( ClearCaseUCMTarget.class ), Mockito.any( FilePath.class ), Mockito.any( TaskListener.class) ) ).thenThrow( new AbortException( "Failing reconfigure" ) );
+		
+		spy.reconfigure( workspace, tasklistener );
+		
+		fail();
+	}
 }
