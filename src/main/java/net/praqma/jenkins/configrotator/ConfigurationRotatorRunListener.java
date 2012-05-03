@@ -60,28 +60,19 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                     /**
                      * To bue: Consider using component.isChangedLast(). This indicates if the component was flipped in the new configuration.
                      * We could limit the feeds to only write to feed for the changed component and not all components in the configuration
-                     * So: We write to everyone when the configuration was just reconfigured: that is if configuration.getChangedComponentIndex() == -1
+                     * Also we can write to everyone when the configuration was just reconfigured: that is if configuration.getChangedComponentIndex() == -1
                      */
                     
                     for (ClearCaseUCMConfigurationComponent component : components) {
-                        String componentName = component.getBaseline().getComponent().getShortname();
-                        // default feed!
-                     
-                        File feedFile = new File(ConfigurationRotator.FEED_FULL_PATH + 
-                                "defaultRunListenerError" + ConfigurationRotator.SEPARATOR 
-                                + "defaultRunListenerError" + ".xml");
-                        File feedFileDir = new File(ConfigurationRotator.FEED_FULL_PATH + 
-                                "defaultRunListenerError" + ConfigurationRotator.SEPARATOR);
-                        
+                        String componentName = component.getBaseline().getComponent().getShortname();    
+                        File feedFile = new File(ConfigurationRotatorReport.createFeedXmlFile("defaultRunListenerError","defaultRunListenerError.xml"));
+                        File feedFileDir = new File(ConfigurationRotatorReport.createFeedFolder("defaultRunListenerError"));
                         String componentPVob = "defaultRunlistenerErrorPvob";
-                        try
-                        {
+                        try {
                             componentPVob = component.getBaseline().getComponent().getPVob().getName();
                             // FIXME pvob folder name!
-                            feedFile = new File(ConfigurationRotator.FEED_FULL_PATH + componentPVob +
-                                    ConfigurationRotator.SEPARATOR + componentName + ".xml");
-                            feedFileDir = new File(ConfigurationRotator.FEED_FULL_PATH + componentPVob +
-                                    ConfigurationRotator.SEPARATOR);
+                            feedFile = new File(ConfigurationRotatorReport.createFeedXmlFile(componentPVob, componentName));
+                            feedFileDir = new File(ConfigurationRotatorReport.createFeedFolder(componentPVob));
                         } catch (Exception ex) {
                             // if we can not load PVob name, the correct feed can not be written
                             // so we use a default one.
@@ -202,11 +193,8 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
         localListener.getLogger().println("onCompleted runlistener, writeFeedToFile - feed.getXML" + feed.getXML( new AtomPublisher() ) );
         Writer writer = null;
         try {
-            localListener.getLogger().println("onCompleted runlistener, writeFeedToFile - " + componentFile.toString());
-            localListener.getLogger().println("onCompleted runlistener, writeFeedToFile - " + componentFile.toURI());
             File feedFile = componentFile;
-            localListener.getLogger().println("onCompleted runlistener, writeFeedToFile - " 
-                    + feedFile.toString());
+            localListener.getLogger().println("onCompleted runlistener, writeFeedToFile - " + feedFile.toString());
             if (!feedFile.exists()) {
                 if (!componentFileDir.exists()) {
                     // create file including dirs
@@ -219,8 +207,7 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                         + componentFileDir.toString());                        
                     }
                 } else {
-                    localListener.getLogger().println("onCompleted runlistener, FeedToFileDIR existed " 
-                        + componentFileDir.toString());                        
+                    localListener.getLogger().println("onCompleted runlistener, FeedToFileDIR existed " + componentFileDir.toString());                        
                     feedFile = new File(componentFile.toString());
                 }
                 localListener.getLogger().println("onCompleted runlistener, writeFeedToFile - " + feedFile.toString());                    

@@ -64,6 +64,14 @@ public class ConfigurationRotatorReport extends AbstractModelObject implements U
         return url;
     }
     
+    public static String createFeedXmlFile(String pvobName, String componentName) {
+        return ConfigurationRotator.FEED_FULL_PATH + pvobName + ConfigurationRotator.SEPARATOR + componentName + ".xml";
+    }
+    
+    public static String createFeedFolder(String pvobName) {
+        return ConfigurationRotator.FEED_FULL_PATH + pvobName + ConfigurationRotator.SEPARATOR;
+    }
+    
     /**
      * Factory method to create the job url for our feed.
      * 
