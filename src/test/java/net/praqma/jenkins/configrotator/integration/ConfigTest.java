@@ -74,7 +74,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         assertFalse(cr.reconfigure); //should initially be false
 
         System.out.println(debugLine + "cr.createChangeLogParser(): " + cr.createChangeLogParser());
-        assertNull(cr.createChangeLogParser());
+        assertNotNull(cr.createChangeLogParser());
         // for now okay null, will be implemented in later versions
         // change log parser, shows scm changes for the build, but we have baselines.
         // consider that we can show the builds baselines? or just remove the changes menu?
