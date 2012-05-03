@@ -279,7 +279,6 @@ public class ConfigurationRotator extends SCM {
                 writer.println(String.format("<date>%s</date>", new Date().toString()));
                 writer.println("</entry>");      
                 writer.println("</changelog>");
-                listener.getLogger().println("Finished writing to change log!");
             }
         
         } catch (IOException e) {
