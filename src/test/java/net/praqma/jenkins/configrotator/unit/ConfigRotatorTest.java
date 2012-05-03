@@ -361,43 +361,4 @@ public class ConfigRotatorTest extends TestCase {
 		
 		fail();
 	}
-    
-    @Test
-    public void testChangeSetAdditions() {
-        
-    }
-    
-    @Test 
-    public void testClearCaseConfigurationGetChangedComponent() {
-        ClearCaseUCM ccucm = new ClearCaseUCM( "" );
-        List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
-		targets.add( new ClearCaseUCMTarget( "bl1@\\pvob", PromotionLevel.INITIAL, false ) );
-        targets.add( new ClearCaseUCMTarget("bl2@\\pvob", PromotionLevel.INITIAL, false ) );
-		ccucm.targets = targets;
-		ClearCaseUCM spy = Mockito.spy( ccucm );
-        
-        Integer expectedIndex = -1; 
-        
-        List<ClearCaseUCMConfigurationComponent> comps = new ArrayList<ClearCaseUCMConfigurationComponent>();
-        
-        ClearCaseUCMConfiguration ccc = new ClearCaseUCMConfiguration( comps );
-		ConfigurationRotatorBuildAction action = new ConfigurationRotatorBuildAction( build, ClearCaseUCM.class, ccc );
-        
-        ClearCaseUCMConfiguration cccSpy = Mockito.spy(ccc);
-        
-        Mockito.doReturn(0).when(cccSpy).getList().size();
-        
-        
-        //Mockito.doReturn(newIndex).when(cccSpy).getChangedComponentIndex();
-        
-        
-        
-        
-    }
-    
-    @Test 
-    public void testClearCaseConfigurationGetChangedComponentIndex() {
-        
-    }
-
 }

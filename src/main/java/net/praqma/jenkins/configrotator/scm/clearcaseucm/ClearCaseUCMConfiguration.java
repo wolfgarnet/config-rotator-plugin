@@ -203,7 +203,8 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUC
                             changes.add(s.getFile().getAbsolutePath());       
                         } 
                     }
-
+                } catch (NullPointerException nex) {
+                    throw new ConfigurationRotatorException("Null pointer found.", nex);
                 } catch (CleartoolException ex) {
                     throw new ConfigurationRotatorException("Cleartool error:", ex);
                 } catch (UnableToLoadEntityException ex) {
