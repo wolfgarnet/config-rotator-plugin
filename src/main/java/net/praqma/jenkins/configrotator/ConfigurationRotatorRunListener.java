@@ -51,26 +51,19 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
             ConfigurationRotatorBuildAction action = build.getAction(ConfigurationRotatorBuildAction.class);
             // if no action, build failed someway to set ConfigurationRotatorBuildAction, thus we can not 
             // say anything about configuration.
-            localListener.getLogger().println("onCompleted runlistener - action: " + action);
             if (action != null) {
                 ClearCaseUCMConfiguration configuration = action.getConfiguration(ClearCaseUCMConfiguration.class);
                 List<ClearCaseUCMConfigurationComponent> components = configuration.getList();
                 
-                String componentNameList = "";
-                for (Iterator<ClearCaseUCMConfigurationComponent> comp = components.iterator(); comp.hasNext();) {
-                    componentNameList += comp.next().getBaseline().getShortname();
-                    if (comp.hasNext()) {
-                        componentNameList += ", ";
-                    }
-                }
-                localListener.getLogger().println("onCompleted runlistener - componentNameList: " + componentNameList);
-
-                Date buildFinishTime = getDateTimeFromMilis(build.getTimeInMillis() + build.getDuration());
-
                 try {
-                    for (Iterator<ClearCaseUCMConfigurationComponent> comp = components.iterator(); comp.hasNext();) {
-                        
-                        ClearCaseUCMConfigurationComponent component = comp.next();
+                    
+                    /**
+                     * To bue: Consider using component.isChangedLast(). This indicates if the component was flipped in the new configuration.
+                     * We could limit the feeds to only write to feed for the changed component and not all components in the configuration
+                     * So: We write to everyone when the configuration was just reconfigured: that is if configuration.getChangedComponentIndex() == -1
+                     */
+                    
+                    for (ClearCaseUCMConfigurationComponent component : components) {
                         String componentName = component.getBaseline().getComponent().getShortname();
                         // default feed!
                      
@@ -127,7 +120,7 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                         } else if(build.getChangeSet().isEmptySet()) {
                             e.content = new Html.Paragraph(ConfigRotatorChangeLogSet.EMPTY_DESCRIPTOR).toString();
                         }
-                        
+  
                         Html.Break br1 = new Html.Break();
                         Html.Anchor linkFeeds = new Html.Anchor(ConfigurationRotatorReport.FeedFrontpageUrl(), "Click here for a list of available feeds");
                         Html.Break br2 = new Html.Break();
@@ -178,27 +171,20 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
      * @throws IOException
      */
     private Feed getFeedFromFile(File feedFile, String componentName, String feedId, Date feedUpdated) throws FeedException {
-
-        localListener.getLogger().println(String.format("getFeedFromFile called"));
         //File feedFile = new File(feedFileNameURI);
         // initial feed
         Feed feed = new Feed(componentName, feedId, feedUpdated);
         // if component already have a feed, use that one
         if (feedFile.exists()) {
-            localListener.getLogger().println(String.format("getFeedFromFile called - file exits"));
             try {
                 feed = Feed.getFeed(new AtomPublisher(), feedFile);
                 localListener.getLogger().println(String.format("getFeedFromFile got file"));
             } catch (IOException ex) {
                 localListener.getLogger().println(String.format("Failed to get feed from file: %s. Exception is: ", feedFile.toString(), ex.getMessage()));                
             }
-        }
-        else
-        {
+        } else {
             localListener.getLogger().println(String.format("Feed-file did not exist."));
         }
-
-        localListener.getLogger().println("onCompleted runlistener getFeedFromFile returnsfeed - feed.getXML" + feed.getXML( new AtomPublisher() ) );
         return feed;
     }
 
@@ -216,46 +202,31 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
         localListener.getLogger().println("onCompleted runlistener, writeFeedToFile - feed.getXML" + feed.getXML( new AtomPublisher() ) );
         Writer writer = null;
         try {
-            //localListener.getLogger().println("onCompleted runlistener, writeFeedToFile - " 
-                    //+ componentFile.toString().substring(0, componentFile.toString().indexOf(".xml")));
-            //boolean feedFileGood = new File(componentFile.toString().substring(0, componentFile.toString().indexOf(".xml"))).mkdirs();
-            localListener.getLogger().println("onCompleted runlistener, writeFeedToFile - " 
-                    + componentFile.toString());
-            localListener.getLogger().println("onCompleted runlistener, writeFeedToFile - " 
-                    + componentFile.toURI());
+            localListener.getLogger().println("onCompleted runlistener, writeFeedToFile - " + componentFile.toString());
+            localListener.getLogger().println("onCompleted runlistener, writeFeedToFile - " + componentFile.toURI());
             File feedFile = componentFile;
             localListener.getLogger().println("onCompleted runlistener, writeFeedToFile - " 
                     + feedFile.toString());
-            if (!feedFile.exists())
-            {
-                if (!componentFileDir.exists())
-                {
-                // create file including dirs
-                boolean feedFileGood = new File(componentFileDir.toString()).mkdirs();
-                    if (!feedFileGood)
-                    {
+            if (!feedFile.exists()) {
+                if (!componentFileDir.exists()) {
+                    // create file including dirs
+                    boolean feedFileGood = new File(componentFileDir.toString()).mkdirs();
+                    if (!feedFileGood) {
                         localListener.getLogger().println("writeFeedToFile runListener: failed to make dirs");
                         throw new IOException("writeFeedToFile runListener: failed to make dirs");
-                    }
-                    else
-                    {
+                    } else {
                         localListener.getLogger().println("onCompleted runlistener, created FeedToFileDIR - " 
                         + componentFileDir.toString());                        
                     }
-                }
-                else
-                {
+                } else {
                     localListener.getLogger().println("onCompleted runlistener, FeedToFileDIR existed " 
                         + componentFileDir.toString());                        
                     feedFile = new File(componentFile.toString());
                 }
-                
-                localListener.getLogger().println("onCompleted runlistener, writeFeedToFile - " 
-                    + feedFile.toString());
+                localListener.getLogger().println("onCompleted runlistener, writeFeedToFile - " + feedFile.toString());                    
             }
-            localListener.getLogger().println("onCompleted runlistener, writeFeedToFile - " 
-                    + feedFile.toString());
-            //File feedFile = new File(componentFile);
+            localListener.getLogger().println("onCompleted runlistener, writeFeedToFile - " + feedFile.toString());
+            
             writer = new FileWriter(feedFile);
             writer.write(feed.getXML(new AtomPublisher()));
             writer.close();
