@@ -33,11 +33,6 @@ public class ClearCaseGetBaseLineCompare implements FilePath.FileCallable<List<S
     @Override
     public List<String> invoke(File f, VirtualChannel channel) throws IOException, InterruptedException {
         List<String> changes = new ArrayList<String>();
-        //TODO:REMOVE THESE BEFORE GOING LIVE//
-        StreamAppender app = new StreamAppender(listener.getLogger());
-        app.setMinimumLevel(Logger.LogLevel.DEBUG);
-        Logger.addAppender(app);
-        ///////////////////////////////////////
         try {
             changes = current.difference(compareto);          
         } catch (ConfigurationRotatorException ex) {
