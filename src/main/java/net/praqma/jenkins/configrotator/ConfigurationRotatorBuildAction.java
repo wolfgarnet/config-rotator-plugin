@@ -101,6 +101,6 @@ public class ConfigurationRotatorBuildAction implements Action {
     
 	@Override
 	public String toString() {
-		return "BUILD ACTION: " + configuration.toString();
+		return "Build action: " + configuration;
 	}
 }
