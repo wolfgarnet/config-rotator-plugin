@@ -28,6 +28,7 @@ import net.praqma.clearcase.ucm.entities.Baseline;
 import net.praqma.clearcase.ucm.entities.Project.PromotionLevel;
 import net.praqma.jenkins.configrotator.AbstractConfiguration;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorException;
+import net.praqma.jenkins.configrotator.ConfigurationRotator.ResultType;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorBuildAction;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigurationComponent;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMTarget;
@@ -392,5 +393,48 @@ public class ConfigRotatorTest extends TestCase {
 		spy.reconfigure( workspace, tasklistener );
 		
 		fail();
+	}
+	
+	/**
+	 * Tests fb case 6168, no new baselines starts an execution.<br>
+	 * Originally, the getLastResult method would return build #01, when it should return build #02.<br>
+	 * This is due to the fact, that we fail a build not having a build action(no bew baselines).
+	 */
+	@Test
+	public void testGetLastResult() {
+		ClearCaseUCM ccucm = new ClearCaseUCM( "" );
+		
+		/* Initialize builds */
+		/* 01: compatible */
+		AbstractBuild<?, ?> build01 = Mockito.mock( AbstractBuild.class );
+		ConfigurationRotatorBuildAction action01 = new ConfigurationRotatorBuildAction( build01, ClearCaseUCM.class, new ClearCaseUCMConfiguration() );
+		action01.setResult( ResultType.COMPATIBLE );
+		Mockito.doReturn( action01 ).when( build01 ).getAction( ConfigurationRotatorBuildAction.class );
+		Mockito.doReturn( "01" ).when( build01 ).toString();
+		Mockito.doReturn( null ).when( build01 ).getPreviousNotFailedBuild();
+		
+		/* 02: incompatible */
+		AbstractBuild<?, ?> build02 = Mockito.mock( AbstractBuild.class );
+		Mockito.doReturn( build01 ).when( build02 ).getPreviousBuild();
+		ConfigurationRotatorBuildAction action02 = new ConfigurationRotatorBuildAction( build02, ClearCaseUCM.class, new ClearCaseUCMConfiguration() );
+		action02.setResult( ResultType.INCOMPATIBLE );
+		Mockito.doReturn( action02 ).when( build02 ).getAction( ConfigurationRotatorBuildAction.class );
+		Mockito.doReturn( "02" ).when( build02 ).toString();
+		Mockito.doReturn( build01 ).when( build02 ).getPreviousNotFailedBuild();
+		
+		/* 02: failed, no action(no baselines) */
+		AbstractBuild<?, ?> build03 = Mockito.mock( AbstractBuild.class );
+		Mockito.doReturn( build02 ).when( build03 ).getPreviousBuild();
+		Mockito.doReturn( "03" ).when( build03 ).toString();
+		Mockito.doReturn( build01 ).when( build03 ).getPreviousNotFailedBuild();
+		
+		/* Initialize project */
+		AbstractProject<?, ?> project = Mockito.mock( AbstractProject.class );
+		Mockito.doReturn( build03 ).when( project ).getLastCompletedBuild();
+		
+		ConfigurationRotatorBuildAction action = ccucm.getLastResult( project, ClearCaseUCM.class );
+		System.out.println( "-----> " + action.getBuild() );
+		
+		assertEquals( action02, action );
 	}
 }
