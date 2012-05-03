@@ -17,6 +17,7 @@ import net.praqma.jenkins.configrotator.scm.ConfigRotatorEntry;
  */
 public class ClearCaseUCMConfigRotatorChangeLogSet extends ConfigRotatorChangeLogSet<ClearCaseUCMConfigRotatorEntry> {
     private static final String NEW_CONFIG = "New configuration - no changes yet";
+    public static final String CONF_ERROR = "Configuration error";
 
     public ClearCaseUCMConfigRotatorChangeLogSet(AbstractBuild<?,?> build) {
         super(build);
@@ -24,31 +25,36 @@ public class ClearCaseUCMConfigRotatorChangeLogSet extends ConfigRotatorChangeLo
     
     public ClearCaseUCMConfigRotatorChangeLogSet(AbstractBuild<?,?> build, List<ClearCaseUCMConfigRotatorEntry> entries) {       
        super(build);
-     
-       ClearCaseUCMConfiguration current = build.getAction(ConfigurationRotatorBuildAction.class).getConfiguration(ClearCaseUCMConfiguration.class);
-       String curBaseline = current.getChangedComponent() != null ? current.getChangedComponent().getBaseline().getNormalizedName() : NEW_CONFIG;
-       String prevBaseline = "";
-       String header = "";
-       int index = current.getChangedComponentIndex();
-       ClearCaseUCMConfiguration previous = null; 
-       if(build.getPreviousSuccessfulBuild() != null) {
-          previous = build.getPreviousSuccessfulBuild().getAction(ConfigurationRotatorBuildAction.class).getConfiguration(ClearCaseUCMConfiguration.class);
-       }
-       
-       if(index != -1) {
-           prevBaseline = previous.getList().get(index).getBaseline().getNormalizedName();
-       } 
+       if(build == null) {
+           setHeadline(CONF_ERROR);
+           this.entries = entries;
+       } else { 
+            ClearCaseUCMConfiguration current = build.getAction(ConfigurationRotatorBuildAction.class).getConfiguration(ClearCaseUCMConfiguration.class);
+            String curBaseline = current.getChangedComponent() != null ? current.getChangedComponent().getBaseline().getNormalizedName() : NEW_CONFIG;
+            String prevBaseline = "";
+            String header = "";
+            int index = current.getChangedComponentIndex();
+            ClearCaseUCMConfiguration previous = null; 
+            if(build.getPreviousSuccessfulBuild() != null) {
+                previous = build.getPreviousSuccessfulBuild().getAction(ConfigurationRotatorBuildAction.class).getConfiguration(ClearCaseUCMConfiguration.class);
+            }
 
-       if(curBaseline.equals(NEW_CONFIG)) {
-           header = NEW_CONFIG;
-       } else {
-           header = String.format("Baseline changed from %s to %s", prevBaseline,curBaseline);
+            if(index != -1) {
+                prevBaseline = previous.getList().get(index).getBaseline().getNormalizedName();
+            } 
+
+            if(curBaseline.equals(NEW_CONFIG)) {
+                header = NEW_CONFIG;
+            } else {
+                header = String.format("Baseline changed from %s to %s", prevBaseline,curBaseline);
+            }
+            
+            setHeadline(header);
+            
+            for(ConfigRotatorEntry e : entries) {
+                e.setParent(this);
+            }
        }
-       setHeadline(header);
-       this.entries = entries;
-       for(ConfigRotatorEntry e : entries) {
-           e.setParent(this);
-       }      
     }
 
     @Override

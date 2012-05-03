@@ -1,18 +1,15 @@
 package net.praqma.jenkins.configrotator;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
-
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
-
-import net.praqma.jenkins.configrotator.ConfigurationRotator.ResultType;
 import hudson.model.AbstractBuild;
 import hudson.model.Action;
 import hudson.scm.SCM;
+import java.io.IOException;
+import javax.servlet.ServletException;
+import net.praqma.jenkins.configrotator.ConfigurationRotator.ResultType;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogSet;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigRotatorChangeLogSet;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 
 public class ConfigurationRotatorBuildAction implements Action {
 	

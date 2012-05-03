@@ -80,7 +80,17 @@ public class ClearCaseUCMConfigRotatorEntry extends ConfigRotatorEntry {
     public String toString() {
         return String.format("Owner: %s CompoentChange: %s Date: %s", owner,componentChange,date);
     }
-    
-    
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof ClearCaseUCMConfigRotatorEntry)) {
+            return false;
+        }
+        
+        ClearCaseUCMConfigRotatorEntry comp = (ClearCaseUCMConfigRotatorEntry)obj;
+        
+        return (comp.getOwner().equals(getOwner()) && comp.getComponentChange().equals(getComponentChange()) && comp.getDate().equals(getDate()));
+        
+    }
     
 }

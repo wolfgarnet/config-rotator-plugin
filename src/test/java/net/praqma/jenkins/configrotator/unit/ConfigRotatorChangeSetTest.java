@@ -12,7 +12,10 @@ import hudson.scm.ChangeLogSet.Entry;
 import java.io.*;
 import java.util.logging.Level;
 import junit.framework.TestCase;
+import net.praqma.jenkins.configrotator.ConfigurationRotatorBuildAction;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeSetDescriptor;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigRotatorChangeLogParser;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigRotatorChangeLogSet;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigRotatorEntry;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration;
 import net.praqma.util.debug.Logger;
@@ -43,7 +46,7 @@ public class ConfigRotatorChangeSetTest extends TestCase {
 	TaskListener tasklistener;
 	BuildListener buildlistener;
 	FilePath workspace = new FilePath( new File( "" ) );
-    ClearCaseUCMConfiguration conf = new ClearCaseUCMConfiguration();
+    //ClearCaseUCMConfiguration conf = new ClearCaseUCMConfiguration();
     
 	
 	@Before
@@ -53,12 +56,12 @@ public class ConfigRotatorChangeSetTest extends TestCase {
 		launcher = Mockito.mock( Launcher.class );
 		tasklistener = Mockito.mock( TaskListener.class );
 		buildlistener = Mockito.mock( BuildListener.class );
-        conf = Mockito.mock(ClearCaseUCMConfiguration.class);
+        //conf = Mockito.mock(ClearCaseUCMConfiguration.class);
 		
 		/* Behaviour */
 		Mockito.when( tasklistener.getLogger() ).thenReturn( System.out );
 		Mockito.when( buildlistener.getLogger() ).thenReturn( System.out );
-        //Mockito.when( build.getAction(AbstractBuild.class))).thenR
+        //Mockito.when( build.getAction(ConfigurationRotatorBuildAction.class)).thenReturn( new ConfigurationRotatorBuildAction(build, null, conf) );
 	}
     
     
@@ -78,27 +81,37 @@ public class ConfigRotatorChangeSetTest extends TestCase {
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
         
-        
-        
         File f = File.createTempFile("changeTest", ".xml");
         FileWriter fw = new FileWriter(f);
         
         String line;
-
-        
         while((line = br.readLine()) != null ) {
             System.out.println("Read line: "+line);
             fw.write(line+System.getProperty("line.separator"));
         }
         
         fw.close();
-        System.out.println("STARTING TO PARSE");
         
-        //Mockito.doReturn(tasklistener).
-        //ChangeLogSet<? extends Entry> entry = parser.parse(build, f);
-        System.out.println("FINISHED PARSE");
-        System.out.println("File is: "+f.getAbsolutePath());
+        ChangeLogSet<? extends Entry> entry = parser.parse(build, f);
+        
         assertTrue(f.delete());
-        //assertFalse(entry.isEmptySet());    
+        assertFalse(entry.isEmptySet());    
+        
+        //<owner>TestOwner</owner>
+        //<componentChange>E:\jenkins-slave-mads\workspace\ChangeLogTest\view\chw_PVOB\CR-1\cr1.h</componentChange>
+        //<date>Wed May 02 14:31:17 CEST 2012</date>
+        
+        //Create the above item. We want to assert that the two changeset objects are equal.
+        ClearCaseUCMConfigRotatorEntry item = new ClearCaseUCMConfigRotatorEntry();
+        item.setOwner("TestOwner");
+        item.setComponentChange("E:\\jenkins-slave-mads\\workspace\\ChangeLogTest\\view\\chw_PVOB\\CR-1\\cr1.h");
+        item.setDate("Wed May 02 14:31:17 CEST 2012");
+        
+        ClearCaseUCMConfigRotatorEntry parsedItem = ((ClearCaseUCMConfigRotatorEntry)entry.getItems()[0]);
+        assertTrue(parsedItem.equals(item));        
+        
+        //The purpose of this test is to test that the changelog is parsed correctly, So we dont care about the other parts
+        ConfigRotatorChangeSetDescriptor descriptor = (ConfigRotatorChangeSetDescriptor)entry;
+        assertTrue(descriptor.getHeadline().equals(ClearCaseUCMConfigRotatorChangeLogSet.CONF_ERROR));
     }
 }
