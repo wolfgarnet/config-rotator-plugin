@@ -7,7 +7,6 @@ package net.praqma.jenkins.configrotator.integration;
 import junit.framework.TestCase;
 import net.praqma.clearcase.ucm.entities.Project;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMTarget;
-import net.praqma.jenkins.utils.test.ClearCaseJenkinsTestCase;
 import org.junit.Test;
 
 /**
