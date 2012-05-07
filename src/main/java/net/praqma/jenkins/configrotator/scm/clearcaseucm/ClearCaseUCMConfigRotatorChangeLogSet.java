@@ -5,6 +5,7 @@
 package net.praqma.jenkins.configrotator.scm.clearcaseucm;
 
 import hudson.model.AbstractBuild;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import net.praqma.jenkins.configrotator.ConfigurationRotator;
@@ -39,7 +40,14 @@ public class ClearCaseUCMConfigRotatorChangeLogSet extends ConfigRotatorChangeLo
                 ConfigurationRotatorBuildAction lac = null;
                 
                 ConfigurationRotator rotator = (ConfigurationRotator)build.getProject().getScm();
-                lac = rotator.getAcrs().getLastResult(build.getProject(), ClearCaseUCM.class);
+                 
+                ArrayList<ConfigurationRotatorBuildAction> results = rotator.getAcrs().getLastResults(build.getProject(), ClearCaseUCM.class, 2);
+                lac = null;
+                
+                if(results.size() >= 2) {
+                    lac = results.get(1);
+                }
+                
                 
                 if(index != -1 && lac != null) {
                     prevBaseline = lac.getConfiguration(ClearCaseUCMConfiguration.class).getList().get(index).getBaseline().getNormalizedName();
