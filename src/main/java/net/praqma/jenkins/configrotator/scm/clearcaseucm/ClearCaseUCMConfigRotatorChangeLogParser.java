@@ -29,12 +29,12 @@ public class ClearCaseUCMConfigRotatorChangeLogParser extends ConfigRotatorChang
         Digester digester = new Digester2();
         List<ClearCaseUCMConfigRotatorEntry> changesetList = new ArrayList<ClearCaseUCMConfigRotatorEntry>();
         digester.push(changesetList);
-        digester.addObjectCreate("*/entry", ClearCaseUCMConfigRotatorEntry.class);
-        digester.addSetProperties("*/entry");
-        digester.addBeanPropertySetter("*/entry/owner");
-        digester.addBeanPropertySetter("*/entry/date");
-        digester.addBeanPropertySetter("*/entry/componentChange");
-        digester.addSetNext("*/entry", "add");
+        digester.addObjectCreate("*/changelog/entry", ClearCaseUCMConfigRotatorEntry.class);
+        digester.addSetProperties("*/changelog/entry");
+        digester.addBeanPropertySetter("*/changelog/entry/owner");
+        digester.addBeanPropertySetter("*/changelog/entry/date");
+        digester.addBeanPropertySetter("*/changelog/entry/componentChange");
+        digester.addSetNext("*/changelog/entry", "add");
                 
         FileReader reader = new FileReader(changelogFile);
         digester.parse(reader);

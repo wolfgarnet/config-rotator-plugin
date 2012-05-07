@@ -53,15 +53,23 @@ public class ConfigurationRotatorReport extends AbstractModelObject implements U
      * 
      */ 
     public static String CreateFeedUrl(String vobname, String componentName) {
-        String url = Jenkins.getInstance().getRootUrl() == null ? DEFAULT_URL : Jenkins.getInstance().getRootUrl();               
+        String url = (Jenkins.getInstance() == null || Jenkins.getInstance().getRootUrl() == null) ? DEFAULT_URL : Jenkins.getInstance().getRootUrl();               
         String actionLink = url+"/"+ConfigurationRotator.URL_NAME+"/feed/?component="+componentName+"&pvob="+vobname;
         return actionLink;
     }
     
     public static String FeedFrontpageUrl() {
-        String url = Jenkins.getInstance().getRootUrl() == null ? DEFAULT_URL : Jenkins.getInstance().getRootUrl();
+        String url = (Jenkins.getInstance() == null || Jenkins.getInstance().getRootUrl() == null) ? DEFAULT_URL : Jenkins.getInstance().getRootUrl();
         url+= "/"+ConfigurationRotator.URL_NAME+"/";
         return url;
+    }
+    
+    public static String createFeedXmlFile(String pvobName, String componentName) {
+        return ConfigurationRotator.FEED_FULL_PATH + pvobName + ConfigurationRotator.SEPARATOR + componentName + ".xml";
+    }
+    
+    public static String createFeedFolder(String pvobName) {
+        return ConfigurationRotator.FEED_FULL_PATH + pvobName + ConfigurationRotator.SEPARATOR;
     }
     
     /**
@@ -70,7 +78,7 @@ public class ConfigurationRotatorReport extends AbstractModelObject implements U
      */
     
     public static String GenerateJobUrl(AbstractBuild<?,?> build) {
-        String url = Jenkins.getInstance().getRootUrl() == null ? DEFAULT_URL : Jenkins.getInstance().getRootUrl();
+        String url = (Jenkins.getInstance() == null || Jenkins.getInstance().getRootUrl() == null) ? DEFAULT_URL : Jenkins.getInstance().getRootUrl();
         String actionLink = url + "/" + build.getUrl();
         return actionLink;
     }
@@ -95,15 +103,6 @@ public class ConfigurationRotatorReport extends AbstractModelObject implements U
     public ArrayList<String> listAvailableFeeds() {
         ArrayList<String> list = new ArrayList<String>();
         list.addAll(Arrays.asList(ConfigurationRotator.FEED_DIRFILE.list()));
-        return list;
-    }
-    
-    public ArrayList<String> listAvailableFeeds(List<String> vobs) {
-        ArrayList<String> list = new ArrayList<String>();
-        for(String s: vobs) {
-            
-        }
-        
         return list;
     }
     

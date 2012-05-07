@@ -1,13 +1,9 @@
 package net.praqma.jenkins.configrotator;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
-import java.util.jar.JarFile;
-import java.util.jar.Manifest;
 
 import net.praqma.util.debug.Logger;
 import net.praqma.util.debug.Logger.LogLevel;
@@ -32,14 +28,10 @@ import hudson.tasks.Publisher;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.logging.Level;
-import javax.security.auth.callback.ConfirmationCallback;
 import jenkins.model.Jenkins;
-import net.praqma.clearcase.ucm.entities.Version;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseGetBaseLineCompare;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigurationComponent;
-import net.praqma.jenkins.configrotator.scm.clearcaseucm.GetConfiguration;
 
 public class ConfigurationRotator extends SCM {
 
@@ -279,7 +271,6 @@ public class ConfigurationRotator extends SCM {
                 writer.println(String.format("<date>%s</date>", new Date().toString()));
                 writer.println("</entry>");      
                 writer.println("</changelog>");
-                listener.getLogger().println("Finished writing to change log!");
             }
         
         } catch (IOException e) {
