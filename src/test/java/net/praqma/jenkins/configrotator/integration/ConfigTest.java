@@ -41,7 +41,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         String debugLine = "**************************************** '" + testName + "': ";
         System.out.println(debugLine + "Starting");
         // ONLY alphanumeric chars
-        String uniqueTestVobName = testName;
+        String uniqueTestVobName = testName + uniqueTimeStamp;
 
         // set up cool to run tests with ClearCase environment
         // variables overwrite cool test case setup.xml setting
@@ -91,10 +91,10 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 
         
         // FIXME - does not work every time either.
-        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
-        coolTest.tearDown();
-        net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
-        System.out.println(debugLine + "Done calling teardown....");
+//        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
+//        coolTest.tearDown();
+//        net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+//        System.out.println(debugLine + "Done calling teardown....");
 
 
         System.out.println(debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error");
@@ -112,7 +112,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         String debugLine = "**************************************** '" + testName + "': ";
         System.out.println(debugLine + "Starting");
         // ONLY alphanumeric chars
-        String uniqueTestVobName = testName;
+        String uniqueTestVobName = testName + uniqueTimeStamp;
 
         // set up cool to run tests with ClearCase environment
         // variables overwrite cool test case setup.xml setting
@@ -253,7 +253,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         String debugLine = "**************************************** '" + testName + "': ";
         System.out.println(debugLine + "Starting");
         // ONLY alphanumeric chars
-        String uniqueTestVobName = testName;
+        String uniqueTestVobName = testName + uniqueTimeStamp;
 
         // set up cool to run tests with ClearCase environment
         // variables overwrite cool test case setup.xml setting
