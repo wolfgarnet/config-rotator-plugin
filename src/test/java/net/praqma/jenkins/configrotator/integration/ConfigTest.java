@@ -89,6 +89,13 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         System.out.println(debugLine + "cr.reconfigure: " + cr.reconfigure);
         assertTrue(cr.reconfigure); //should initially be false, but now true
 
+        
+
+        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
+        coolTest.tearDown();
+        net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        System.out.println(debugLine + "Done calling teardown....");
+
 
         System.out.println(debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error");
         // waiting is important to ensure unique timestamps and let Jenkins clean
@@ -229,10 +236,6 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         // now after one successfull build, justconfigured should be false
         System.out.println(debugLine + "cr.justConfigured: " + cr.justConfigured);
         assertFalse(cr.justConfigured);
-
-        System.out.println(debugLine + "Trying teardown....");
-        coolTest.tearDown();
-        System.out.println(debugLine + "Done calling teardown....");
         
         System.out.println(debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error");
         // waiting is important to ensure unique timestamps and let Jenkins clean
@@ -335,7 +338,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         System.out.println(debugLine + "action.getResult(): " + action.getResult());
         assertEquals(action.getResult(), ConfigurationRotator.ResultType.FAILED);
 
-
+        
         System.out.println(debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error");
         // waiting is important to ensure unique timestamps and let Jenkins clean
         // workspace after each test
@@ -595,7 +598,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         ClearCaseUCMTarget target2 = new ClearCaseUCMTarget("client-1@" + coolTest.getPVob() + ", INITIAL, false");
         System.out.println(debugLine + "Comparing target1 with target2");
         assertFalse(target1.equals(target2));
-
+        
         System.out.println(debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error");
         // waiting is important to ensure unique timestamps and let Jenkins clean
         // workspace after each test
@@ -1171,7 +1174,8 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         
         String feedPath = ConfigurationRotator.FEED_FULL_PATH;
         
-
+        // FIXME write tests here
+        
         
         
         
