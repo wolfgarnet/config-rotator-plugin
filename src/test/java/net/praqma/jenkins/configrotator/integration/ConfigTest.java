@@ -41,7 +41,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         String debugLine = "**************************************** '" + testName + "': ";
         System.out.println(debugLine + "Starting");
         // ONLY alphanumeric chars
-        String uniqueTestVobName = testName + uniqueTimeStamp;
+        String uniqueTestVobName = testName;
 
         // set up cool to run tests with ClearCase environment
         // variables overwrite cool test case setup.xml setting
@@ -90,7 +90,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         assertTrue(cr.reconfigure); //should initially be false, but now true
 
         
-
+        // FIXME - does not work every time either.
         System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
         coolTest.tearDown();
         net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
@@ -112,7 +112,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         String debugLine = "**************************************** '" + testName + "': ";
         System.out.println(debugLine + "Starting");
         // ONLY alphanumeric chars
-        String uniqueTestVobName = testName + uniqueTimeStamp;
+        String uniqueTestVobName = testName;
 
         // set up cool to run tests with ClearCase environment
         // variables overwrite cool test case setup.xml setting
@@ -253,7 +253,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         String debugLine = "**************************************** '" + testName + "': ";
         System.out.println(debugLine + "Starting");
         // ONLY alphanumeric chars
-        String uniqueTestVobName = testName + uniqueTimeStamp;
+        String uniqueTestVobName = testName;
 
         // set up cool to run tests with ClearCase environment
         // variables overwrite cool test case setup.xml setting
