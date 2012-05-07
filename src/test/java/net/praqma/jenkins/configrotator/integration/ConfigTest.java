@@ -230,6 +230,10 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         System.out.println(debugLine + "cr.justConfigured: " + cr.justConfigured);
         assertFalse(cr.justConfigured);
 
+        System.out.println(debugLine + "Trying teardown....");
+        coolTest.tearDown();
+        System.out.println(debugLine + "Done calling teardown....");
+        
         System.out.println(debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error");
         // waiting is important to ensure unique timestamps and let Jenkins clean
         // workspace after each test
