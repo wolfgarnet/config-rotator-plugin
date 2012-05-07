@@ -1,8 +1,10 @@
 package net.praqma.jenkins.configrotator.unit;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,6 +27,8 @@ import junit.framework.TestCase;
 import net.praqma.clearcase.PVob;
 import net.praqma.clearcase.exceptions.UnableToInitializeEntityException;
 import net.praqma.clearcase.ucm.entities.Baseline;
+import net.praqma.clearcase.ucm.entities.Component;
+import net.praqma.clearcase.ucm.entities.Stream;
 import net.praqma.clearcase.ucm.entities.Project.PromotionLevel;
 import net.praqma.jenkins.configrotator.AbstractConfiguration;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorException;
@@ -436,5 +440,50 @@ public class ConfigRotatorTest extends TestCase {
 		System.out.println( "-----> " + action.getBuild() );
 		
 		assertEquals( action02, action );
+	}
+	
+	@Test
+	public void testPrint() throws UnableToInitializeEntityException, UnsupportedEncodingException {
+		ClearCaseUCM ccucm = new ClearCaseUCM( "" );
+		
+		/* Configuration component 1*/
+		Stream stream1 = Stream.get( "stream1@\\pvob" );
+		Component comp1 = Component.get( "comp1@\\pvob" );
+		Baseline bl1 = Mockito.mock( Baseline.class );
+		Mockito.doReturn( stream1 ).when( bl1 ).getStream();
+		Mockito.doReturn( comp1 ).when( bl1 ).getComponent();
+		Mockito.doReturn( "bl1@\\pvob" ).when( bl1 ).getNormalizedName();
+		
+		/* Configuration component 2*/
+		Stream stream2 = Stream.get( "stream2@\\pvob" );
+		Component comp2 = Component.get( "comp2@\\pvob" );
+		Baseline bl2 = Mockito.mock( Baseline.class );
+		Mockito.doReturn( stream2 ).when( bl2 ).getStream();
+		Mockito.doReturn( comp2 ).when( bl2 ).getComponent();
+		Mockito.doReturn( "bl2@\\pvob" ).when( bl2 ).getNormalizedName();
+		
+		ClearCaseUCMConfigurationComponent cccc1 = new ClearCaseUCMConfigurationComponent( bl1, PromotionLevel.INITIAL, false );
+		ClearCaseUCMConfigurationComponent cccc2 = new ClearCaseUCMConfigurationComponent( bl2, PromotionLevel.INITIAL, false );
+		
+		List<ClearCaseUCMConfigurationComponent> list = new ArrayList<ClearCaseUCMConfigurationComponent>();
+		list.add( cccc1 );
+		list.add( cccc2 );
+		
+		ClearCaseUCMConfiguration ccc = new ClearCaseUCMConfiguration( list );
+		
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream ps = new PrintStream( baos );
+		
+		ccucm.printConfiguration( ps, ccc );
+		
+		String nl = System.getProperty("line.separator");
+		String content = baos.toString("latin1");
+		String expected = "The configuration is:" + nl + " * component:comp1@\\pvob, stream:stream1@\\pvob, bl1@\\pvob" + nl + " * component:comp2@\\pvob, stream:stream2@\\pvob, bl2@\\pvob" + nl + nl;
+		
+		System.out.println( "CONTENT : " + content );
+		System.out.println( "EXPECTED: " + expected );
+		
+		//assertEquals( expected, content );
+		assertSame( expected, content );
 	}
 }
