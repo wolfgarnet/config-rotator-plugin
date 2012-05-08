@@ -81,6 +81,14 @@ public class ConfigRotatorChangeSetTest extends TestCase {
         assertEquals("Test", cca.getVersions().get(0).getFile());
         assertEquals("Test", cca.getVersions().get(0).getName());
         assertEquals("Test", cca.getVersions().get(0).getUser());
+        
+        ClearCaseActivity ccaTwo = new ClearCaseActivity("Test", "TestAuthorRemodify");
+        ccaTwo.setAuthor("TestAuthor");
+        assertTrue(ccaTwo.getAuthor().equals("TestAuthour"));
+        
+        assertFalse(ccaTwo.equals("FalseString"));
+        
+        
     }
     
     @Test
@@ -89,16 +97,26 @@ public class ConfigRotatorChangeSetTest extends TestCase {
         cca.setActivityName("TestActivity");
                 
         ClearCaseActivity cca2 = new ClearCaseActivity("TestActivity");
+        
+        
         cca.setVersions(new ArrayList<ClearCaseVersion>());
         cca.addVersion(new ClearCaseVersion("Test","Test","Test"));
         
+        
+        
         ClearCaseUCMConfigRotatorEntry ccucroe = new ClearCaseUCMConfigRotatorEntry();
+        assertNull(ccucroe.getActivityName());
+        assertNull(ccucroe.getAuthor());
+        
+        
         ccucroe.setVersions(cca.getVersions());
         assertEquals("ClearCase UCM ConfigRotator Change",ccucroe.getMsg());
         
         assertEquals(1, ccucroe.getAffectedPaths().size());
         ccucroe.addVersion(new ClearCaseVersion("Test2", "Test2", "Test2"));
         assertEquals(2, ccucroe.getAffectedPaths().size());
+        
+        
     }
     
     @Test
