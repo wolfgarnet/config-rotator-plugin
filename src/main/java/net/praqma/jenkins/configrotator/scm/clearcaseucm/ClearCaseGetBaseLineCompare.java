@@ -12,14 +12,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorException;
-import net.praqma.util.debug.Logger;
-import net.praqma.util.debug.appenders.StreamAppender;
 
 /**
  *
  * @author Praqma
  */
-public class ClearCaseGetBaseLineCompare implements FilePath.FileCallable<List<String>> {
+public class ClearCaseGetBaseLineCompare implements FilePath.FileCallable<List<ClearCaseActivity>> {
     private ClearCaseUCMConfiguration current;
     private ClearCaseUCMConfiguration compareto;
     private BuildListener listener;
@@ -31,8 +29,8 @@ public class ClearCaseGetBaseLineCompare implements FilePath.FileCallable<List<S
     }
 
     @Override
-    public List<String> invoke(File f, VirtualChannel channel) throws IOException, InterruptedException {
-        List<String> changes = new ArrayList<String>();
+    public List<ClearCaseActivity> invoke(File f, VirtualChannel channel) throws IOException, InterruptedException {
+        List<ClearCaseActivity> changes = new ArrayList<ClearCaseActivity>();
         try {
             changes = current.difference(compareto);          
         } catch (ConfigurationRotatorException ex) {

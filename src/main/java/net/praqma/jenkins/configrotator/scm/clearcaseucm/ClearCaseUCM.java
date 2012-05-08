@@ -1,17 +1,5 @@
 package net.praqma.jenkins.configrotator.scm.clearcaseucm;
 
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.servlet.ServletException;
-
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.StaplerRequest;
-
 import hudson.AbortException;
 import hudson.Extension;
 import hudson.FilePath;
@@ -20,30 +8,30 @@ import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.model.TaskListener;
-import hudson.scm.ChangeLogParser;
 import hudson.scm.PollingResult;
 import hudson.util.FormValidation;
-
-import net.praqma.clearcase.util.ExceptionUtils;
-
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import javax.servlet.ServletException;
 import net.praqma.clearcase.PVob;
+import net.praqma.clearcase.ucm.entities.Activity;
 import net.praqma.clearcase.ucm.entities.Baseline;
 import net.praqma.clearcase.ucm.entities.Project;
 import net.praqma.clearcase.ucm.entities.Stream;
 import net.praqma.clearcase.ucm.view.SnapshotView;
-import net.praqma.clearcase.util.setup.CheckoutTask;
-import net.praqma.jenkins.configrotator.AbstractConfiguration;
-import net.praqma.jenkins.configrotator.AbstractConfigurationRotatorSCM;
-import net.praqma.jenkins.configrotator.ConfigurationRotator;
-import net.praqma.jenkins.configrotator.ConfigurationRotatorBuildAction;
-import net.praqma.jenkins.configrotator.ConfigurationRotatorException;
-import net.praqma.jenkins.configrotator.ConfigurationRotatorSCMDescriptor;
+import net.praqma.clearcase.util.ExceptionUtils;
+import net.praqma.jenkins.configrotator.*;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
 import net.praqma.jenkins.utils.remoting.DetermineProject;
 import net.praqma.jenkins.utils.remoting.GetBaselines;
 import net.praqma.util.debug.Logger;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.StaplerRequest;
 
 public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Serializable {
 	
@@ -370,6 +358,79 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		
 		return PollingResult.BUILD_NOW;
 	}
+
+    @Override
+    public void writeChangeLog(File f, BuildListener listener, AbstractBuild<?, ?> build) throws IOException, ConfigurationRotatorException, InterruptedException {
+        PrintWriter writer = null;
+        List<ClearCaseActivity> changes = new ArrayList<ClearCaseActivity>();
+        //First obtain last succesful result
+        ConfigurationRotatorBuildAction crbac = getLastResult(build.getProject(), this.getClass());
+        
+        //Special case: This is the first build
+         if(crbac == null) {
+            
+        } else {
+             List<AbstractConfigurationComponent> currentComponentList = null;
+             ConfigurationRotatorBuildAction current = build.getAction(ConfigurationRotatorBuildAction.class);
+             if(current != null)
+                 currentComponentList = current.getConfiguration().getList();
+             
+             int compareIndex = -1;
+             
+             if(currentComponentList != null) {
+                for(AbstractConfigurationComponent acc : currentComponentList) {
+                    if(acc.isChangedLast()) {
+                        compareIndex = currentComponentList.indexOf(acc);
+                        break;
+                    }
+                }
+             }
+             
+             //The compare is totally new. Else compare the previous component
+             if(compareIndex == -1) {
+                 
+             } else {
+                 if(currentComponentList.get(compareIndex) instanceof ClearCaseUCMConfigurationComponent) {
+                    changes = build.getWorkspace().act(new ClearCaseGetBaseLineCompare(listener, current.getConfiguration(ClearCaseUCMConfiguration.class), crbac.getConfiguration(ClearCaseUCMConfiguration.class)));
+                 }
+             }
+        }
+        
+        try {
+            
+            writer = new PrintWriter(new FileWriter(f));
+            
+            
+            writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+            writer.println("<changelog>");
+            
+            for(ClearCaseActivity a : changes) {
+                writer.println("<activity>");
+                writer.println(String.format("<author>%s</author>", a.getAuthor()));
+                writer.println(String.format("<activityName>%s</activityName>", a.getActivityName()));
+                writer.println("<versions>");
+                for(ClearCaseVersion v : a.getVersions()) {
+                    writer.println("<version>");
+                    writer.println(String.format("<name>%s</name>", v.getName()));
+                    writer.println(String.format("<file>%s</file>", v.getFile()));
+                    writer.println(String.format("<user>%s</user>", v.getUser()));
+                    writer.println("</version>");
+                }
+                writer.println("</versions>");
+                writer.print("</activity>");
+                
+                
+            }
+            
+            writer.println("</changelog>");
+            
+        
+        } catch (IOException e) {
+            listener.getLogger().println("Unable to create change log!" +e);
+        } finally {
+            writer.close();
+        }
+    }
 	
 	@Extension
 	public static final class DescriptorImpl extends ConfigurationRotatorSCMDescriptor<ClearCaseUCM> {

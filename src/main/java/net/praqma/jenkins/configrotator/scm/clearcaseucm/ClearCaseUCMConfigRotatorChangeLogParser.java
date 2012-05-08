@@ -8,9 +8,7 @@ import hudson.model.AbstractBuild;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
 import hudson.util.Digester2;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -29,20 +27,55 @@ public class ClearCaseUCMConfigRotatorChangeLogParser extends ConfigRotatorChang
         Digester digester = new Digester2();
         List<ClearCaseUCMConfigRotatorEntry> changesetList = new ArrayList<ClearCaseUCMConfigRotatorEntry>();
         digester.push(changesetList);
-        digester.addObjectCreate("*/changelog/entry", ClearCaseUCMConfigRotatorEntry.class);
-        digester.addSetProperties("*/changelog/entry");
-        digester.addBeanPropertySetter("*/changelog/entry/owner");
-        digester.addBeanPropertySetter("*/changelog/entry/date");
-        digester.addBeanPropertySetter("*/changelog/entry/componentChange");
-        digester.addSetNext("*/changelog/entry", "add");
-                
-        FileReader reader = new FileReader(changelogFile);
-        digester.parse(reader);
-        reader.close();
+        digester.addObjectCreate("*/changelog/activity", ClearCaseUCMConfigRotatorEntry.class);
+        digester.addSetProperties("*/changelog/activity");
+        digester.addBeanPropertySetter("*/changelog/activity/author");
+        digester.addBeanPropertySetter("*/changelog/activity/activityName"); 
+        digester.addObjectCreate("*/changelog/activity/versions/", ClearCaseVersion.class);
+        digester.addBeanPropertySetter("*/changelog/activity/versions/version/name");
+        digester.addBeanPropertySetter("*/changelog/activity/versions/version/user");
+        digester.addBeanPropertySetter("*/changelog/activity/versions/version/file");
         
+        digester.addSetNext("*/changelog/activity/versions","addVersion");
+        digester.addSetNext("*/changelog/activity", "add");
+        try {
+            FileReader reader = new FileReader(changelogFile);
+            digester.parse(reader);
+            reader.close();
+        } catch (SAXException sex) {
+            return new ClearCaseUCMConfigRotatorChangeLogSet(build);
+        }
         ClearCaseUCMConfigRotatorChangeLogSet clogSet = new ClearCaseUCMConfigRotatorChangeLogSet(build, changesetList);
-        System.out.println(clogSet);
+       
         return clogSet;
         
     }
 }
+
+/*
+ * 
+ *             writer = new PrintWriter(new FileWriter(f));
+            
+            
+            writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+            writer.println("<changelog>");
+            
+            for(ClearCaseActivity a : changes) {
+                writer.println("<entry>");
+                writer.println(String.format("<activityName>%s</activityName>", a.getActivityName()));
+                writer.println("<versions>");
+                for(ClearCaseVersion v : a.getVersions()) {
+                    writer.println("<version>");
+                    writer.println(String.format("<v>%</v>", v.version));
+                    writer.println(String.format("<file>%</file>", v.sFile));
+                    writer.println(String.format("<user>%</user>", v.user));
+                    writer.println("</version>");
+                }
+                writer.println("</versions>");
+                writer.print("</entry>");
+                
+                
+            }
+            
+            writer.println("</changelog>");
+ */

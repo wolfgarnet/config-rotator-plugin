@@ -10,14 +10,14 @@ import hudson.model.*;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.logging.Level;
 import junit.framework.TestCase;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorBuildAction;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeSetDescriptor;
-import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigRotatorChangeLogParser;
-import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigRotatorChangeLogSet;
-import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigRotatorEntry;
-import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorEntry;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.*;
 import net.praqma.util.debug.Logger;
 import net.praqma.util.debug.appenders.Appender;
 import net.praqma.util.debug.appenders.ConsoleAppender;
@@ -64,10 +64,41 @@ public class ConfigRotatorChangeSetTest extends TestCase {
         //Mockito.when( build.getAction(ConfigurationRotatorBuildAction.class)).thenReturn( new ConfigurationRotatorBuildAction(build, null, conf) );
 	}
     
+    @Test
+    public void testDAOChangeLogItems() {
+        ClearCaseActivity cca = new ClearCaseActivity();
+        cca.setActivityName("TestActivity");
+                
+        ClearCaseActivity cca2 = new ClearCaseActivity("TestActivity");
+        
+        assertTrue(cca.equals(cca2));
+        cca.setVersions(new ArrayList<ClearCaseVersion>());
+        cca.addVersion(new ClearCaseVersion("Test","Test","Test"));
+        
+        
+        assertEquals(1, cca.getVersions().size());
+        
+        assertEquals("Test", cca.getVersions().get(0).getFile());
+        assertEquals("Test", cca.getVersions().get(0).getName());
+        assertEquals("Test", cca.getVersions().get(0).getUser());
+    }
     
     @Test
-    public void testChangeSetAdditions() {
+    public void testConfigRotatorEntry() {
+        ClearCaseActivity cca = new ClearCaseActivity();
+        cca.setActivityName("TestActivity");
+                
+        ClearCaseActivity cca2 = new ClearCaseActivity("TestActivity");
+        cca.setVersions(new ArrayList<ClearCaseVersion>());
+        cca.addVersion(new ClearCaseVersion("Test","Test","Test"));
         
+        ClearCaseUCMConfigRotatorEntry ccucroe = new ClearCaseUCMConfigRotatorEntry();
+        ccucroe.setVersions(cca.getVersions());
+        assertEquals("ClearCase UCM ConfigRotator Change",ccucroe.getMsg());
+        
+        assertEquals(1, ccucroe.getAffectedPaths().size());
+        ccucroe.addVersion(new ClearCaseVersion("Test2", "Test2", "Test2"));
+        assertEquals(2, ccucroe.getAffectedPaths().size());
     }
     
     @Test
@@ -76,7 +107,7 @@ public class ConfigRotatorChangeSetTest extends TestCase {
         ClearCaseUCMConfigRotatorChangeLogParser spy = Mockito.spy(parser);
         
         //Load the provided changelog
-        InputStream is = this.getClass().getResourceAsStream("changelog.xml");
+        InputStream is = this.getClass().getResourceAsStream("changelog_1.xml");
         assertNotNull(is);
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
@@ -93,25 +124,9 @@ public class ConfigRotatorChangeSetTest extends TestCase {
         fw.close();
         
         ChangeLogSet<? extends Entry> entry = parser.parse(build, f);
+        ClearCaseUCMConfigRotatorChangeLogSet converted = (ClearCaseUCMConfigRotatorChangeLogSet)entry;
         
         assertTrue(f.delete());
-        assertFalse(entry.isEmptySet());    
-        
-        //<owner>TestOwner</owner>
-        //<componentChange>E:\jenkins-slave-mads\workspace\ChangeLogTest\view\chw_PVOB\CR-1\cr1.h</componentChange>
-        //<date>Wed May 02 14:31:17 CEST 2012</date>
-        
-        //Create the above item. We want to assert that the two changeset objects are equal.
-        ClearCaseUCMConfigRotatorEntry item = new ClearCaseUCMConfigRotatorEntry();
-        item.setOwner("TestOwner");
-        item.setComponentChange("E:\\jenkins-slave-mads\\workspace\\ChangeLogTest\\view\\chw_PVOB\\CR-1\\cr1.h");
-        item.setDate("Wed May 02 14:31:17 CEST 2012");
-        
-        ClearCaseUCMConfigRotatorEntry parsedItem = ((ClearCaseUCMConfigRotatorEntry)entry.getItems()[0]);
-        assertTrue(parsedItem.equals(item));        
-        
-        //The purpose of this test is to test that the changelog is parsed correctly, So we dont care about the other parts
-        ConfigRotatorChangeSetDescriptor descriptor = (ConfigRotatorChangeSetDescriptor)entry;
-        assertTrue(descriptor.getHeadline().equals(ClearCaseUCMConfigRotatorChangeLogSet.CONF_ERROR));
+        assertFalse(entry.isEmptySet());   
     }
 }

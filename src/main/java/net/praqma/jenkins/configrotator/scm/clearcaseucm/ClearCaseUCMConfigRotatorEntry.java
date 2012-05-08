@@ -4,6 +4,8 @@
  */
 package net.praqma.jenkins.configrotator.scm.clearcaseucm;
 
+import hudson.model.User;
+import java.util.ArrayList;
 import java.util.Collection;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorEntry;
 
@@ -13,15 +15,15 @@ import net.praqma.jenkins.configrotator.scm.ConfigRotatorEntry;
  */
 public class ClearCaseUCMConfigRotatorEntry extends ConfigRotatorEntry {
     
-    private String owner;
-    private String componentChange;
-    private String date;
+    private String activityName;
+    private String author;
+    private ArrayList<ClearCaseVersion> versions;
 
     /**
      * Default constructor
      */
     public ClearCaseUCMConfigRotatorEntry() {
-        
+        versions = new ArrayList<ClearCaseVersion>();
     }
     
     @Override
@@ -31,66 +33,55 @@ public class ClearCaseUCMConfigRotatorEntry extends ConfigRotatorEntry {
 
     @Override
     public Collection<String> getAffectedPaths() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    /**
-     * @return the owner
-     */
-    public String getOwner() {
-        return owner;
-    }
-
-    /**
-     * @param owner the owner to set
-     */
-    public void setOwner(String owner) {
-        this.owner = owner;
-    }
-
-    /**
-     * @return the date
-     */
-    public String getDate() {
-        return date;
-    }
-
-    /**
-     * @param date the date to set
-     */
-    public void setDate(String date) {
-        this.date = date;
-    }
-
-    /**
-     * @return the componentChange
-     */
-    public String getComponentChange() {
-        return componentChange;
-    }
-
-    /**
-     * @param componentChange the componentChange to set
-     */
-    public void setComponentChange(String componentChange) {
-        this.componentChange = componentChange;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("Owner: %s CompoentChange: %s Date: %s", owner,componentChange,date);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof ClearCaseUCMConfigRotatorEntry)) {
-            return false;
+        ArrayList<String> strings = new ArrayList<String>();
+        for(ClearCaseVersion ccv : getVersions()) {
+            strings.add(ccv.getFile());
         }
-        
-        ClearCaseUCMConfigRotatorEntry comp = (ClearCaseUCMConfigRotatorEntry)obj;
-        
-        return (comp.getOwner().equals(getOwner()) && comp.getComponentChange().equals(getComponentChange()) && comp.getDate().equals(getDate()));
-        
+        return strings;
+    }
+
+    /**
+     * @return the activityName
+     */
+    public String getActivityName() {
+        return activityName;
+    }
+
+    /**
+     * @param activityName the activityName to set
+     */
+    public void setActivityName(String activityName) {
+        this.activityName = activityName;
+    }
+
+    /**
+     * @return the versions
+     */
+    public ArrayList<ClearCaseVersion> getVersions() {
+        return versions;
+    }
+
+    /**
+     * @param versions the versions to set
+     */
+    public void setVersions(ArrayList<ClearCaseVersion> files) {
+        this.versions = files;
     }
     
+    public void addVersion(ClearCaseVersion version) {
+        versions.add(version);
+    }
+    
+    @Override
+	public User getAuthor() {
+		if( author == null ) {
+			return User.getUnknown();
+		}
+		return User.get( author );
+	}
+    
+    @Override
+    public void setAuthor(String author) {
+        this.author = author;
+    }
 }

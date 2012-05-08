@@ -2,14 +2,13 @@
     <j:choose>
         <j:when test="${it.emptySet}">
             ${%No changes.}
-            ${it}
         </j:when>
         <j:otherwise>
         Changes
         <ol>
             <j:forEach var="cs" items="${it.items}" varStatus="loop">
             <li>
-               ${cs.msgAnnotated} (<a href="changes#detail${loop.index}">detail</a>)
+               ${cs.msg} (<a href="changes#detail${loop.index}">detail</a>)
             </li>
             </j:forEach>
         </ol>

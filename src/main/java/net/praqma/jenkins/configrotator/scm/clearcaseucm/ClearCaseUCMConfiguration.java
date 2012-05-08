@@ -3,18 +3,15 @@ package net.praqma.jenkins.configrotator.scm.clearcaseucm;
 import hudson.FilePath;
 import hudson.model.TaskListener;
 import java.io.File;
-
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
-import net.praqma.clearcase.exceptions.CleartoolException;
-import net.praqma.clearcase.exceptions.UCMEntityNotFoundException;
-import net.praqma.clearcase.exceptions.UnableToInitializeEntityException;
-import net.praqma.clearcase.exceptions.UnableToLoadEntityException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import net.praqma.clearcase.exceptions.*;
 import net.praqma.clearcase.ucm.entities.Activity;
 import net.praqma.clearcase.ucm.entities.Version;
-
 import net.praqma.clearcase.ucm.view.SnapshotView;
 import net.praqma.jenkins.configrotator.AbstractConfiguration;
 import net.praqma.jenkins.configrotator.AbstractConfigurationComponent;
@@ -121,13 +118,6 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUC
 		return list.toString();
 	}
 	
-
-	@Override
-	public void getConfiguration() {
-		// TODO Auto-generated method stub
-		
-	}
-
 	@Override
 	public boolean equals( Object other ) {
 		if( other == this ) {
@@ -187,22 +177,32 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUC
      */
     
     @Override
-    public List<String> difference(AbstractConfiguration<ClearCaseUCMConfigurationComponent> configuration) throws ConfigurationRotatorException {
-        List<String> changes = new ArrayList<String>();
+    public List<ClearCaseActivity> difference(AbstractConfiguration<ClearCaseUCMConfigurationComponent> configuration) throws ConfigurationRotatorException {
+        List<ClearCaseActivity> changes = new ArrayList<ClearCaseActivity>();
         List<ClearCaseUCMConfigurationComponent> components = getList();
         //Find changed component
         for(ClearCaseUCMConfigurationComponent comp : components) {
             if(comp.isChangedLast()) {
                 try {
-                    int index = components.indexOf(comp);
-                    
-                    List<Activity> activities = Version.getBaselineDiff(configuration.getList().get(index).getBaseline(),comp.getBaseline(), true, new File(getView().getPath()));
-                    
+                    int index = components.indexOf(comp);                    
+                    List<Activity> activities = Version.getBaselineDiff(configuration.getList().get(index).getBaseline(),comp.getBaseline(), true, new File(getView().getPath()));                    
                     for(Activity a : activities) {
-                        for(Version s : a.changeset.versions) {
-                            changes.add(s.getFile().getAbsolutePath());       
-                        } 
+                        ClearCaseActivity ccac = new ClearCaseActivity();
+                        ccac.setAuthor(a.getUser());
+                        ccac.setActivityName(a.getShortname());
+                        for(Version v: a.changeset.versions) {
+                            ClearCaseVersion ccv = new ClearCaseVersion();
+                            ccv.setFile(v.getSFile());
+                            ccv.setName(v.getVersion());
+                            ccv.setUser(v.blame());
+                            ccac.addVersion(ccv);
+                        }
+                        changes.add(ccac);
                     }
+                } catch (UnableToCreateEntityException ex) {
+                    throw new ConfigurationRotatorException("UnableToCreateEntityException.", ex);
+                } catch (UnableToGetEntityException ex) {
+                    throw new ConfigurationRotatorException("UnableToGetEntityException.", ex);
                 } catch (NullPointerException nex) {
                     throw new ConfigurationRotatorException("Null pointer found.", nex);
                 } catch (CleartoolException ex) {
@@ -219,11 +219,3 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUC
         return changes;
     }
 }
-/*
-for( Activity a : bldiff ) {
-    c += a.changeset.versions.size();
-    for( Version version : a.changeset.versions ) {
-        changeset.addChange( version.getFullyQualifiedName(), version.getUser() );
-    }
-}
-*/

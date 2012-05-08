@@ -18,6 +18,7 @@ import hudson.model.Describable;
 import hudson.model.TaskListener;
 import hudson.model.Descriptor;
 import hudson.scm.PollingResult;
+import java.io.File;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
 
 public abstract class AbstractConfigurationRotatorSCM implements Describable<AbstractConfigurationRotatorSCM>, ExtensionPoint {
@@ -35,6 +36,17 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
 	public abstract boolean wasReconfigured( AbstractProject<?, ?> project );
     
     public abstract ConfigRotatorChangeLogParser createChangeLogParser();
+    
+    /**
+     * @param changeLogFile
+     * @param listener
+     * @param build
+     * @throws IOException
+     * @throws ConfigurationRotatorException
+     * @throws InterruptedException 
+     */
+    public abstract void writeChangeLog( File changeLogFile, BuildListener listener, AbstractBuild<?, ?> build ) throws IOException, ConfigurationRotatorException, InterruptedException;
+    
 		
 	@Override
 	public Descriptor<AbstractConfigurationRotatorSCM> getDescriptor() {
@@ -74,13 +86,14 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
     
     public ArrayList<ConfigurationRotatorBuildAction> getLastResults(AbstractProject<?, ?> project, Class<? extends AbstractConfigurationRotatorSCM> clazz, int limit) {
         ArrayList<ConfigurationRotatorBuildAction> actions = new ArrayList<ConfigurationRotatorBuildAction>();
-        int count = 0;
         for( AbstractBuild<?, ?> b = getLastBuildToBeConsidered( project ); b != null; b = b.getPreviousBuild() ) {
 			ConfigurationRotatorBuildAction r = b.getAction( ConfigurationRotatorBuildAction.class );
 			if( r != null ) {
-				if( r.isDetermined() && ( (clazz == null || r.getClazz().equals( clazz )) && count <= limit ) ) {
-                    count++;
+				if( r.isDetermined() && ( (clazz == null || r.getClazz().equals( clazz ))) ) {
 					actions.add(r);
+                    if(actions.size() >= limit) {
+                        return actions;
+                    }
 				}
 			}
 		}
