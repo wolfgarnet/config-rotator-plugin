@@ -63,7 +63,7 @@ public class ConfigRotatorChangeSetTest extends TestCase {
 		Mockito.when( buildlistener.getLogger() ).thenReturn( System.out );
         //Mockito.when( build.getAction(ConfigurationRotatorBuildAction.class)).thenReturn( new ConfigurationRotatorBuildAction(build, null, conf) );
 	}
-    
+
     @Test
     public void testDAOChangeLogItems() {
         ClearCaseActivity cca = new ClearCaseActivity();
@@ -107,17 +107,15 @@ public class ConfigRotatorChangeSetTest extends TestCase {
         ClearCaseUCMConfigRotatorEntry ccucroe = new ClearCaseUCMConfigRotatorEntry();
         
         assertNull(ccucroe.getActivityName());
-        assertNull(ccucroe.getAuthor());
-        
+      
         ccucroe.setVersions(cca.getVersions());
         assertEquals("ClearCase UCM ConfigRotator Change",ccucroe.getMsg());
         
         assertEquals(1, ccucroe.getAffectedPaths().size());
         ccucroe.addVersion(new ClearCaseVersion("Test2", "Test2", "Test2"));
-        assertEquals(2, ccucroe.getAffectedPaths().size());
-        
-        
+        assertEquals(2, ccucroe.getAffectedPaths().size());      
     }
+    
     
     @Test
     public void testChangeLog() throws IOException, SAXException {
