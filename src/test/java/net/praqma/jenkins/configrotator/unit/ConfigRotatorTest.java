@@ -483,7 +483,7 @@ public class ConfigRotatorTest extends TestCase {
 		System.out.println( "CONTENT : " + content );
 		System.out.println( "EXPECTED: " + expected );
 		
-		//assertEquals( expected, content );
-		assertSame( expected, content );
+		assertEquals( expected, content );
+		//assertSame( expected, content );
 	}
 }
