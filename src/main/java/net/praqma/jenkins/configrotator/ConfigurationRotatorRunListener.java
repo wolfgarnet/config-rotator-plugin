@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package net.praqma.jenkins.configrotator;
 
 import hudson.Extension;
@@ -19,6 +15,51 @@ import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigurati
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigurationComponent;
 import net.praqma.util.xml.feed.*;
 
+/**
+ * RunLister implements onCompleted method that runs for every job on Jenkins 
+ * when completed, thus we check if it is a CR job and harvest the result of 
+ * the configuration.
+ * 
+ * Design notes - using a runListener vs. notifier for writing feed
+ * -----------------------------------------------------------------
+ * 
+ * http://jenkinshost/config-rotator shows a summary with atom-feed and links 
+ * for the feed for every configuration of component tried with the config-rotator 
+ * plug-in (from now denoted CR) on the Jenkins host.
+ * 
+ * That is every job using the plug-in could have a result that should be shown
+ * in one or more feeds, thus we must "subscribe" or ensure these data are 
+ * collected.
+ * 
+ * We already decided for an easy format for storing the feed - one file per 
+ * component in the feed XML format.
+ * 
+ * The feed can be written easily from two places: a runlistener or from the 
+ * notifier part of CR.
+ * 
+ * We chose to implement this as a runlistener, because 
+ * - we expect concurrency problems if doing this in the notifier step
+ * - we find the runlistener way of doing it more clear instead of using the 
+ * notifier (the post build step)
+ * For now we assumes the notifier step is per job, where as the runlistener is 
+ * registered per plug-in.
+ * TODO - need to test this though.
+ * 
+ * Writing feeds: we would have liked to use a fully tested and mature open 
+ * source library for writing feeds, and did a short searching and found to 
+ * large one: ROME and Apache Abdera
+ * ROME though, seemed not to be maintained or changed for some time, 
+ * but seemed the easiest to use.
+ * NONE of them did we succeed in use: both had weird classloader problems under
+ * Jenkins (but not if using them alone). The problem seems to comes from Jenkins 
+ * making the hpi file, from splits of jar-files. Others have this problem, 
+ * and we do to with some internal libraries (cool test case not being able to 
+ * use setup.xml across projects).
+ * Thus we ended up creating our own simple framework in praqmajutils
+ * 
+ * 
+ * @author bue
+ */
 @Extension
 public class ConfigurationRotatorRunListener extends RunListener<Run> {
     
@@ -32,6 +73,27 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
     /**
      * Run listener for ConfigurationRotator jobs that does atom feed writing
      * for the results.
+     * Writes entries to an existing feed, which is read from the component-
+     * feedfile. If this file does not exist, an initial feed is created incl. 
+     * the file.
+     * 
+     * Upon adding the new entry, the feed is written to the file 
+     * (overwriting the existing feed).
+     * Feed clients uses the entries id and timestamps, so they only see 
+     * the new entries added.
+     * 
+     * A component, as we for now only speak ClearCase, is only unique combined 
+     * with the PVob-name, so component feed-files are stored in folders under 
+     * there PVob in the feed-directory.
+     * 
+     * When a configuration is know to be compatible or incompatible, several 
+     * feeds must be updated. Say CR1-1 and CR2-1 and CR3-2 all in PVob 'myPVob'
+     * was found to be compatible, then three feed are updated.
+     * Eg. CR1-1 feed becomes an entry about it found compatible or incompatible
+     * with components CR2-1 and CR3-2.
+     * CR2-1 will have a feed entry about compatibility with CR1-1 and CR3-2.
+     * They will be stored in:
+     * JENKINNS-ROOTFOLDER/config-rotator/feed/myPVob/CR1-1.xml etc.
      *
      * @param run
      * @param listener
