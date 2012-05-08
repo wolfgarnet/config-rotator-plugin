@@ -84,7 +84,7 @@ public class ConfigRotatorChangeSetTest extends TestCase {
         
         ClearCaseActivity ccaTwo = new ClearCaseActivity("Test", "TestAuthorRemodify");
         ccaTwo.setAuthor("TestAuthor");
-        assertTrue(ccaTwo.getAuthor().equals("TestAuthour"));
+        assertTrue(ccaTwo.getAuthor().equals("TestAuthor"));
         
         assertFalse(ccaTwo.equals("FalseString"));
         
@@ -105,9 +105,9 @@ public class ConfigRotatorChangeSetTest extends TestCase {
         
         
         ClearCaseUCMConfigRotatorEntry ccucroe = new ClearCaseUCMConfigRotatorEntry();
+        
         assertNull(ccucroe.getActivityName());
         assertNull(ccucroe.getAuthor());
-        
         
         ccucroe.setVersions(cca.getVersions());
         assertEquals("ClearCase UCM ConfigRotator Change",ccucroe.getMsg());
