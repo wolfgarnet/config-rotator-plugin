@@ -26,8 +26,8 @@ public class ClearCaseUCMConfigRotatorChangeLogSet extends ConfigRotatorChangeLo
     }
     
     public ClearCaseUCMConfigRotatorChangeLogSet(AbstractBuild<?,?> build, List<ClearCaseUCMConfigRotatorEntry> entries) {       
-       super(build);
-       if(build == null) {
+        super(build);
+        if(build == null) {
            setHeadline(CONF_ERROR);
            this.entries = entries;
        } else {

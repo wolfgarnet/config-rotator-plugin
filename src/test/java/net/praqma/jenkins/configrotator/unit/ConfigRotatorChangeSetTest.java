@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.logging.Level;
 import junit.framework.TestCase;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorBuildAction;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogSet;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeSetDescriptor;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorEntry;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.*;
@@ -140,7 +141,22 @@ public class ConfigRotatorChangeSetTest extends TestCase {
         fw.close();
         
         ChangeLogSet<? extends Entry> entry = parser.parse(build, f);
-        ClearCaseUCMConfigRotatorChangeLogSet converted = (ClearCaseUCMConfigRotatorChangeLogSet)entry;
+        ConfigRotatorChangeLogSet<ConfigRotatorEntry> set = (ConfigRotatorChangeLogSet<ConfigRotatorEntry>)entry;
+       
+        System.out.println("PARENT: "+set.getEntries().get(0).getParent());
+        assertEquals(set.getEntries().get(0).getParent(),null);
+        
+        //TODO: WHY ARE THESE NULL AFTERWARDS?
+        ConfigRotatorEntry entri = set.getEntries().get(0);
+        //entri.setParent(set);
+        //assertEquals(entri.getParent(),set);
+       
+        assertEquals(2, set.getEntries().size());
+        set.getEntries().add(new ClearCaseUCMConfigRotatorEntry());
+        assertEquals(3, set.getEntries().size());
+        assertEquals(set.getHeadline(), "Configuration error");
+       
+        
         
         assertTrue(f.delete());
         assertFalse(entry.isEmptySet());   
