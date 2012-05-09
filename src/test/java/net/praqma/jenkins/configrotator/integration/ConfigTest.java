@@ -897,7 +897,8 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         System.out.println(debugLine + "action.getResult(): " + action.getResult());
 		assertEquals(action.getResult(), net.praqma.jenkins.configrotator.ConfigurationRotator.ResultType.INCOMPATIBLE);
         System.out.println(debugLine + "action.isCompatible: " + action.isCompatible());
-		assertTrue(action.isCompatible());
+		//The assertion above assumes that the result is 'INCOMPATIBLE'...
+        assertFalse(action.isCompatible());
 
         ClearCaseUCMConfiguration configuration = action.getConfiguration(ClearCaseUCMConfiguration.class);
         System.out.println(debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname());
