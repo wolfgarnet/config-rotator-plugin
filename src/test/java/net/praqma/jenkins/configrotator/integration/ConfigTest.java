@@ -31,7 +31,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 
     // Controls how many seconds a test as minimum takes by
     // waiting before asserting on the test.
-    Integer watingSeconds = 60;
+    Integer watingSeconds = 3;
     // A time stamp added to ClearCase Vob names to make them unique for each
     // test. They also include the test name.
     // Division by 60000, giving milis to minute precission asuming all tests do
@@ -640,7 +640,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         System.out.println(debugLine + "Usual ccucm target set on ccucm");
 
         System.out.println(debugLine + "ccucm.getPvobName():" + ccucm.getPvobName());
-        assertEquals("\\" + uniqueTestVobName, ccucm.getPvobName());
+        assertEquals("\\" + uniqueTestVobName + "_PVOB", ccucm.getPvobName());
 
         System.out.println(debugLine + "ccucm.getName():" + ccucm.getName());
         assertEquals("ClearCase UCM", ccucm.getName());
