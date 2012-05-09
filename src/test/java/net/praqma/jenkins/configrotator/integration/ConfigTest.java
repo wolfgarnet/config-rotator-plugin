@@ -1472,7 +1472,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         waiting(watingSeconds);
 
     }
-    
+    /*
     @Test
     public void testFeedWasCreated() throws Exception {
         String testName = "testFeedWasCreated";
@@ -1543,7 +1543,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         System.out.println("Entering wait mode");
         waiting(watingSeconds);
     } 
-
+    */
     // busy wait....
     private static void waiting(int seconds) {
 
