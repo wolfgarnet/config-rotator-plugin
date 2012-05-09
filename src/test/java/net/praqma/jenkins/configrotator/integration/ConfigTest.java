@@ -52,7 +52,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         // Unique names for each test is used to avoid all sort of clear case 
         // complications - but leaves as mess...
         coolTest.variables.put("vobname", uniqueTestVobName);
-        coolTest.variables.put("pvobname", uniqueTestVobName);
+        coolTest.variables.put("pvobname", uniqueTestVobName + "_PVOB");
         coolTest.bootStrap();
         System.out.println(debugLine + "Cool test case setup done.");
 
@@ -123,7 +123,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         // Unique names for each test is used to avoid all sort of clear case 
         // complications - but leaves as mess...
         coolTest.variables.put("vobname", uniqueTestVobName);
-        coolTest.variables.put("pvobname", uniqueTestVobName);
+        coolTest.variables.put("pvobname", uniqueTestVobName + "_PVOB");
         coolTest.bootStrap();
         System.out.println(debugLine + "Cool test case setup done.");
 
@@ -264,7 +264,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         // Unique names for each test is used to avoid all sort of clear case 
         // complications - but leaves as mess...
         coolTest.variables.put("vobname", uniqueTestVobName);
-        coolTest.variables.put("pvobname", uniqueTestVobName);
+        coolTest.variables.put("pvobname", uniqueTestVobName + "_PVOB");
         coolTest.bootStrap();
         System.out.println(debugLine + "Cool test case setup done.");
 
@@ -365,7 +365,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         // Unique names for each test is used to avoid all sort of clear case 
         // complications - but leaves as mess...
         coolTest.variables.put("vobname", uniqueTestVobName);
-        coolTest.variables.put("pvobname", uniqueTestVobName);
+        coolTest.variables.put("pvobname", uniqueTestVobName + "_PVOB");
         coolTest.bootStrap();
         System.out.println(debugLine + "Cool test case setup done.");
 
@@ -513,7 +513,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         // Unique names for each test is used to avoid all sort of clear case 
         // complications - but leaves as mess...
         coolTest.variables.put("vobname", uniqueTestVobName);
-        coolTest.variables.put("pvobname", uniqueTestVobName);
+        coolTest.variables.put("pvobname", uniqueTestVobName + "_PVOB");
         coolTest.bootStrap();
         System.out.println(debugLine + "Cool test case setup done.");
 
@@ -581,7 +581,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         // Unique names for each test is used to avoid all sort of clear case 
         // complications - but leaves as mess...
         coolTest.variables.put("vobname", uniqueTestVobName);
-        coolTest.variables.put("pvobname", uniqueTestVobName);
+        coolTest.variables.put("pvobname", uniqueTestVobName + "_PVOB");
         coolTest.bootStrap();
         System.out.println(debugLine + "Cool test case setup done.");
 
@@ -623,7 +623,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         // Unique names for each test is used to avoid all sort of clear case 
         // complications - but leaves as mess...
         coolTest.variables.put("vobname", uniqueTestVobName);
-        coolTest.variables.put("pvobname", uniqueTestVobName);
+        coolTest.variables.put("pvobname", uniqueTestVobName + "_PVOB");
         coolTest.bootStrap();
         System.out.println(debugLine + "Cool test case setup done.");
 
@@ -713,7 +713,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         // Unique names for each test is used to avoid all sort of clear case 
         // complications - but leaves as mess...
         coolTest.variables.put("vobname", uniqueTestVobName);
-        coolTest.variables.put("pvobname", uniqueTestVobName);
+        coolTest.variables.put("pvobname", uniqueTestVobName + "_PVOB");
         coolTest.bootStrap();
         System.out.println(debugLine + "Cool test case setup done.");
 
@@ -814,7 +814,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         // Unique names for each test is used to avoid all sort of clear case 
         // complications - but leaves as mess...
         coolTest.variables.put("vobname", uniqueTestVobName);
-        coolTest.variables.put("pvobname", uniqueTestVobName);
+        coolTest.variables.put("pvobname", uniqueTestVobName + "_PVOB");
         coolTest.bootStrap();
         System.out.println(debugLine + "Cool test case setup done.");
 
@@ -910,7 +910,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         // Unique names for each test is used to avoid all sort of clear case 
         // complications - but leaves as mess...
         coolTest.variables.put("vobname", uniqueTestVobName);
-        coolTest.variables.put("pvobname", uniqueTestVobName);
+        coolTest.variables.put("pvobname", uniqueTestVobName + "_PVOB");
         coolTest.bootStrap();
         System.out.println(debugLine + "Cool test case setup done.");
 
@@ -1071,7 +1071,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         // Unique names for each test is used to avoid all sort of clear case 
         // complications - but leaves as mess...
         coolTest.variables.put("vobname", uniqueTestVobName);
-        coolTest.variables.put("pvobname", uniqueTestVobName);
+        coolTest.variables.put("pvobname", uniqueTestVobName + "_PVOB");
         coolTest.bootStrap();
         System.out.println(debugLine + "Cool test case setup done.");
 
@@ -1211,7 +1211,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         // Unique names for each test is used to avoid all sort of clear case 
         // complications - but leaves as mess...
         coolTest.variables.put("vobname", uniqueTestVobName);
-        coolTest.variables.put("pvobname", uniqueTestVobName);
+        coolTest.variables.put("pvobname", uniqueTestVobName + "_PVOB");
         coolTest.bootStrap();
         System.out.println(debugLine + "Cool test case setup done.");
 
@@ -1486,7 +1486,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         // Unique names for each test is used to avoid all sort of clear case 
         // complications - but leaves as mess...
         coolTest.variables.put("vobname", uniqueTestVobName);
-        coolTest.variables.put("pvobname", uniqueTestVobName);
+        coolTest.variables.put("pvobname", uniqueTestVobName + "_PVOB");
         coolTest.bootStrap();
         System.out.println(debugLine + "Cool test case setup done.");
         
