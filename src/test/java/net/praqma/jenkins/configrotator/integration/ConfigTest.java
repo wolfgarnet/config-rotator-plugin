@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -22,6 +23,8 @@ import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCM;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMTarget;
 import net.praqma.jenkins.utils.test.ClearCaseJenkinsTestCase;
+import net.praqma.util.xml.feed.AtomPublisher;
+import net.praqma.util.xml.feed.Feed;
 import org.jvnet.hudson.test.TestBuilder;
 
 public class ConfigTest extends ClearCaseJenkinsTestCase {
@@ -1512,6 +1515,31 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         assertTrue(f1.exists());
         System.out.println("Checking existance of newly created feed (client-1):" + f2.getAbsolutePath());
         assertTrue(f2.exists());
+       
+        Feed modelFeed = Feed.getFeed(new AtomPublisher(), f1);
+        Feed clientFeed = Feed.getFeed(new AtomPublisher(), f2);
+        
+        int modelOneEntries = modelFeed.getEntries().size();
+        int clientOneEntries = clientFeed.getEntries().size();
+        
+        System.out.println("Expecting 1 model feed entry and 1 client feed entry:");
+        assertEquals(modelOneEntries, 1);
+        assertEquals(clientOneEntries, 1);
+        
+        FreeStyleBuild bTwo = project.scheduleBuild2(0).get();
+        
+        modelFeed = Feed.getFeed(new AtomPublisher(), f1);
+        clientFeed = Feed.getFeed(new AtomPublisher(), f2);
+        
+        modelOneEntries = modelFeed.getEntries().size();
+        clientOneEntries = clientFeed.getEntries().size();
+        
+        System.out.println("Expecting 2 model feed entry and 2 client feed entry:");
+        assertEquals(modelOneEntries, 2);
+        assertEquals(clientOneEntries, 2);
+        
+        System.out.println("Done testing feeds");
+
         System.out.println("Entering wait mode");
         waiting(watingSeconds);
     } 
