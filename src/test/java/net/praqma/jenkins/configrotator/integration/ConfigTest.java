@@ -4,9 +4,11 @@ import hudson.AbortException;
 import hudson.Launcher;
 import hudson.model.*;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -21,6 +23,8 @@ import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCM;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMTarget;
 import net.praqma.jenkins.utils.test.ClearCaseJenkinsTestCase;
+import net.praqma.util.xml.feed.AtomPublisher;
+import net.praqma.util.xml.feed.Feed;
 import org.jvnet.hudson.test.TestBuilder;
 
 public class ConfigTest extends ClearCaseJenkinsTestCase {
@@ -1468,7 +1472,78 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         waiting(watingSeconds);
 
     }
+    /*
+    @Test
+    public void testFeedWasCreated() throws Exception {
+        String testName = "testFeedWasCreated";
+        String debugLine = "**************************************** '" + testName + "': ";
+        System.out.println(debugLine + "Starting");
+        // ONLY alphanumeric chars
+        String uniqueTestVobName = testName + uniqueTimeStamp;
 
+        // set up cool to run tests with ClearCase environment
+        // variables overwrite cool test case setup.xml setting
+        // Unique names for each test is used to avoid all sort of clear case 
+        // complications - but leaves as mess...
+        coolTest.variables.put("vobname", uniqueTestVobName);
+        coolTest.variables.put("pvobname", uniqueTestVobName);
+        coolTest.bootStrap();
+        System.out.println(debugLine + "Cool test case setup done.");
+        
+        
+        // create Jenkins job - also use unique name
+        FreeStyleProject project = createFreeStyleProject(uniqueTestVobName);
+        // Setup ClearCase UCM as SCM and to use with config-rotator
+        ClearCaseUCM ccucm = new ClearCaseUCM(coolTest.getPVob().toString());
+        List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
+        // A first configuration added as targets: model-1 and client-1 that we 
+        // would know to be compatible.
+        targets.add(new ClearCaseUCMTarget("model-1@" + coolTest.getPVob() + ", INITIAL, false"));
+        targets.add(new ClearCaseUCMTarget("client-1@" + coolTest.getPVob() + ", INITIAL, false"));
+        ccucm.targets = targets;
+        // create config-rotator, and set it as SCM
+        System.out.println(debugLine + "Create configurationRotator.");
+        ConfigurationRotator cr = new ConfigurationRotator(ccucm, true);
+        //Set SCM on project (ConfigRotator)
+        project.setScm(cr);
+
+        System.out.println(debugLine + "Scheduling a build for model-1 and client-1...");
+        FreeStyleBuild b = project.scheduleBuild2(0).get();
+        File f1 = new File(ConfigurationRotatorReport.createFeedXmlFile(uniqueTestVobName, "model-1"));
+        File f2 = new File(ConfigurationRotatorReport.createFeedXmlFile(uniqueTestVobName, "client-1"));
+        System.out.println("Checking existance of newly created feed (model-1):" + f1.getAbsolutePath());
+        assertTrue(f1.exists());
+        System.out.println("Checking existance of newly created feed (client-1):" + f2.getAbsolutePath());
+        assertTrue(f2.exists());
+       
+        Feed modelFeed = Feed.getFeed(new AtomPublisher(), f1);
+        Feed clientFeed = Feed.getFeed(new AtomPublisher(), f2);
+        
+        int modelOneEntries = modelFeed.getEntries().size();
+        int clientOneEntries = clientFeed.getEntries().size();
+        
+        System.out.println("Expecting 1 model feed entry and 1 client feed entry:");
+        assertEquals(modelOneEntries, 1);
+        assertEquals(clientOneEntries, 1);
+        
+        FreeStyleBuild bTwo = project.scheduleBuild2(0).get();
+        
+        modelFeed = Feed.getFeed(new AtomPublisher(), f1);
+        clientFeed = Feed.getFeed(new AtomPublisher(), f2);
+        
+        modelOneEntries = modelFeed.getEntries().size();
+        clientOneEntries = clientFeed.getEntries().size();
+        
+        System.out.println("Expecting 2 model feed entry and 2 client feed entry:");
+        assertEquals(modelOneEntries, 2);
+        assertEquals(clientOneEntries, 2);
+        
+        System.out.println("Done testing feeds");
+
+        System.out.println("Entering wait mode");
+        waiting(watingSeconds);
+    } 
+    */
     // busy wait....
     private static void waiting(int seconds) {
 
