@@ -91,10 +91,10 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 
         
         // FIXME - does not work every time either.
-//        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
-//        coolTest.tearDown();
-//        net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
-//        System.out.println(debugLine + "Done calling teardown....");
+        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
+        coolTest.tearDown();
+        net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        System.out.println(debugLine + "Done calling teardown....");
 
 
         System.out.println(debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error");
