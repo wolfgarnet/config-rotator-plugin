@@ -31,7 +31,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 
     // Controls how many seconds a test as minimum takes by
     // waiting before asserting on the test.
-    Integer watingSeconds = 3;
+    Integer watingSeconds = 10;
     // A time stamp added to ClearCase Vob names to make them unique for each
     // test. They also include the test name.
     // Division by 60000, giving milis to minute precission asuming all tests do
@@ -94,9 +94,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         assertTrue(cr.reconfigure); //should initially be false, but now true
 
         
-        // FIXME - does not work every time either.
         System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
-        //coolTest.tearDown();
         net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
         System.out.println(debugLine + "Done calling teardown....");
 
@@ -241,6 +239,10 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         System.out.println(debugLine + "cr.justConfigured: " + cr.justConfigured);
         assertFalse(cr.justConfigured);
         
+        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
+        net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        System.out.println(debugLine + "Done calling teardown....");
+        
         System.out.println(debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error");
         // waiting is important to ensure unique timestamps and let Jenkins clean
         // workspace after each test
@@ -342,6 +344,11 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         System.out.println(debugLine + "action.getResult(): " + action.getResult());
         assertEquals(action.getResult(), ConfigurationRotator.ResultType.FAILED);
 
+        
+        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
+        net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        System.out.println(debugLine + "Done calling teardown....");
+        
         
         System.out.println(debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error");
         // waiting is important to ensure unique timestamps and let Jenkins clean
@@ -491,6 +498,10 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         assertEquals("model-1", configuration3.getList().get(0).getBaseline().getShortname());
         assertEquals("client-1", configuration3.getList().get(1).getBaseline().getShortname());
 
+        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
+        net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        System.out.println(debugLine + "Done calling teardown....");        
+        
         System.out.println(debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error");
         // waiting is important to ensure unique timestamps and let Jenkins clean
         // workspace after each test
@@ -556,6 +567,9 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         br.close();
         System.out.println(debugLine + "... done printing logfile");
 
+        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
+        net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        System.out.println(debugLine + "Done calling teardown....");
 
         System.out.println(debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error");
         // waiting is important to ensure unique timestamps and let Jenkins clean
@@ -602,6 +616,10 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         ClearCaseUCMTarget target2 = new ClearCaseUCMTarget("client-1@" + coolTest.getPVob() + ", INITIAL, false");
         System.out.println(debugLine + "Comparing target1 with target2");
         assertFalse(target1.equals(target2));
+
+        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
+        net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        System.out.println(debugLine + "Done calling teardown....");
         
         System.out.println(debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error");
         // waiting is important to ensure unique timestamps and let Jenkins clean
@@ -692,6 +710,9 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         System.out.println(debugLine + "ccucm.wasReconfigured(project):" + ccucm.wasReconfigured(project));
         assertTrue(ccucm.wasReconfigured(project)); // still, should be same result ?
 
+        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
+        net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        System.out.println(debugLine + "Done calling teardown....");
 
         System.out.println(debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error");
         // waiting is important to ensure unique timestamps and let Jenkins clean
@@ -788,7 +809,11 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         assertEquals("/plugin/config-rotator/images/rotate.png", crpa.getIconFileName());
         assertEquals("config-rotator", crpa.getSearchUrl());
         assertEquals("config-rotator", crpa.getUrlName());
-
+        
+        
+        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
+        net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        System.out.println(debugLine + "Done calling teardown....");
 
         System.out.println(debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error");
         // waiting is important to ensure unique timestamps and let Jenkins clean
@@ -870,17 +895,19 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 
         // check config rotator result
         System.out.println(debugLine + "action.getResult(): " + action.getResult());
-//		assertEquals(action.getResult(), net.praqma.jenkins.configrotator.ConfigurationRotator.ResultType.INCOMPATIBLE);
+		assertEquals(action.getResult(), net.praqma.jenkins.configrotator.ConfigurationRotator.ResultType.INCOMPATIBLE);
         System.out.println(debugLine + "action.isCompatible: " + action.isCompatible());
-//		assertTrue(action.isCompatible());
+		assertTrue(action.isCompatible());
 
         ClearCaseUCMConfiguration configuration = action.getConfiguration(ClearCaseUCMConfiguration.class);
         System.out.println(debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname());
         System.out.println(debugLine + "getShortname(): " + configuration.getList().get(1).getBaseline().getShortname());
-//		assertEquals("model-1", configuration.getList().get(0).getBaseline().getShortname());
-//		assertEquals("client-1", configuration.getList().get(1).getBaseline().getShortname());
+		assertEquals("model-1", configuration.getList().get(0).getBaseline().getShortname());
+		assertEquals("client-1", configuration.getList().get(1).getBaseline().getShortname());
 
-
+        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
+        net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        System.out.println(debugLine + "Done calling teardown....");
 
 
         System.out.println(debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error");
@@ -1045,6 +1072,10 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 
 
 
+        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
+        net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        System.out.println(debugLine + "Done calling teardown....");
+
 
         System.out.println(debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error");
         // waiting is important to ensure unique timestamps and let Jenkins clean
@@ -1180,7 +1211,10 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         
         // FIXME write tests here
         
-        
+
+        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
+        net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        System.out.println(debugLine + "Done calling teardown....");
         
         
         
@@ -1465,6 +1499,10 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         // action expected to be null, as build failed because of no new baselines
         assertNull(action);
 
+
+        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
+        net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        System.out.println(debugLine + "Done calling teardown....");
 
         System.out.println(debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error");
         // waiting is important to ensure unique timestamps and let Jenkins clean
