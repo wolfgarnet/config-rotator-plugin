@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import net.praqma.clearcase.exceptions.CleartoolException;
 
 
 import org.junit.Test;
@@ -95,7 +96,17 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 
         
         System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
-        net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        // try catch to avoid teardown failing tests - it's okay for teardown to fail
+        // as our test environment later can be cleaned manually
+        try 
+        {
+            net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        }
+        catch (CleartoolException clex)
+        {
+            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob() throwed exception - ignoring on purpose");
+            System.out.println(debugLine + "Exception was: " + clex.getMessage());
+        }
         System.out.println(debugLine + "Done calling teardown....");
 
 
@@ -240,7 +251,17 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         assertFalse(cr.justConfigured);
         
         System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
-        net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        // try catch to avoid teardown failing tests - it's okay for teardown to fail
+        // as our test environment later can be cleaned manually
+        try 
+        {
+            net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        }
+        catch (CleartoolException clex)
+        {
+            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob() throwed exception - ignoring on purpose");
+            System.out.println(debugLine + "Exception was: " + clex.getMessage());
+        }
         System.out.println(debugLine + "Done calling teardown....");
         
         System.out.println(debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error");
@@ -346,7 +367,17 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 
         
         System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
-        net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        // try catch to avoid teardown failing tests - it's okay for teardown to fail
+        // as our test environment later can be cleaned manually
+        try 
+        {
+            net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        }
+        catch (CleartoolException clex)
+        {
+            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob() throwed exception - ignoring on purpose");
+            System.out.println(debugLine + "Exception was: " + clex.getMessage());
+        }
         System.out.println(debugLine + "Done calling teardown....");
         
         
@@ -499,7 +530,17 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         assertEquals("client-1", configuration3.getList().get(1).getBaseline().getShortname());
 
         System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
-        net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        // try catch to avoid teardown failing tests - it's okay for teardown to fail
+        // as our test environment later can be cleaned manually
+        try 
+        {
+            net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        }
+        catch (CleartoolException clex)
+        {
+            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob() throwed exception - ignoring on purpose");
+            System.out.println(debugLine + "Exception was: " + clex.getMessage());
+        }
         System.out.println(debugLine + "Done calling teardown....");        
         
         System.out.println(debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error");
@@ -568,7 +609,17 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         System.out.println(debugLine + "... done printing logfile");
 
         System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
-        net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        // try catch to avoid teardown failing tests - it's okay for teardown to fail
+        // as our test environment later can be cleaned manually
+        try 
+        {
+            net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        }
+        catch (CleartoolException clex)
+        {
+            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob() throwed exception - ignoring on purpose");
+            System.out.println(debugLine + "Exception was: " + clex.getMessage());
+        }
         System.out.println(debugLine + "Done calling teardown....");
 
         System.out.println(debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error");
@@ -618,7 +669,17 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         assertFalse(target1.equals(target2));
 
         System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
-        net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        // try catch to avoid teardown failing tests - it's okay for teardown to fail
+        // as our test environment later can be cleaned manually
+        try 
+        {
+            net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        }
+        catch (CleartoolException clex)
+        {
+            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob() throwed exception - ignoring on purpose");
+            System.out.println(debugLine + "Exception was: " + clex.getMessage());
+        }
         System.out.println(debugLine + "Done calling teardown....");
         
         System.out.println(debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error");
@@ -711,7 +772,17 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         assertTrue(ccucm.wasReconfigured(project)); // still, should be same result ?
 
         System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
-        net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        // try catch to avoid teardown failing tests - it's okay for teardown to fail
+        // as our test environment later can be cleaned manually
+        try 
+        {
+            net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        }
+        catch (CleartoolException clex)
+        {
+            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob() throwed exception - ignoring on purpose");
+            System.out.println(debugLine + "Exception was: " + clex.getMessage());
+        }
         System.out.println(debugLine + "Done calling teardown....");
 
         System.out.println(debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error");
@@ -812,7 +883,17 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         
         
         System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
-        net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        // try catch to avoid teardown failing tests - it's okay for teardown to fail
+        // as our test environment later can be cleaned manually
+        try 
+        {
+            net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        }
+        catch (CleartoolException clex)
+        {
+            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob() throwed exception - ignoring on purpose");
+            System.out.println(debugLine + "Exception was: " + clex.getMessage());
+        }
         System.out.println(debugLine + "Done calling teardown....");
 
         System.out.println(debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error");
@@ -907,7 +988,17 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		assertEquals("client-1", configuration.getList().get(1).getBaseline().getShortname());
 
         System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
-        net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        // try catch to avoid teardown failing tests - it's okay for teardown to fail
+        // as our test environment later can be cleaned manually
+        try 
+        {
+            net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        }
+        catch (CleartoolException clex)
+        {
+            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob() throwed exception - ignoring on purpose");
+            System.out.println(debugLine + "Exception was: " + clex.getMessage());
+        }
         System.out.println(debugLine + "Done calling teardown....");
 
 
@@ -1074,7 +1165,17 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 
 
         System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
-        net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        // try catch to avoid teardown failing tests - it's okay for teardown to fail
+        // as our test environment later can be cleaned manually
+        try 
+        {
+            net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        }
+        catch (CleartoolException clex)
+        {
+            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob() throwed exception - ignoring on purpose");
+            System.out.println(debugLine + "Exception was: " + clex.getMessage());
+        }
         System.out.println(debugLine + "Done calling teardown....");
 
 
@@ -1214,7 +1315,17 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         
 
         System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
-        net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        // try catch to avoid teardown failing tests - it's okay for teardown to fail
+        // as our test environment later can be cleaned manually
+        try 
+        {
+            net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        }
+        catch (CleartoolException clex)
+        {
+            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob() throwed exception - ignoring on purpose");
+            System.out.println(debugLine + "Exception was: " + clex.getMessage());
+        }
         System.out.println(debugLine + "Done calling teardown....");
         
         
@@ -1502,7 +1613,17 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 
 
         System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
-        net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        // try catch to avoid teardown failing tests - it's okay for teardown to fail
+        // as our test environment later can be cleaned manually
+        try 
+        {
+            net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+        }
+        catch (CleartoolException clex)
+        {
+            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob() throwed exception - ignoring on purpose");
+            System.out.println(debugLine + "Exception was: " + clex.getMessage());
+        }
         System.out.println(debugLine + "Done calling teardown....");
 
         System.out.println(debugLine + "Test done - waiting... trying avoid Jenkins failing due to clean temp dirs error");
