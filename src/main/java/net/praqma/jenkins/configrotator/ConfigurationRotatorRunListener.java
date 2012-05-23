@@ -248,7 +248,7 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                 }
             } else
             {
-                localListener.getLogger().println("ConfigRotator RunListener - writeFeedToFile: write.close  WAS NULLailed too caught IOException meaning feed may not have been written "+" Exception was: " + ex.getMessage());
+                localListener.getLogger().println("ConfigRotator RunListener - writeFeedToFile: writer  WAS NULL, caught IOException meaning feed may not have been written "+" Exception was: " + ex.getMessage());
             }
         } 
     }
