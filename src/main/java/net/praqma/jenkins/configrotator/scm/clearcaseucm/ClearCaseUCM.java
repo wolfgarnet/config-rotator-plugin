@@ -120,7 +120,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 				inputconfiguration = ClearCaseUCMConfiguration.getConfigurationFromTargets( getTargets(), workspace, listener );
 			} catch( ConfigurationRotatorException e ) {
 				out.println( "Unable to parse configuration: " + e.getMessage() );
-				ExceptionUtils.print( e, out, false );
+				ExceptionUtils.print( e, out, true );
 				throw new AbortException();
 			}
 			
@@ -152,7 +152,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 			projectConfiguration.setView( view );
 		} catch( Exception e ) {
 			out.println( ConfigurationRotator.LOGGERNAME + "Unable to create view: " + e.getMessage() );
-			ExceptionUtils.print( e, out, false );
+			ExceptionUtils.print( e, out, true );
 			throw new AbortException();
 		}
 				
