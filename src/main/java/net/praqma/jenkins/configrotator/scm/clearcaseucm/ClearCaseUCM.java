@@ -138,7 +138,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 				}
 			} catch( Exception e ) {
 				out.println( "Unable to get next configuration: " + e.getMessage() );
-				ExceptionUtils.print( e, out, false );
+				ExceptionUtils.print( e, out, true );
 				throw new AbortException();
 			}
 		}
