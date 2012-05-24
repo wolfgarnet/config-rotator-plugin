@@ -17,6 +17,7 @@ import net.praqma.clearcase.ucm.entities.Project;
 import net.praqma.clearcase.ucm.entities.Stream;
 import net.praqma.clearcase.ucm.view.SnapshotView;
 import net.praqma.jenkins.configrotator.ConfigurationRotator;
+import net.praqma.jenkins.configrotator.util.RemoteLogger;
 import net.praqma.jenkins.utils.ViewUtils;
 
 public class PrepareWorkspace implements FileCallable<SnapshotView> {
@@ -25,12 +26,16 @@ public class PrepareWorkspace implements FileCallable<SnapshotView> {
 	private TaskListener listener;
 	private String viewtag;
 	private List<Baseline> baselines;
+	
+	private RemoteLogger rlogger;
 
-	public PrepareWorkspace( Project project, List<Baseline> baselines, String viewtag, TaskListener listener ) {
+	public PrepareWorkspace( Project project, List<Baseline> baselines, String viewtag, TaskListener listener, RemoteLogger rlogger ) {
 		this.project = project;
 		this.viewtag = viewtag;
 		this.listener = listener;
 		this.baselines = baselines;
+		
+		this.rlogger = rlogger;
 	}
 
 	@Override
@@ -38,6 +43,8 @@ public class PrepareWorkspace implements FileCallable<SnapshotView> {
 		PrintStream out = listener.getLogger();
 		SnapshotView view = null;
 		File viewroot = new File( workspace, "view" );
+		
+		rlogger.establish();
 					
 		/* Changle stream, if exists */
 		String streamName = viewtag + "@" + project.getPVob();
@@ -45,6 +52,7 @@ public class PrepareWorkspace implements FileCallable<SnapshotView> {
 		try {
 			devStream = Stream.get( streamName );
 		} catch( UnableToInitializeEntityException e ) {
+			rlogger.end();
 			throw new IOException( "No entity", e );
 
 		}
@@ -57,6 +65,7 @@ public class PrepareWorkspace implements FileCallable<SnapshotView> {
 			try {
 				view = ViewUtils.createView( out, devStream, "ALL", new File( workspace, "view" ), viewtag, true );
 			} catch( ClearCaseException e ) {
+				rlogger.end();
 				throw new IOException( "Unable to create view", e );
 			}
 			
@@ -65,6 +74,7 @@ public class PrepareWorkspace implements FileCallable<SnapshotView> {
 				Rebase rebase = new Rebase( devStream, view, baselines );
 				rebase.rebase( true );
 			} catch( ClearCaseException e ) {
+				rlogger.end();
 				throw new IOException( "Could not load " + devStream, e );
 			}
 		} else {
@@ -76,16 +86,19 @@ public class PrepareWorkspace implements FileCallable<SnapshotView> {
 				out.println( ConfigurationRotator.LOGGERNAME + "Creating new stream" );
 				devStream = Stream.create( project.getIntegrationStream(), streamName, true, baselines );
 			} catch( ClearCaseException e1 ) {
+				rlogger.end();
 				throw new IOException( "Unable to create stream " + streamName, e1 );
 			}
 			
 			try {
 				view = ViewUtils.createView( out, devStream, "ALL", new File( workspace, "view" ), viewtag, true );
 			} catch( ClearCaseException e ) {
+				rlogger.end();
 				throw new IOException( "Unable to create view", e );
 			}
 		}
 		
+		rlogger.end();
 		return view;
 	}
 

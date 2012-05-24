@@ -8,6 +8,7 @@ import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.model.TaskListener;
+import hudson.remoting.Future;
 import hudson.scm.PollingResult;
 import hudson.util.FormValidation;
 import java.io.*;
@@ -15,6 +16,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+
 import javax.servlet.ServletException;
 import net.praqma.clearcase.PVob;
 import net.praqma.clearcase.ucm.entities.Activity;
@@ -25,9 +28,11 @@ import net.praqma.clearcase.ucm.view.SnapshotView;
 import net.praqma.clearcase.util.ExceptionUtils;
 import net.praqma.jenkins.configrotator.*;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
+import net.praqma.jenkins.configrotator.util.RemoteLogger;
 import net.praqma.jenkins.utils.remoting.DetermineProject;
 import net.praqma.jenkins.utils.remoting.GetBaselines;
 import net.praqma.util.debug.Logger;
+import net.praqma.util.debug.Logger.LogLevel;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -263,7 +268,22 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 		/* Make a view tag*/
 		String viewtag = "cr-" + build.getProject().getDisplayName().replaceAll( "\\s", "_" ) + "-" + System.getenv( "COMPUTERNAME" );
 		
-		return workspace.act( new PrepareWorkspace( project, selectedBaselines, viewtag, listener ) );
+		Future<SnapshotView> f = null;
+		RemoteLogger rl;
+		if( appender != null ) {
+			rl = new RemoteLogger( workspace, Logger.getLoggerSettings( appender.getMinimumLevel() ) );
+		} else {
+			rl = new RemoteLogger( workspace, Logger.getLoggerSettings( LogLevel.ERROR ) );
+		}
+		rl.prepare();
+		f = workspace.actAsync( new PrepareWorkspace( project, selectedBaselines, viewtag, listener, rl ) );
+		rl.writeLog( appender );
+		
+		try {
+			return f.get();
+		} catch( ExecutionException e ) {
+			throw new IOException( e );
+		}
 	}
 	
 	/**

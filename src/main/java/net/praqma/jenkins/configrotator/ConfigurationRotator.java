@@ -127,6 +127,7 @@ public class ConfigurationRotator extends SCM {
 			app.setTemplate( "[%level]%space %message%newline" );
 			app.lockToCurrentThread();
 			Logger.addAppender( app );
+			acrs.appender = app;
 		}
         
        
@@ -195,6 +196,19 @@ public class ConfigurationRotator extends SCM {
 
 	@Override
 	protected PollingResult compareRemoteRevisionWith( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener, SCMRevisionState arg4 ) throws IOException, InterruptedException {
+		
+		/*
+		 * Configure debugger
+		 */
+		if( printDebug ) {
+			Appender app = new StreamAppender( listener.getLogger() );
+			app.setMinimumLevel( LogLevel.DEBUG );
+			app.setTemplate( "[%level]%space %message%newline" );
+			app.lockToCurrentThread();
+			Logger.addAppender( app );
+			acrs.appender = app;
+		}
+		
 		/*
 		 * Determine if the job was reconfigured
 		 */
