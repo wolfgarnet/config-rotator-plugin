@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.praqma.util.debug.Logger;
-import net.praqma.util.debug.appenders.Appender;
 
 import jenkins.model.Jenkins;
 import hudson.DescriptorExtensionList;
@@ -25,8 +24,6 @@ import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
 public abstract class AbstractConfigurationRotatorSCM implements Describable<AbstractConfigurationRotatorSCM>, ExtensionPoint {
 	
 	private static Logger logger = Logger.getLogger();
-	
-	protected transient Appender appender;
 	
 	public abstract String getName();
 	
