@@ -185,7 +185,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 			inputconfiguration = ClearCaseUCMConfiguration.getConfigurationFromTargets( getTargets(), workspace, listener );
 		} catch( ConfigurationRotatorException e ) {
 			out.println( "Unable to parse configuration: " + e.getMessage() );
-			ExceptionUtils.print( e, out, false );
+			ExceptionUtils.print( e, out, true );
 			throw new AbortException();
 		}
 		
@@ -216,6 +216,9 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 			/* This configuration is not fixed */
 			if( !config.isFixed() ) {
 				logger.debug( "Wasn't fixed: " + config.getBaseline().getNormalizedName() );
+                
+                logger.debug( this.getClass().getName() + " Debug printout - which host is running command? (line 1/2): " + System.getenv("COMPUTERNAME") );
+                logger.debug( this.getClass().getName() + " Debug printout - which host is running command? (line 1/2): " + System.getenv("computername") );
 				try {
 					current = workspace.act( new GetBaselines( listener, config.getBaseline().getComponent(), config.getBaseline().getStream(), config.getPlevel(), 1, config.getBaseline() ) ).get( 0 );
 					if( oldest == null || current.getDate().before( oldest.getDate() ) )  {
@@ -332,7 +335,8 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	public PollingResult poll( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener, boolean reconfigure ) throws IOException, InterruptedException {
 		PrintStream out = listener.getLogger();
 		out.println( ConfigurationRotator.LOGGERNAME + "Polling" );
-		
+		logger.debug( this.getClass().getName() + " Debug printout - which host is running command? (line 1/2): " + System.getenv("COMPUTERNAME") );
+        logger.debug( this.getClass().getName() + " Debug printout - which host is running command? (line 1/2): " + System.getenv("computername") );
 		ClearCaseUCMConfiguration configuration = null;
 		if( projectConfiguration == null ) {
 			if( reconfigure ) {
