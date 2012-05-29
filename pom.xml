@@ -63,6 +63,12 @@
             <url>http://code.praqma.net/repo/maven/</url>
         </repository>
     </repositories>
+    
+		<repository>
+			<id>ubuntu</id>
+			<name>ubuntu-releases</name>
+			<url>http://217.116.243.220:8081/artifactory/repo</url>
+		</repository>
 
     <pluginRepositories>
         <pluginRepository>
@@ -200,7 +206,7 @@
         <dependency>
             <groupId>net.praqma</groupId>
             <artifactId>praqmajutils</artifactId>
-            <version>0.1.19</version>
+            <version>0.1.20</version>
         </dependency>
         
         
