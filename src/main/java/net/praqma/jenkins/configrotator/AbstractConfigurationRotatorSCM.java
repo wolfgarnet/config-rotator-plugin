@@ -26,7 +26,7 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
 	
 	private static Logger logger = Logger.getLogger();
 	
-	protected Appender appender;
+	protected transient Appender appender;
 	
 	public abstract String getName();
 	
