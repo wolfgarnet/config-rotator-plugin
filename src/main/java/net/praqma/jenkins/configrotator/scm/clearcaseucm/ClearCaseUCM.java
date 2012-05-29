@@ -156,8 +156,10 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 			SnapshotView view = createView( listener, build, projectConfiguration, workspace, pvob );
 			projectConfiguration.setView( view );
 		} catch( Exception e ) {
-			out.println( ConfigurationRotator.LOGGERNAME + "Unable to create view: " + e.getMessage() );
-			ExceptionUtils.print( e, out, true );
+			out.println( ConfigurationRotator.LOGGERNAME + "Unable to create view - exception follows: " );
+            out.println( ConfigurationRotator.LOGGERNAME + "Unable to create view: " + e.getMessage() );
+			out.println( ConfigurationRotator.LOGGERNAME + "Unable to create view - exception above " );
+            ExceptionUtils.print( e, out, true );
 			throw new AbortException();
 		}
 				
