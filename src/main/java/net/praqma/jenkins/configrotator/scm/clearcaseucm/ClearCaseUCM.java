@@ -152,9 +152,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 			SnapshotView view = createView( listener, build, projectConfiguration, workspace, pvob );
 			projectConfiguration.setView( view );
 		} catch( Exception e ) {
-			out.println( ConfigurationRotator.LOGGERNAME + "Unable to create view - exception follows: " );
-            out.println( ConfigurationRotator.LOGGERNAME + "Unable to create view: " + e.getMessage() );
-			out.println( ConfigurationRotator.LOGGERNAME + "Unable to create view - exception above " );
+            out.println( ConfigurationRotator.LOGGERNAME + "Unable to create view, exception message is: " + e.getMessage() );
             ExceptionUtils.print( e, out, true );
 			throw new AbortException();
 		}
@@ -215,8 +213,6 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 			if( !config.isFixed() ) {
 				logger.debug( "Wasn't fixed: " + config.getBaseline().getNormalizedName() );
                 
-                logger.debug( this.getClass().getName() + " Debug printout - which host is running command? (line 1/2): " + System.getenv("COMPUTERNAME") );
-                logger.debug( this.getClass().getName() + " Debug printout - which host is running command? (line 1/2): " + System.getenv("computername") );
 				try {
 					current = workspace.act( new GetBaselines( listener, config.getBaseline().getComponent(), config.getBaseline().getStream(), config.getPlevel(), 1, config.getBaseline() ) ).get( 0 );
 					if( oldest == null || current.getDate().before( oldest.getDate() ) )  {
@@ -319,8 +315,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 	public PollingResult poll( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener, boolean reconfigure ) throws IOException, InterruptedException {
 		PrintStream out = listener.getLogger();
 		out.println( ConfigurationRotator.LOGGERNAME + "Polling" );
-		logger.debug( this.getClass().getName() + " Debug printout - which host is running command? (line 1/2): " + System.getenv("COMPUTERNAME") );
-        logger.debug( this.getClass().getName() + " Debug printout - which host is running command? (line 1/2): " + System.getenv("computername") );
+
 		ClearCaseUCMConfiguration configuration = null;
 		if( projectConfiguration == null ) {
 			if( reconfigure ) {

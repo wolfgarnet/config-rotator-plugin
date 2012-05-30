@@ -124,7 +124,7 @@ public class ConfigurationRotator extends SCM {
 		if( printDebug ) {
 			Appender app = new StreamAppender( out );
 			app.setMinimumLevel( LogLevel.DEBUG );
-			//app.setTemplate( "[%level]%space %message%newline" );
+			app.setTemplate( "[%level]%space %message%newline" );
 			app.lockToCurrentThread();
 			Logger.addAppender( app );
 		}
