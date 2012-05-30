@@ -215,7 +215,6 @@ public class ConfigurationRotator extends SCM {
      */
     @Override
     public ChangeLogParser createChangeLogParser() {
-        // TODO Auto-generated method stub
         return acrs.createChangeLogParser();
     }
 

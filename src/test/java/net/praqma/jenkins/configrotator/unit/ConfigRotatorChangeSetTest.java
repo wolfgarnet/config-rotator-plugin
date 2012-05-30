@@ -154,7 +154,7 @@ public class ConfigRotatorChangeSetTest extends TestCase {
         System.out.println("PARENT: "+set.getEntries().get(0).getParent());
         assertEquals(set.getEntries().get(0).getParent(),null);
         
-        //TODO: WHY ARE THESE NULL AFTERWARDS?
+        //TODO: WHY ARE THESE NULL AFTERWARDS? Keeping test for later fix
         ConfigRotatorEntry entri = set.getEntries().get(0);
         //entri.setParent(set);
         //assertEquals(entri.getParent(),set);

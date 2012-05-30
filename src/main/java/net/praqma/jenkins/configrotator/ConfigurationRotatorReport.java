@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.List;
 import jenkins.model.Jenkins;
 
-// FIXME - RootAction - needs login ? Should it be public?
 @Extension
 public class ConfigurationRotatorReport extends AbstractModelObject implements UnprotectedRootAction {
     
@@ -141,7 +140,7 @@ public class ConfigurationRotatorReport extends AbstractModelObject implements U
 
 	// yourhost/config-rotator/feed/
 	// eg. http://localhost:8080/config-rotator/feed/?component=hest2
-    // TODO: input parameter check and validation
+    // TODO: we should do some input parameter check and validation
 	public HttpResponse doFeed( @QueryParameter( required = true ) String component, @QueryParameter( required = true ) String pvob) throws ServletException, IOException {
 		final String mycomp = pvob+ConfigurationRotator.SEPARATOR+component+XML_EXTENSION;
         final String fullComponentFeedPath = ConfigurationRotator.FEED_FULL_PATH+mycomp;

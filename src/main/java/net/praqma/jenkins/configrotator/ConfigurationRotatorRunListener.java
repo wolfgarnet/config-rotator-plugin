@@ -37,13 +37,11 @@ import net.praqma.util.xml.feed.*;
  * The feed can be written easily from two places: a runlistener or from the 
  * notifier part of CR.
  * 
- * We chose to implement this as a runlistener, because 
- * - we expect concurrency problems if doing this in the notifier step
- * - we find the runlistener way of doing it more clear instead of using the 
- * notifier (the post build step)
- * For now we assumes the notifier step is per job, where as the runlistener is 
- * registered per plug-in.
- * TODO - need to test this though.
+ * We chose to implement this as a runlistener we find the runlistener way of 
+ * doing it more clear instead of using the notifier (the post build step).
+ * We know there might be some concurrency problems writing the feed files
+ * if a lots of build finish at the same time.
+ * TODO: This will be handled later and implemented.
  * 
  * Writing feeds: we would have liked to use a fully tested and mature open 
  * source library for writing feeds, and did a short searching and found to 

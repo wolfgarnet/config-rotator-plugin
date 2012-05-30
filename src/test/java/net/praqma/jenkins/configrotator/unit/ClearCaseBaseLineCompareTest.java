@@ -42,7 +42,8 @@ public class ClearCaseBaseLineCompareTest extends TestCase {
     
     
     /**
-     * TODO:IMPLEMENT ME
+     * TODO:IMPLEMENT ME There need to be at least one test here, but
+     * we did not finish the test in this version. will be done later.
      */
     @Test
     public void testClearCaseBaseLineCompare() {
