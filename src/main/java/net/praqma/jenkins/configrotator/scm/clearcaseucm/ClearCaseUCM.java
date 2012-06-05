@@ -244,6 +244,8 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
         }
         
         /**/
+        logger.debug( "chosen: " + chosen );
+        logger.debug( "oldest: " + oldest );
         if( chosen != null && oldest != null ) {
             logger.debug( "There was a baseline: " + oldest );
             listener.getLogger().println( ConfigurationRotator.LOGGERNAME + "There was a baseline: " + oldest );
