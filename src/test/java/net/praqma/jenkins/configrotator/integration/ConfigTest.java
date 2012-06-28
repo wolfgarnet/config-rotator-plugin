@@ -11,10 +11,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import net.praqma.clearcase.exceptions.CleartoolException;
+import net.praqma.clearcase.test.annotations.ClearCaseUniqueVobName;
+import net.praqma.clearcase.test.junit.ClearCaseRule;
 
 
+import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 
+import net.praqma.jenkins.configrotator.ConfigRotatorRule;
 import net.praqma.jenkins.configrotator.ConfigurationRotator;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorBuildAction;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorProjectAction;
@@ -23,12 +28,22 @@ import net.praqma.jenkins.configrotator.ConfigurationRotator.ResultType;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCM;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMTarget;
-import net.praqma.jenkins.utils.test.ClearCaseJenkinsTestCase;
 import net.praqma.util.xml.feed.AtomPublisher;
 import net.praqma.util.xml.feed.Feed;
+
+import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestBuilder;
 
-public class ConfigTest extends ClearCaseJenkinsTestCase {
+import static org.junit.Assert.*;
+
+
+public class ConfigTest {
+	
+	@ClassRule
+	public static ConfigRotatorRule jenkins = new ConfigRotatorRule();
+	
+	@Rule
+	public static ClearCaseRule ccenv = new ClearCaseRule( "cr" );
 
     // Controls how many seconds a test as minimum takes by
     // waiting before asserting on the test.
@@ -40,27 +55,17 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
     String uniqueTimeStamp = "" + System.currentTimeMillis() / 60000;
 
     @Test
+    @ClearCaseUniqueVobName( name = "config" )
     public void testConfigRotatorObject() throws Exception {
         // Testing getting stuff and info from config rotator
         String testName = "ConfigRotatorObject";
         String debugLine = "**************************************** '" + testName + "': ";
         System.out.println(debugLine + "Starting");
-        // ONLY alphanumeric chars
-        String uniqueTestVobName = testName + uniqueTimeStamp;
-
-        // set up cool to run tests with ClearCase environment
-        // variables overwrite cool test case setup.xml setting
-        // Unique names for each test is used to avoid all sort of clear case 
-        // complications - but leaves as mess...
-        coolTest.variables.put("vobname", uniqueTestVobName);
-        coolTest.variables.put("pvobname", uniqueTestVobName + "_PVOB");
-        coolTest.bootStrap();
-        System.out.println(debugLine + "Cool test case setup done.");
 
         // Setup ClearCase UCM as SCM and to use with config-rotator
-        ClearCaseUCM ccucm = new ClearCaseUCM(coolTest.getPVob().toString());
+        ClearCaseUCM ccucm = new ClearCaseUCM(ccenv.getPVob().toString());
         List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
-        targets.add(new ClearCaseUCMTarget("model-1@" + coolTest.getPVob() + ", INITIAL, false"));
+        targets.add(new ClearCaseUCMTarget("model-1@" + ccenv.getPVob() + ", INITIAL, false"));
         ccucm.targets = targets;
         // create config-rotator, and set it as SCM
         System.out.println(debugLine + "Creating configurationRotator.");
@@ -95,16 +100,16 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         assertTrue(cr.reconfigure); //should initially be false, but now true
 
         
-        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
+        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob())");
         // try catch to avoid teardown failing tests - it's okay for teardown to fail
         // as our test environment later can be cleaned manually
         try 
         {
-            net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+            net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob());
         }
         catch (CleartoolException clex)
         {
-            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob() throwed exception - ignoring on purpose");
+            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob() throwed exception - ignoring on purpose");
             System.out.println(debugLine + "Exception was: " + clex.getMessage());
         }
         System.out.println(debugLine + "Done calling teardown....");
@@ -116,8 +121,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         waiting(watingSeconds);
     }
 
-    // Note a test must include the string "test" somehow, else 
-    // surefire will not find the test-method.
+    @ClearCaseUniqueVobName( name = "reconfigure" )
     @Test
     public void testTryReconfigure() throws Exception {
         // Testing reconfigure
@@ -125,23 +129,13 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         String debugLine = "**************************************** '" + testName + "': ";
         System.out.println(debugLine + "Starting");
         // ONLY alphanumeric chars
-        String uniqueTestVobName = testName + uniqueTimeStamp;
-
-        // set up cool to run tests with ClearCase environment
-        // variables overwrite cool test case setup.xml setting
-        // Unique names for each test is used to avoid all sort of clear case 
-        // complications - but leaves as mess...
-        coolTest.variables.put("vobname", uniqueTestVobName);
-        coolTest.variables.put("pvobname", uniqueTestVobName + "_PVOB");
-        coolTest.bootStrap();
-        System.out.println(debugLine + "Cool test case setup done.");
 
         // create Jenkins job - also use unique name
-        FreeStyleProject project = createFreeStyleProject(uniqueTestVobName);
+        FreeStyleProject project = jenkins.createProject(ccenv.getVobName());
         // Setup ClearCase UCM as SCM and to use with config-rotator
-        ClearCaseUCM ccucm = new ClearCaseUCM(coolTest.getPVob().toString());
+        ClearCaseUCM ccucm = new ClearCaseUCM(ccenv.getPVob().toString());
         List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
-        targets.add(new ClearCaseUCMTarget("model-1@" + coolTest.getPVob() + ", INITIAL, false"));
+        targets.add(new ClearCaseUCMTarget("model-1@" + ccenv.getPVob() + ", INITIAL, false"));
         ccucm.targets = targets;
         // create config-rotator, and set it as SCM
         System.out.println(debugLine + "Create configurationRotator.");
@@ -192,7 +186,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         assertFalse(cr.justConfigured);
 
         // trying to change configuration to what happens....
-        ccucm.targets.add(new ClearCaseUCMTarget("client-1@" + coolTest.getPVob() + ", INITIAL, false"));
+        ccucm.targets.add(new ClearCaseUCMTarget("client-1@" + ccenv.getPVob() + ", INITIAL, false"));
         System.out.println(debugLine + "Changed targets adding client-1 on ccucm.targets. Target now contains:" + ccucm.targets.size());
         System.out.println(debugLine + "cr.justConfigured: " + cr.justConfigured);
         System.out.println(debugLine + "cr.reconfigure: " + cr.reconfigure);
@@ -250,16 +244,16 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         System.out.println(debugLine + "cr.justConfigured: " + cr.justConfigured);
         assertFalse(cr.justConfigured);
         
-        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
+        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob())");
         // try catch to avoid teardown failing tests - it's okay for teardown to fail
         // as our test environment later can be cleaned manually
         try 
         {
-            net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+            net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob());
         }
         catch (CleartoolException clex)
         {
-            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob() throwed exception - ignoring on purpose");
+            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob() throwed exception - ignoring on purpose");
             System.out.println(debugLine + "Exception was: " + clex.getMessage());
         }
         System.out.println(debugLine + "Done calling teardown....");
@@ -271,35 +265,23 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 
     }
 
-    // Note a test must include the string "test" somehow, else 
-    // surefire will not find the test-method.
+    @ClearCaseUniqueVobName( name = "buildaction" )
     @Test
     public void testConfigurationRotatorBuildAction() throws Exception {
         // Just boosting coverage getting stuff on action object
         String testName = "ConfigurationRotatorBuildAction";
         String debugLine = "**************************************** '" + testName + "': ";
         System.out.println(debugLine + "Starting");
-        // ONLY alphanumeric chars
-        String uniqueTestVobName = testName + uniqueTimeStamp;
-
-        // set up cool to run tests with ClearCase environment
-        // variables overwrite cool test case setup.xml setting
-        // Unique names for each test is used to avoid all sort of clear case 
-        // complications - but leaves as mess...
-        coolTest.variables.put("vobname", uniqueTestVobName);
-        coolTest.variables.put("pvobname", uniqueTestVobName + "_PVOB");
-        coolTest.bootStrap();
-        System.out.println(debugLine + "Cool test case setup done.");
 
         // create Jenkins job - also use unique name
-        FreeStyleProject project = createFreeStyleProject(uniqueTestVobName);
+        FreeStyleProject project = jenkins.createProject(ccenv.getVobName());
         // Setup ClearCase UCM as SCM and to use with config-rotator
-        ClearCaseUCM ccucm = new ClearCaseUCM(coolTest.getPVob().toString());
+        ClearCaseUCM ccucm = new ClearCaseUCM(ccenv.getPVob().toString());
         List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
         // A first configuration added as targets: model-1 and client-1 that we 
         // would know to be compatible.
-        targets.add(new ClearCaseUCMTarget("model-1@" + coolTest.getPVob() + ", INITIAL, false"));
-        targets.add(new ClearCaseUCMTarget("client-1@" + coolTest.getPVob() + ", INITIAL, false"));
+        targets.add(new ClearCaseUCMTarget("model-1@" + ccenv.getPVob() + ", INITIAL, false"));
+        targets.add(new ClearCaseUCMTarget("client-1@" + ccenv.getPVob() + ", INITIAL, false"));
         ccucm.targets = targets;
         // create config-rotator, and set it as SCM
         System.out.println(debugLine + "Creating configurationRotator.");
@@ -366,16 +348,16 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         assertEquals(action.getResult(), ConfigurationRotator.ResultType.FAILED);
 
         
-        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
+        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob())");
         // try catch to avoid teardown failing tests - it's okay for teardown to fail
         // as our test environment later can be cleaned manually
         try 
         {
-            net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+            net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob());
         }
         catch (CleartoolException clex)
         {
-            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob() throwed exception - ignoring on purpose");
+            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob() throwed exception - ignoring on purpose");
             System.out.println(debugLine + "Exception was: " + clex.getMessage());
         }
         System.out.println(debugLine + "Done calling teardown....");
@@ -387,35 +369,23 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         waiting(watingSeconds);
     }
 
-    // Note a test must include the string "test" somehow, else 
-    // surefire will not find the test-method.
+    @ClearCaseUniqueVobName( name = "revert" )
     @Test
     public void testRevertToConfiguration() throws Exception {
         // Tests if we can revert to another configuration from an old build
         String testName = "RevertToConfiguration";
         String debugLine = "**************************************** '" + testName + "': ";
         System.out.println(debugLine + "Starting");
-        // ONLY alphanumeric chars
-        String uniqueTestVobName = testName + uniqueTimeStamp;
-
-        // set up cool to run tests with ClearCase environment
-        // variables overwrite cool test case setup.xml setting
-        // Unique names for each test is used to avoid all sort of clear case 
-        // complications - but leaves as mess...
-        coolTest.variables.put("vobname", uniqueTestVobName);
-        coolTest.variables.put("pvobname", uniqueTestVobName + "_PVOB");
-        coolTest.bootStrap();
-        System.out.println(debugLine + "Cool test case setup done.");
 
         // create Jenkins job - also use unique name
-        FreeStyleProject project = createFreeStyleProject(uniqueTestVobName);
+        FreeStyleProject project = jenkins.createProject( ccenv.getVobName());
         // Setup ClearCase UCM as SCM and to use with config-rotator
-        ClearCaseUCM ccucm = new ClearCaseUCM(coolTest.getPVob().toString());
+        ClearCaseUCM ccucm = new ClearCaseUCM(ccenv.getPVob().toString());
         List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
         // A first configuration added as targets: model-1 and client-1 that we 
         // would know to be compatible.
-        targets.add(new ClearCaseUCMTarget("model-1@" + coolTest.getPVob() + ", INITIAL, false"));
-        targets.add(new ClearCaseUCMTarget("client-1@" + coolTest.getPVob() + ", INITIAL, false"));
+        targets.add(new ClearCaseUCMTarget("model-1@" + ccenv.getPVob() + ", INITIAL, false"));
+        targets.add(new ClearCaseUCMTarget("client-1@" + ccenv.getPVob() + ", INITIAL, false"));
         ccucm.targets = targets;
         // create config-rotator, and set it as SCM
         System.out.println(debugLine + "Creating configurationRotator.");
@@ -529,16 +499,16 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         assertEquals("model-1", configuration3.getList().get(0).getBaseline().getShortname());
         assertEquals("client-1", configuration3.getList().get(1).getBaseline().getShortname());
 
-        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
+        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob())");
         // try catch to avoid teardown failing tests - it's okay for teardown to fail
         // as our test environment later can be cleaned manually
         try 
         {
-            net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+            net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob());
         }
         catch (CleartoolException clex)
         {
-            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob() throwed exception - ignoring on purpose");
+            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob() throwed exception - ignoring on purpose");
             System.out.println(debugLine + "Exception was: " + clex.getMessage());
         }
         System.out.println(debugLine + "Done calling teardown....");        
@@ -549,34 +519,22 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         waiting(watingSeconds);
     }
 
-    // Note a test must include the string "test" somehow, else 
-    // surefire will not find the test-method.
+    @ClearCaseUniqueVobName( name = "wrongtarget" )
     @Test
     public void testInputWrongTargetName() throws Exception {
         // Do we handle user inputting wrong target names?
         String testName = "InputWrongTargetName";
         String debugLine = "**************************************** '" + testName + "': ";
         System.out.println(debugLine + "Starting");
-        // ONLY alphanumeric chars
-        String uniqueTestVobName = testName + uniqueTimeStamp;
-
-        // set up cool to run tests with ClearCase environment
-        // variables overwrite cool test case setup.xml setting
-        // Unique names for each test is used to avoid all sort of clear case 
-        // complications - but leaves as mess...
-        coolTest.variables.put("vobname", uniqueTestVobName);
-        coolTest.variables.put("pvobname", uniqueTestVobName + "_PVOB");
-        coolTest.bootStrap();
-        System.out.println(debugLine + "Cool test case setup done.");
-
+        
         // create Jenkins job - also use unique name
-        FreeStyleProject project = createFreeStyleProject(uniqueTestVobName);
+        FreeStyleProject project = jenkins.createProject(ccenv.getVobName());
         // Setup ClearCase UCM as SCM and to use with config-rotator
-        ClearCaseUCM ccucm = new ClearCaseUCM(coolTest.getPVob().toString());
+        ClearCaseUCM ccucm = new ClearCaseUCM(ccenv.getPVob().toString());
         List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
         System.out.println(debugLine + "Adding two targets with wrong name...");
-        targets.add(new ClearCaseUCMTarget("model-WrongName@" + coolTest.getPVob() + ", INITIAL, false"));
-        targets.add(new ClearCaseUCMTarget("client-WrongName@" + coolTest.getPVob() + ", INITIAL, false"));
+        targets.add(new ClearCaseUCMTarget("model-WrongName@" + ccenv.getPVob() + ", INITIAL, false"));
+        targets.add(new ClearCaseUCMTarget("client-WrongName@" + ccenv.getPVob() + ", INITIAL, false"));
         ccucm.targets = targets;
         // create config-rotator, and set it as SCM
         System.out.println(debugLine + "Create configurationRotator.");
@@ -608,16 +566,16 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         br.close();
         System.out.println(debugLine + "... done printing logfile");
 
-        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
+        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob())");
         // try catch to avoid teardown failing tests - it's okay for teardown to fail
         // as our test environment later can be cleaned manually
         try 
         {
-            net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+            net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob());
         }
         catch (CleartoolException clex)
         {
-            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob() throwed exception - ignoring on purpose");
+            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob() throwed exception - ignoring on purpose");
             System.out.println(debugLine + "Exception was: " + clex.getMessage());
         }
         System.out.println(debugLine + "Done calling teardown....");
@@ -629,8 +587,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 
     }
 
-    // Note a test must include the string "test" somehow, else 
-    // surefire will not find the test-method.
+    @ClearCaseUniqueVobName( name = "ccucmtarget" )
     @Test
     public void testClearCaseUCMTarget() throws Exception {
         // Test is supposed to test last parts of UCMTarget component
@@ -638,17 +595,6 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         String testName = "ClearCaseUCMTarget";
         String debugLine = "**************************************** '" + testName + "': ";
         System.out.println(debugLine + "Starting");
-        // ONLY alphanumeric chars
-        String uniqueTestVobName = testName + uniqueTimeStamp;
-
-        // set up cool to run tests with ClearCase environment
-        // variables overwrite cool test case setup.xml setting
-        // Unique names for each test is used to avoid all sort of clear case 
-        // complications - but leaves as mess...
-        coolTest.variables.put("vobname", uniqueTestVobName);
-        coolTest.variables.put("pvobname", uniqueTestVobName + "_PVOB");
-        coolTest.bootStrap();
-        System.out.println(debugLine + "Cool test case setup done.");
 
         // Make targets.... and test on those
         // try constructor 
@@ -656,28 +602,28 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         ClearCaseUCMTarget target1 = new ClearCaseUCMTarget();
         // set component on it
         System.out.println(debugLine + "Setting component");
-        target1.setComponent("model-1@" + coolTest.getPVob() + ", INITIAL, false");
+        target1.setComponent("model-1@" + ccenv.getPVob() + ", INITIAL, false");
         // test getComponent - should be the same
         System.out.println(debugLine + "Getting component and checking equality");
-        assertEquals("model-1@" + coolTest.getPVob() + ", INITIAL, false", target1.getComponent());
+        assertEquals("model-1@" + ccenv.getPVob() + ", INITIAL, false", target1.getComponent());
         // test equals
         System.out.println(debugLine + "Comparing target1 with target1");
         assertTrue(target1.equals(target1));
         System.out.println(debugLine + "Creating a target2");
-        ClearCaseUCMTarget target2 = new ClearCaseUCMTarget("client-1@" + coolTest.getPVob() + ", INITIAL, false");
+        ClearCaseUCMTarget target2 = new ClearCaseUCMTarget("client-1@" + ccenv.getPVob() + ", INITIAL, false");
         System.out.println(debugLine + "Comparing target1 with target2");
         assertFalse(target1.equals(target2));
 
-        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
+        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob())");
         // try catch to avoid teardown failing tests - it's okay for teardown to fail
         // as our test environment later can be cleaned manually
         try 
         {
-            net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+            net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob());
         }
         catch (CleartoolException clex)
         {
-            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob() throwed exception - ignoring on purpose");
+            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob() throwed exception - ignoring on purpose");
             System.out.println(debugLine + "Exception was: " + clex.getMessage());
         }
         System.out.println(debugLine + "Done calling teardown....");
@@ -688,38 +634,28 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         waiting(watingSeconds);
     }
 
+    @ClearCaseUniqueVobName( name = "ccucmobj" )
     @Test
     public void testClearCaseUCMObject() throws Exception {
         // Boosting coverage
         String testName = "CClearCaseUCMObject";
         String debugLine = "**************************************** '" + testName + "': ";
         System.out.println(debugLine + "Starting");
-        // ONLY alphanumeric chars
-        String uniqueTestVobName = testName + uniqueTimeStamp;
-
-        // set up cool to run tests with ClearCase environment
-        // variables overwrite cool test case setup.xml setting
-        // Unique names for each test is used to avoid all sort of clear case 
-        // complications - but leaves as mess...
-        coolTest.variables.put("vobname", uniqueTestVobName);
-        coolTest.variables.put("pvobname", uniqueTestVobName + "_PVOB");
-        coolTest.bootStrap();
-        System.out.println(debugLine + "Cool test case setup done.");
 
         // create Jenkins job - also use unique name
-        FreeStyleProject project = createFreeStyleProject(uniqueTestVobName);
+        FreeStyleProject project = jenkins.createProject(ccenv.getVobName());
         // Setup ClearCase UCM as SCM and to use with config-rotator
-        ClearCaseUCM ccucm = new ClearCaseUCM(coolTest.getPVob().toString());
+        ClearCaseUCM ccucm = new ClearCaseUCM(ccenv.getPVob().toString());
         List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
         // A first configuration added as targets: model-1 and client-1 that we 
         // would know to be compatible.
-        targets.add(new ClearCaseUCMTarget("model-1@" + coolTest.getPVob() + ", INITIAL, false"));
-        targets.add(new ClearCaseUCMTarget("client-1@" + coolTest.getPVob() + ", INITIAL, false"));
+        targets.add(new ClearCaseUCMTarget("model-1@" + ccenv.getPVob() + ", INITIAL, false"));
+        targets.add(new ClearCaseUCMTarget("client-1@" + ccenv.getPVob() + ", INITIAL, false"));
         ccucm.targets = targets;
         System.out.println(debugLine + "Usual ccucm target set on ccucm");
 
         System.out.println(debugLine + "ccucm.getPvobName():" + ccucm.getPvobName());
-        assertEquals("\\" + uniqueTestVobName + "_PVOB", ccucm.getPvobName());
+        assertEquals("\\" + ccenv.getVobName() + "_PVOB", ccucm.getPvobName());
 
         System.out.println(debugLine + "ccucm.getName():" + ccucm.getName());
         assertEquals("ClearCase UCM", ccucm.getName());
@@ -765,22 +701,22 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         assertTrue(ccucm.wasReconfigured(project)); // true, just removed targets
 
         System.out.println(debugLine + "adding one target to ccucm");
-        ccucm.targets.add(new ClearCaseUCMTarget("model-1@" + coolTest.getPVob() + ", INITIAL, false"));
+        ccucm.targets.add(new ClearCaseUCMTarget("model-1@" + ccenv.getPVob() + ", INITIAL, false"));
         System.out.println(debugLine + "ccucm.wasReconfigured(project):" + ccucm.wasReconfigured(project));
         assertTrue(ccucm.wasReconfigured(project)); // true, just added a target
         System.out.println(debugLine + "ccucm.wasReconfigured(project):" + ccucm.wasReconfigured(project));
         assertTrue(ccucm.wasReconfigured(project)); // still, should be same result ?
 
-        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
+        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob())");
         // try catch to avoid teardown failing tests - it's okay for teardown to fail
         // as our test environment later can be cleaned manually
         try 
         {
-            net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+            net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob());
         }
         catch (CleartoolException clex)
         {
-            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob() throwed exception - ignoring on purpose");
+            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob() throwed exception - ignoring on purpose");
             System.out.println(debugLine + "Exception was: " + clex.getMessage());
         }
         System.out.println(debugLine + "Done calling teardown....");
@@ -791,33 +727,23 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         waiting(watingSeconds);
     }
 
+    @ClearCaseUniqueVobName( name = "misc" )
     @Test
     public void testMiscObjects() throws Exception {
         // is this cheating ?
         String testName = "MiscObjects";
         String debugLine = "**************************************** '" + testName + "': ";
         System.out.println(debugLine + "Starting");
-        // ONLY alphanumeric chars
-        String uniqueTestVobName = testName + uniqueTimeStamp;
-
-        // set up cool to run tests with ClearCase environment
-        // variables overwrite cool test case setup.xml setting
-        // Unique names for each test is used to avoid all sort of clear case 
-        // complications - but leaves as mess...
-        coolTest.variables.put("vobname", uniqueTestVobName);
-        coolTest.variables.put("pvobname", uniqueTestVobName + "_PVOB");
-        coolTest.bootStrap();
-        System.out.println(debugLine + "Cool test case setup done.");
 
         // create Jenkins job - also use unique name
-        FreeStyleProject project = createFreeStyleProject(uniqueTestVobName);
+        FreeStyleProject project = jenkins.createProject(ccenv.getVobName());
         // Setup ClearCase UCM as SCM and to use with config-rotator
-        ClearCaseUCM ccucm = new ClearCaseUCM(coolTest.getPVob().toString());
+        ClearCaseUCM ccucm = new ClearCaseUCM(ccenv.getPVob().toString());
         List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
         // A first configuration added as targets: model-1 and client-1 that we 
         // would know to be compatible.
-        targets.add(new ClearCaseUCMTarget("model-1@" + coolTest.getPVob() + ", INITIAL, false"));
-        targets.add(new ClearCaseUCMTarget("client-1@" + coolTest.getPVob() + ", INITIAL, false"));
+        targets.add(new ClearCaseUCMTarget("model-1@" + ccenv.getPVob() + ", INITIAL, false"));
+        targets.add(new ClearCaseUCMTarget("client-1@" + ccenv.getPVob() + ", INITIAL, false"));
         ccucm.targets = targets;
         // create config-rotator, and set it as SCM
         System.out.println(debugLine + "Create configurationRotator.");
@@ -873,7 +799,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         System.out.println(debugLine + "crr.getDisplayName(): " + crr.getDisplayName());
         System.out.println(debugLine + "crr.getUrlName(): " + crr.getUrlName());
         System.out.println(debugLine + "crr.getSearchUrl(): " + crr.getSearchUrl());
-//		System.out.println( debugLine + "crr.getSearchUrl(): " + crr.doFeed("model-1@" + coolTest.getPVob() + ", INITIAL, false", "text/plain") );
+//		System.out.println( debugLine + "crr.getSearchUrl(): " + crr.doFeed("model-1@" + ccenv.getPVob() + ", INITIAL, false", "text/plain") );
 
         ConfigurationRotatorProjectAction crpa = new ConfigurationRotatorProjectAction(project);
         assertEquals("Config Rotator", crpa.getDisplayName());
@@ -882,16 +808,16 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         assertEquals("config-rotator", crpa.getUrlName());
         
         
-        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
+        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob())");
         // try catch to avoid teardown failing tests - it's okay for teardown to fail
         // as our test environment later can be cleaned manually
         try 
         {
-            net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+            net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob());
         }
         catch (CleartoolException clex)
         {
-            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob() throwed exception - ignoring on purpose");
+            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob() throwed exception - ignoring on purpose");
             System.out.println(debugLine + "Exception was: " + clex.getMessage());
         }
         System.out.println(debugLine + "Done calling teardown....");
@@ -903,6 +829,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 
     }
 
+    @ClearCaseUniqueVobName( name = "fail" )
     @Test
     public void testTryFailingBuild() throws Exception {
         // This test is supposed to "manually" iterate over baselines by scheduling
@@ -912,27 +839,16 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         String testName = "TryFailingBuild";
         String debugLine = "**************************************** '" + testName + "': ";
         System.out.println(debugLine + "Starting");
-        // ONLY alphanumeric chars
-        String uniqueTestVobName = testName + uniqueTimeStamp;
-
-        // set up cool to run tests with ClearCase environment
-        // variables overwrite cool test case setup.xml setting
-        // Unique names for each test is used to avoid all sort of clear case 
-        // complications - but leaves as mess...
-        coolTest.variables.put("vobname", uniqueTestVobName);
-        coolTest.variables.put("pvobname", uniqueTestVobName + "_PVOB");
-        coolTest.bootStrap();
-        System.out.println(debugLine + "Cool test case setup done.");
 
         // create Jenkins job - also use unique name
-        FreeStyleProject project = createFreeStyleProject(uniqueTestVobName);
+        FreeStyleProject project = jenkins.createProject(ccenv.getVobName());
         // Setup ClearCase UCM as SCM and to use with config-rotator
-        ClearCaseUCM ccucm = new ClearCaseUCM(coolTest.getPVob().toString());
+        ClearCaseUCM ccucm = new ClearCaseUCM(ccenv.getPVob().toString());
         List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
         // A first configuration added as targets: model-1 and client-1 that we 
         // would know to be compatible.
-        targets.add(new ClearCaseUCMTarget("model-1@" + coolTest.getPVob() + ", INITIAL, false"));
-        targets.add(new ClearCaseUCMTarget("client-1@" + coolTest.getPVob() + ", INITIAL, false"));
+        targets.add(new ClearCaseUCMTarget("model-1@" + ccenv.getPVob() + ", INITIAL, false"));
+        targets.add(new ClearCaseUCMTarget("client-1@" + ccenv.getPVob() + ", INITIAL, false"));
         ccucm.targets = targets;
         // create config-rotator, and set it as SCM
         System.out.println(debugLine + "Create configurationRotator.");
@@ -987,16 +903,16 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 		assertEquals("model-1", configuration.getList().get(0).getBaseline().getShortname());
 		assertEquals("client-1", configuration.getList().get(1).getBaseline().getShortname());
 
-        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
+        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob())");
         // try catch to avoid teardown failing tests - it's okay for teardown to fail
         // as our test environment later can be cleaned manually
         try 
         {
-            net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+            net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob());
         }
         catch (CleartoolException clex)
         {
-            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob() throwed exception - ignoring on purpose");
+            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob() throwed exception - ignoring on purpose");
             System.out.println(debugLine + "Exception was: " + clex.getMessage());
         }
         System.out.println(debugLine + "Done calling teardown....");
@@ -1009,8 +925,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 
     }
 
-    // Note a test must include the string "test" somehow, else 
-    // surefire will not find the test-method.
+    @ClearCaseUniqueVobName( name = "fixedtargets" )
     @Test
     public void testManualIterateWithFixedTargets() throws Exception {
         // This test is supposed to "manually" iterate over baselines by scheduling
@@ -1021,27 +936,16 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         String testName = "ManualIterateWithFixedTargets";
         String debugLine = "**************************************** '" + testName + "': ";
         System.out.println(debugLine + "Starting");
-        // ONLY alphanumeric chars
-        String uniqueTestVobName = testName + uniqueTimeStamp;
-
-        // set up cool to run tests with ClearCase environment
-        // variables overwrite cool test case setup.xml setting
-        // Unique names for each test is used to avoid all sort of clear case 
-        // complications - but leaves as mess...
-        coolTest.variables.put("vobname", uniqueTestVobName);
-        coolTest.variables.put("pvobname", uniqueTestVobName + "_PVOB");
-        coolTest.bootStrap();
-        System.out.println(debugLine + "Cool test case setup done.");
 
         // create Jenkins job - also use unique name
-        FreeStyleProject project = createFreeStyleProject(uniqueTestVobName);
+        FreeStyleProject project = jenkins.createProject(ccenv.getVobName());
         // Setup ClearCase UCM as SCM and to use with config-rotator
-        ClearCaseUCM ccucm = new ClearCaseUCM(coolTest.getPVob().toString());
+        ClearCaseUCM ccucm = new ClearCaseUCM(ccenv.getPVob().toString());
         List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
         // A first configuration added as targets: model-1 and client-1 that we 
         // would know to be compatible.
-        targets.add(new ClearCaseUCMTarget("model-1@" + coolTest.getPVob() + ", INITIAL, true"));
-        targets.add(new ClearCaseUCMTarget("client-1@" + coolTest.getPVob() + ", INITIAL, false"));
+        targets.add(new ClearCaseUCMTarget("model-1@" + ccenv.getPVob() + ", INITIAL, true"));
+        targets.add(new ClearCaseUCMTarget("client-1@" + ccenv.getPVob() + ", INITIAL, false"));
         ccucm.targets = targets;
         // create config-rotator, and set it as SCM
         System.out.println(debugLine + "Create configurationRotator.");
@@ -1164,16 +1068,16 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
 
 
 
-        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
+        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob())");
         // try catch to avoid teardown failing tests - it's okay for teardown to fail
         // as our test environment later can be cleaned manually
         try 
         {
-            net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+            net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob());
         }
         catch (CleartoolException clex)
         {
-            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob() throwed exception - ignoring on purpose");
+            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob() throwed exception - ignoring on purpose");
             System.out.println(debugLine + "Exception was: " + clex.getMessage());
         }
         System.out.println(debugLine + "Done calling teardown....");
@@ -1187,8 +1091,7 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
     }
     
     
-    // Note a test must include the string "test" somehow, else 
-    // surefire will not find the test-method.
+    @ClearCaseUniqueVobName( name = "iterateall" )
     @Test
     public void testManualIterateThroughAllBaselines() throws Exception {
         // This test is supposed to "manually" iterate over baselines by scheduling
@@ -1198,27 +1101,16 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         String testName = "ManualIterateThroughAllBaselines";
         String debugLine = "**************************************** '" + testName + "': ";
         System.out.println(debugLine + "Starting");
-        // ONLY alphanumeric chars
-        String uniqueTestVobName = testName + uniqueTimeStamp;
-
-        // set up cool to run tests with ClearCase environment
-        // variables overwrite cool test case setup.xml setting
-        // Unique names for each test is used to avoid all sort of clear case 
-        // complications - but leaves as mess...
-        coolTest.variables.put("vobname", uniqueTestVobName);
-        coolTest.variables.put("pvobname", uniqueTestVobName + "_PVOB");
-        coolTest.bootStrap();
-        System.out.println(debugLine + "Cool test case setup done.");
 
         // create Jenkins job - also use unique name
-        FreeStyleProject project = createFreeStyleProject(uniqueTestVobName);
+        FreeStyleProject project = jenkins.createProject(ccenv.getVobName());
         // Setup ClearCase UCM as SCM and to use with config-rotator
-        ClearCaseUCM ccucm = new ClearCaseUCM(coolTest.getPVob().toString());
+        ClearCaseUCM ccucm = new ClearCaseUCM(ccenv.getPVob().toString());
         List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
         // A first configuration added as targets: model-1 and client-1 that we 
         // would know to be compatible.
-        targets.add(new ClearCaseUCMTarget("model-1@" + coolTest.getPVob() + ", INITIAL, false"));
-        targets.add(new ClearCaseUCMTarget("client-1@" + coolTest.getPVob() + ", INITIAL, false"));
+        targets.add(new ClearCaseUCMTarget("model-1@" + ccenv.getPVob() + ", INITIAL, false"));
+        targets.add(new ClearCaseUCMTarget("client-1@" + ccenv.getPVob() + ", INITIAL, false"));
         ccucm.targets = targets;
         // create config-rotator, and set it as SCM
         System.out.println(debugLine + "Create configurationRotator.");
@@ -1461,16 +1353,16 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         assertNull(action);
 
 
-        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob())");
+        System.out.println(debugLine + "Trying teardown with net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob())");
         // try catch to avoid teardown failing tests - it's okay for teardown to fail
         // as our test environment later can be cleaned manually
         try 
         {
-            net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob());
+            net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob());
         }
         catch (CleartoolException clex)
         {
-            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(coolTest.getPVob() throwed exception - ignoring on purpose");
+            System.out.println(debugLine + "net.praqma.clearcase.util.SetupUtils.tearDown(ccenv.getPVob() throwed exception - ignoring on purpose");
             System.out.println(debugLine + "Exception was: " + clex.getMessage());
         }
         System.out.println(debugLine + "Done calling teardown....");
@@ -1494,21 +1386,21 @@ public class ConfigTest extends ClearCaseJenkinsTestCase {
         // variables overwrite cool test case setup.xml setting
         // Unique names for each test is used to avoid all sort of clear case 
         // complications - but leaves as mess...
-        coolTest.variables.put("vobname", uniqueTestVobName);
-        coolTest.variables.put("pvobname", uniqueTestVobName + "_PVOB");
-        coolTest.bootStrap();
+        ccenv.variables.put("vobname", uniqueTestVobName);
+        ccenv.variables.put("pvobname", uniqueTestVobName + "_PVOB");
+        ccenv.bootStrap();
         System.out.println(debugLine + "Cool test case setup done.");
         
         
         // create Jenkins job - also use unique name
         FreeStyleProject project = createFreeStyleProject(uniqueTestVobName);
         // Setup ClearCase UCM as SCM and to use with config-rotator
-        ClearCaseUCM ccucm = new ClearCaseUCM(coolTest.getPVob().toString());
+        ClearCaseUCM ccucm = new ClearCaseUCM(ccenv.getPVob().toString());
         List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
         // A first configuration added as targets: model-1 and client-1 that we 
         // would know to be compatible.
-        targets.add(new ClearCaseUCMTarget("model-1@" + coolTest.getPVob() + ", INITIAL, false"));
-        targets.add(new ClearCaseUCMTarget("client-1@" + coolTest.getPVob() + ", INITIAL, false"));
+        targets.add(new ClearCaseUCMTarget("model-1@" + ccenv.getPVob() + ", INITIAL, false"));
+        targets.add(new ClearCaseUCMTarget("client-1@" + ccenv.getPVob() + ", INITIAL, false"));
         ccucm.targets = targets;
         // create config-rotator, and set it as SCM
         System.out.println(debugLine + "Create configurationRotator.");
