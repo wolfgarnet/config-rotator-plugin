@@ -81,10 +81,19 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUC
 		return view;
 	}
 	
+        /**
+         * Parsing and loading the user-input config rotator configuration - targets in the GUI.
+         * Returned configuration may not be valid for building, but the clear case components can load
+         * Throws ConfigurationRotatorException if targets is not parsed correctly or can not be loaded.
+         * @param targets
+         * @param workspace
+         * @param listener
+         * @return
+         * @throws ConfigurationRotatorException if target can not be parsed, or if they can not be loaded with ClearCase
+         * @throws IOException 
+         */
 	public static ClearCaseUCMConfiguration getConfigurationFromTargets( List<ClearCaseUCMTarget> targets, FilePath workspace, TaskListener listener ) throws ConfigurationRotatorException, IOException {
 		PrintStream out = listener.getLogger();
-		
-		out.println( "Input: " + targets );
 		
 		/**/
 		ClearCaseUCMConfiguration configuration = new ClearCaseUCMConfiguration();
@@ -96,17 +105,42 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUC
 			if( units.length == 3 ) {
 				try {
 					ClearCaseUCMConfigurationComponent config = workspace.act( new GetConfiguration( units, listener ) );
-					out.println( ConfigurationRotator.LOGGERNAME + "Config: " + config );
-					configuration.list.add( config );
+                                        configuration.list.add( config );
+                                        out.println( ConfigurationRotator.LOGGERNAME + "Parsed configuration: " + config );
 				} catch( InterruptedException e ) {
-					out.println( ConfigurationRotator.LOGGERNAME + "Error: " + e.getMessage() );
-					
-					throw new ConfigurationRotatorException( "Unable parse input", e );
+					out.println( ConfigurationRotator.LOGGERNAME + "Error parsing configuration - interrupted: " + e.getMessage() );
+					throw new ConfigurationRotatorException("Unable parse configuration - interrupted", e );
 				}
+                                catch (IOException ioe)
+                                {   
+                                    // The GetConfiguration above on the slave might throw three
+                                    // exception: IOException and InterruptedException.
+                                    // The third is ClearCase exception, implicit, as it is packed
+                                    // into the IOException as it was not serializeable.
+                                    try
+                                    {
+                                        // Regardless of the exception, try get the cause
+                                        // to see if there is a ClearCase exception in it somewhere
+                                        Exception cce = (Exception)ioe.getCause();
+                                        throw cce;
+                                    }
+                                    catch (ClearCaseException cce)
+                                    {
+                                        // yah, ...
+                                        out.println(ConfigurationRotator.LOGGERNAME + "Unable to load with ClearCase: " + cce.getMessage());
+                                        throw new ConfigurationRotatorException("Unable to load with ClearCase", cce );
+                                    }
+                                    catch (Exception e2)
+                                    {
+                                        // nah, just some other exception, but we should still fail
+                                        out.println( ConfigurationRotator.LOGGERNAME + "Error parsing configuration - io: " + e2.getMessage() );
+					throw new ConfigurationRotatorException("Unable parse configuration - io", e2 );
+                                    }
+                                }
 			} else {
 				/* Do nothing */
-				out.println( ConfigurationRotator.LOGGERNAME + "\"" + target.getComponent() + "\" was not correct" );
-				throw new ConfigurationRotatorException( "Wrong input, length is " + units.length );
+				out.println(ConfigurationRotator.LOGGERNAME + "\"" + target.getComponent() + "\" was not correct");
+				throw new ConfigurationRotatorException("Wrong input, length is " + units.length);
 			}
 		}
 		

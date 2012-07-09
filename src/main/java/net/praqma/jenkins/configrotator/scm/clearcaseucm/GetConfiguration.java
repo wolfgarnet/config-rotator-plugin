@@ -19,14 +19,17 @@ public class GetConfiguration implements FileCallable<ClearCaseUCMConfigurationC
 		this.listener = listener;
 	}
 	
+        @Override
 	public ClearCaseUCMConfigurationComponent invoke( File f, VirtualChannel channel ) throws IOException, InterruptedException {
-		PrintStream out = listener.getLogger();
+		//PrintStream out = listener.getLogger();
 		
 		try {
 			return new ClearCaseUCMConfigurationComponent( units[0].trim(), units[1].trim(), units[2].trim() );
 		} catch( ClearCaseException e ) {
-			e.print( out );
-			return null;
+                    // ClearCaseException can not be passed through from slave to master
+                    // but IOException can, so using that one, and packing out later
+                        IOException ioe = new IOException(e);
+                        throw ioe;
 		}
 	}
 }

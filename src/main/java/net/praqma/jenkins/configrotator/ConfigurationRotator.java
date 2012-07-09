@@ -36,7 +36,8 @@ import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigurati
 public class ConfigurationRotator extends SCM {
 
 	private AbstractConfigurationRotatorSCM acrs;
-	private static Logger logger = Logger.getLogger();
+        // public to be able to print the name in debug everywhere
+	public static Logger logger = Logger.getLogger();
 	private boolean printDebug;
 
 	public enum ResultType {
