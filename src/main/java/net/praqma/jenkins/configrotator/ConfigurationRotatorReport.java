@@ -83,7 +83,13 @@ public class ConfigurationRotatorReport extends AbstractModelObject implements U
     }
     
     public String getFeedUrl(String vob, String componentName) {
-        String actionLink = "/"+getUrlName()+"/feed/?component="+componentName+"&pvob="+vob;
+        String url = (Jenkins.getInstance() == null || Jenkins.getInstance().getRootUrl() == null) ? DEFAULT_URL : Jenkins.getInstance().getRootUrl();
+        // url could be configured for "http://localhost:8080/myjenkins" instead of default "http://localhost:8080"
+        // actionLink need to be based on this
+        String baseurl = url.replace(DEFAULT_URL, "").toString();
+        // ... will be now be "/myjenkins" or just "/"
+        // and with getUrlName = "config-rotator" this is what we want
+        String actionLink = baseurl +getUrlName()+"/feed/?component="+componentName+"&pvob="+vob;
         return actionLink;
     }
     
