@@ -5,3 +5,4 @@ target/
 build/
 work/
 *.log
+jenkins-cli.jar
