@@ -70,7 +70,7 @@ public class ClearCaseUCMConfigurationComponent extends AbstractConfigurationCom
 			return false;
 		}
 	}
-    
+        
     /**
      * Test method...
      * 

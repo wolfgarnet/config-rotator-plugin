@@ -13,12 +13,10 @@ import hudson.util.FormValidation;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
 import net.praqma.clearcase.PVob;
-import net.praqma.clearcase.ucm.entities.Activity;
 import net.praqma.clearcase.ucm.entities.Baseline;
 import net.praqma.clearcase.ucm.entities.Project;
 import net.praqma.clearcase.ucm.entities.Stream;
@@ -33,6 +31,9 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
+import java.util.HashSet;
+import java.util.Set;
+import net.praqma.clearcase.ucm.entities.Component;
 
 public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Serializable {
     
@@ -144,6 +145,17 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
             }
         }
         
+        try
+        {
+            simpleCheckOfConfiguration(projectConfiguration);
+            out.println(ConfigurationRotator.LOGGERNAME + "Simple check of configuration done.");
+        }
+        catch (AbortException ae)
+        {
+            out.println(ConfigurationRotator.LOGGERNAME + "Simple check of configuration failed.");
+            throw ae;
+        }
+        
         printConfiguration( out, projectConfiguration );
         
         /* Create the view */
@@ -152,8 +164,9 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
             SnapshotView view = createView( listener, build, projectConfiguration, workspace, pvob );
             projectConfiguration.setView( view );
         } catch( Exception e ) {
-            out.println( ConfigurationRotator.LOGGERNAME + "Unable to create view, exception message is: " + e.getMessage() );
-            ExceptionUtils.print( e, out, true );
+            out.println( ConfigurationRotator.LOGGERNAME + "Unable to create view, message is: " 
+                    + e.getMessage() + ". Cause was: " + (e.getCause() == null ? "unknown" : e.getCause().getMessage()));
+            //ExceptionUtils.print( e, out, true );
             throw new AbortException();
         }
                 
@@ -189,7 +202,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
     }
     
     public void printConfiguration( PrintStream out, AbstractConfiguration cfg ) {
-        out.println( "The configuration is:" );
+        out.println(ConfigurationRotator.LOGGERNAME +  "The configuration is:" );
         if( cfg instanceof ClearCaseUCMConfiguration ) {
             ClearCaseUCMConfiguration config = (ClearCaseUCMConfiguration)cfg;
             for( ClearCaseUCMConfigurationComponent c : config.getList() ) {
@@ -197,7 +210,45 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
             }
             out.println( "" );
         }
+        }
+
+    
+    /**
+     * Does a simple check of the config-rotator configuration
+     * of Clear Case UCM component, checking that the same component
+     * is not used more than once in the configuration.
+     * @param out is the console log
+     * @param cfg config rotator configuration
+     * @throws AbortException 
+     */
+    public void simpleCheckOfConfiguration(AbstractConfiguration cfg ) throws AbortException {
+        if( cfg instanceof ClearCaseUCMConfiguration ) {
+            ClearCaseUCMConfiguration config = (ClearCaseUCMConfiguration)cfg;
+            Set<Component> ccucmcfgset = new HashSet<Component>();
+            
+            // loops iterates over clear case component which must have unique 
+            // hash representation
+            for( ClearCaseUCMConfigurationComponent c : config.getList() ) {
+                Component currentClearCaseComponent = c.getBaseline().getComponent();
+                if (!ccucmcfgset.contains(currentClearCaseComponent))
+                {
+                    ccucmcfgset.add(currentClearCaseComponent);
+                }
+                else
+                {
+                    // should throw abort exception that is catched by jenkins
+                    // and message printed to the console by Jenkins.
+                    // Therefore we like it to be descriptive.
+                    String errorMessage = ConfigurationRotator.LOGGERNAME +"Simple check of configuration failed because component used more than once in configuration. Component is: \n";
+                    errorMessage += " * " + c.getBaseline().getComponent() + ", " + c.getBaseline().getStream() + ", " + c.getBaseline().getNormalizedName();
+                    throw new AbortException(errorMessage);
+                }
+            }
+        }
+        else
+            throw new AbortException(ConfigurationRotator.LOGGERNAME + "simpleCheckOfconfiguration was not passed an instance of a ClearCaseUCMConfiguration");
     }
+    
     
     public ClearCaseUCMConfiguration nextConfiguration( TaskListener listener, ClearCaseUCMConfiguration configuration, FilePath workspace ) throws IOException, InterruptedException, ConfigurationRotatorException {
         
