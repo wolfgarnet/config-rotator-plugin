@@ -478,7 +478,7 @@ public class ConfigRotatorTest extends TestCase {
 		
 		String nl = System.getProperty("line.separator");
 		String content = baos.toString("latin1");
-		String expected = "The configuration is:" + nl + " * component:comp1@\\pvob, stream:stream1@\\pvob, bl1@\\pvob" + nl + " * component:comp2@\\pvob, stream:stream2@\\pvob, bl2@\\pvob" + nl + nl;
+		String expected = "[ConfigRotator] The configuration is:" + nl + " * component:comp1@\\pvob, stream:stream1@\\pvob, bl1@\\pvob" + nl + " * component:comp2@\\pvob, stream:stream2@\\pvob, bl2@\\pvob" + nl + nl;
 		
 		System.out.println( "CONTENT : " + content );
 		System.out.println( "EXPECTED: " + expected );
