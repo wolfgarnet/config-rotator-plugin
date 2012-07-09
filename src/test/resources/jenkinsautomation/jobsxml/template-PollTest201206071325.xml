@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <scm class="net.praqma.jenkins.configrotator.ConfigurationRotator">
+    <acrs class="net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCM">
+      <targets>
+        <net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMTarget>
+          <component>model-1@\PollTest201206071325_PVOB, INITIAL, false</component>
+          <baselineName>model-1@\PollTest201206071325_PVOB</baselineName>
+          <level>INITIAL</level>
+          <fixed>false</fixed>
+        </net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMTarget>
+        <net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMTarget>
+          <component>client-1@\PollTest201206071325_PVOB, INITIAL, false</component>
+          <baselineName>client-1@\PollTest201206071325_PVOB</baselineName>
+          <level>INITIAL</level>
+          <fixed>false</fixed>
+        </net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMTarget>
+      </targets>
+      <pvob>
+        <name>\PollTest201206071325_PVOB</name>
+        <projectVob>true</projectVob>
+      </pvob>
+    </acrs>
+    <printDebug>false</printDebug>
+    <justConfigured>true</justConfigured>
+    <reconfigure>false</reconfigure>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>true</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers class="vector">
+    <hudson.triggers.SCMTrigger>
+      <spec>* * * * *</spec>
+    </hudson.triggers.SCMTrigger>
+  </triggers>
+  <concurrentBuild>false</concurrentBuild>
+  <builders/>
+  <publishers>
+    <net.praqma.jenkins.configrotator.ConfigurationRotatorPublisher/>
+  </publishers>
+  <buildWrappers/>
+</project>
