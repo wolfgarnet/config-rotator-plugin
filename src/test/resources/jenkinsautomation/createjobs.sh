@@ -9,7 +9,7 @@ do
 	# name without extension and path
     	name=$(basename "$file")
     	name="${name%.*}"
-	for i in $(seq 1 10);
+	for i in $(seq 1 20);
 	do
 		echo "$cmd create-job $name-j$i <$file"
 		$cmd create-job $name-j$i <$file
