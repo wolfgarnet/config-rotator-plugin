@@ -236,7 +236,8 @@ public class ConfigRotatorTest extends TestCase {
 		PowerMockito.doReturn( null ).when( spy ).getLastResult( Mockito.any( AbstractProject.class ), Mockito.any( Class.class ) );
 		
 		Mockito.doNothing().when( spy ).printConfiguration( Mockito.any( PrintStream.class ), Mockito.any( AbstractConfiguration.class ) );
-		
+		Mockito.doNothing().when( spy ).simpleCheckOfConfiguration(Mockito.any( AbstractConfiguration.class));
+        
 		PowerMockito.doReturn( ccc ).when( spy ).nextConfiguration( Mockito.any( TaskListener.class ), Mockito.any( ClearCaseUCMConfiguration.class ), Mockito.any( FilePath.class ) );
 		
 		PowerMockito.doReturn( null ).when( spy ).createView( Mockito.any( TaskListener.class ), Mockito.any( FreeStyleBuild.class ), Mockito.any( ClearCaseUCMConfiguration.class ), Mockito.any( FilePath.class ), Mockito.any( PVob.class ) );
@@ -282,7 +283,8 @@ public class ConfigRotatorTest extends TestCase {
 		PowerMockito.doReturn( action ).when( spy ).getLastResult( Mockito.any( AbstractProject.class ), Mockito.any( Class.class ) );
 		
 		Mockito.doNothing().when( spy ).printConfiguration( Mockito.any( PrintStream.class ), Mockito.any( AbstractConfiguration.class ) );
-		
+		Mockito.doNothing().when( spy ).simpleCheckOfConfiguration(Mockito.any( AbstractConfiguration.class));
+        
 		PowerMockito.doReturn( ccc ).when( spy ).nextConfiguration( Mockito.any( TaskListener.class ), Mockito.any( ClearCaseUCMConfiguration.class ), Mockito.any( FilePath.class ) );
 		
 		PowerMockito.doReturn( null ).when( spy ).createView( Mockito.any( TaskListener.class ), Mockito.any( FreeStyleBuild.class ), Mockito.any( ClearCaseUCMConfiguration.class ), Mockito.any( FilePath.class ), Mockito.any( PVob.class ) );
@@ -349,7 +351,7 @@ public class ConfigRotatorTest extends TestCase {
 		
 		/* ClearCase mock */
 		List<ClearCaseUCMConfigurationComponent> comps = new ArrayList<ClearCaseUCMConfigurationComponent>();
-		comps.add( new ClearCaseUCMConfigurationComponent( Baseline.get( "bl2@\\pvob" ), PromotionLevel.INITIAL, false ) );
+        comps.add( new ClearCaseUCMConfigurationComponent( Baseline.get( "bl2@\\pvob" ), PromotionLevel.INITIAL, false ) );
 		ClearCaseUCMConfiguration ccc = new ClearCaseUCMConfiguration( comps );
 		ConfigurationRotatorBuildAction action = new ConfigurationRotatorBuildAction( build, ClearCaseUCM.class, ccc );
 		
@@ -357,6 +359,7 @@ public class ConfigRotatorTest extends TestCase {
 		PowerMockito.doReturn( action ).when( spy ).getLastResult( Mockito.any( AbstractProject.class ), Mockito.any( Class.class ) );
 		
 		Mockito.doNothing().when( spy ).printConfiguration( Mockito.any( PrintStream.class ), Mockito.any( AbstractConfiguration.class ) );
+        Mockito.doNothing().when( spy ).simpleCheckOfConfiguration(Mockito.any( AbstractConfiguration.class));
 		
 		PowerMockito.doReturn( ccc ).when( spy ).nextConfiguration( Mockito.any( TaskListener.class ), Mockito.any( ClearCaseUCMConfiguration.class ), Mockito.any( FilePath.class ) );
 		
