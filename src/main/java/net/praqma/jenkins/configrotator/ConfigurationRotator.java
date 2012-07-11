@@ -196,7 +196,19 @@ public class ConfigurationRotator extends SCM {
 
 	@Override
 	protected PollingResult compareRemoteRevisionWith( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener, SCMRevisionState arg4 ) throws IOException, InterruptedException {
-		
+                PrintStream out = listener.getLogger();	
+                // This little check ensures changes are not found while building, as
+                // this with many concurrent builds and polling leads to issues where
+                // we saw a build was long in the queue, and when started, the polling found
+                // changed a did schedule the same build with the same changes as last time
+                // between the last one started and finished.
+                //Basically this disables polling while the job has a build in the queue.
+                if (project.isInQueue())
+                {
+                    out.println("A build already in queue - cancelling poll");
+                    logger.debug("A build already in queue - cancelling poll");
+                    return PollingResult.NO_CHANGES;
+                }
 		/*
 		 * Determine if the job was reconfigured
 		 */
