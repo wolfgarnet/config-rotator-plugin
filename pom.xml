@@ -238,10 +238,9 @@
         <dependency>
             <groupId>net.praqma</groupId>
             <artifactId>praqmajutils</artifactId>
-            <version>0.1.22</version>
+            <version>0.1.23</version>
         </dependency>
-        
-        
+
         <dependency>
             <groupId>net.praqma</groupId>
             <artifactId>cool</artifactId>

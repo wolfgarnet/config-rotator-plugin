@@ -9,7 +9,7 @@
 
 		<table>
 			<tr>
-				<td rowspan="2" style="padding:10px"><img src="'${rootURL}/plugin/config-rotator/images/rotate.png" /></td>
+				<td rowspan="2" style="padding:10px"><img src="${rootURL}/plugin/config-rotator/images/rotate.png" /></td>
 				<td style="font-size:14px;text-align:left">
                    <j:choose>
                        <j:when test="${lastResult.isCompatible()}">
