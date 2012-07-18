@@ -228,6 +228,7 @@ public class ConfigurationRotator extends SCM {
      */
     @Override
     public ChangeLogParser createChangeLogParser() {
+        logger.debug("Creating change log parser");
         return acrs.createChangeLogParser();
     }
 

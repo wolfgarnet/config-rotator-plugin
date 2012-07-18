@@ -7,12 +7,15 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import net.praqma.jenkins.configrotator.ConfigurationRotator.ResultType;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogSet;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCM;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigRotatorChangeLogSet;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
 public class ConfigurationRotatorBuildAction implements Action {
 	
+    private String description;
 	private AbstractBuild<?, ?> build;
 	private Class<? extends AbstractConfigurationRotatorSCM> clazz;
 	private ResultType result = ResultType.UNDETERMINED;
@@ -41,17 +44,6 @@ public class ConfigurationRotatorBuildAction implements Action {
 			rsp.sendError( StaplerResponse.SC_BAD_REQUEST, "Not a Configuration Rotator job" );
 		}
 	}
-	
-    /**
-     * Returs a description of the changes performed in this build.
-     */
-    public String getHeadline() {
-        String headline = ConfigRotatorChangeLogSet.EMPTY_DESCRIPTOR;
-        if(build.getChangeSet() instanceof ClearCaseUCMConfigRotatorChangeLogSet) {
-            headline = ((ClearCaseUCMConfigRotatorChangeLogSet)build.getChangeSet()).getHeadline();
-        }
-        return headline;
-    }
 	
 	public void setResult( ResultType result ) {
 		this.result = result;
@@ -100,4 +92,38 @@ public class ConfigurationRotatorBuildAction implements Action {
 	public String toString() {
 		return "Build action: " + configuration;
 	}
+
+    /**
+     * @return the description
+     */
+    public String getDescription() {
+        /**
+         * Ensure backwards compatability
+         */
+        if(description == null) {
+            ClearCaseUCMConfiguration current = this.getConfiguration(ClearCaseUCMConfiguration.class);
+        
+            if(current != null) {
+                ConfigurationRotator rotator = (ConfigurationRotator)this.getBuild().getProject().getScm();
+                if(current.getChangedComponent() == null) {
+                    return "New Configuration - no changes yet";
+                } else {
+                    int currentComponentIndex = current.getChangedComponentIndex();
+                    String currentBaseline = current.getChangedComponent().getBaseline().getNormalizedName();
+                    ConfigurationRotatorBuildAction previous = rotator.getAcrs().getLastResult(this.getBuild().getProject(), ClearCaseUCM.class);
+                    String previousBaseline = previous.getConfiguration(ClearCaseUCMConfiguration.class).getList().get(currentComponentIndex).getBaseline().getNormalizedName();
+
+                    return String.format("Baseline changed from %s to %s", previousBaseline, currentBaseline);
+                }
+            }    
+        }  
+        return description;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
 }

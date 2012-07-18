@@ -9,7 +9,7 @@ import java.util.List;
  *
  * @author Praqma
  */
-public abstract class ConfigRotatorChangeLogSet<T extends ConfigRotatorEntry> extends ChangeLogSet<T> implements ConfigRotatorChangeSetDescriptor{
+public abstract class ConfigRotatorChangeLogSet<T extends ConfigRotatorEntry> extends ChangeLogSet<T> {
     
     
     protected List<T> entries;
@@ -36,15 +36,5 @@ public abstract class ConfigRotatorChangeLogSet<T extends ConfigRotatorEntry> ex
 
     public List<T> getEntries() {
         return entries;
-    }
-
-    @Override
-    public String getHeadline() {
-        return headline;
-    }
-
-    @Override
-    public void setHeadline(String headline) {
-        this.headline = headline;
     }
 }

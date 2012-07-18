@@ -16,7 +16,6 @@ import java.util.logging.Level;
 import junit.framework.TestCase;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorBuildAction;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogSet;
-import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeSetDescriptor;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorEntry;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.*;
 import net.praqma.util.debug.Logger;
@@ -162,7 +161,6 @@ public class ConfigRotatorChangeSetTest extends TestCase {
         assertEquals(2, set.getEntries().size());
         set.getEntries().add(new ClearCaseUCMConfigRotatorEntry());
         assertEquals(3, set.getEntries().size());
-        assertEquals(set.getHeadline(), "Configuration error");
         
         entri.setAuthor("EntriAuthor");
        

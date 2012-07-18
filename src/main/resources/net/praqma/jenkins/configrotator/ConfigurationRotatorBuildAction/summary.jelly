@@ -14,12 +14,12 @@
 				<j:choose>
 					<j:when test="${from.isCompatible()}">
 						<!--<b>${%This configuration is compatible}</b> -->
-                        <b>${from.getHeadline()}</b>
+                        <b>${from.getDescription()}</b>
                         <br/>
                         ${%This configuration is compatible}
 					</j:when>
 					<j:otherwise>
-                        <b>${from.getHeadline()}</b>
+                        <b>${from.getDescription()}</b>
                         <br/>
 						 ${%This configuration is not compatible}
 					</j:otherwise>

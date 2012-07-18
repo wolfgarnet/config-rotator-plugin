@@ -6,6 +6,7 @@ import hudson.FilePath;
 import hudson.model.TaskListener;
 import net.praqma.jenkins.configrotator.AbstractConfigurationRotatorSCM;
 import net.praqma.jenkins.configrotator.AbstractPostConfigurationRotator;
+import net.praqma.jenkins.configrotator.ConfigurationRotator;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorBuildAction;
 
 @Extension
@@ -14,19 +15,25 @@ public class ClearCaseUCMPostBuild extends AbstractPostConfigurationRotator {
 	@Override
 	public boolean perform( FilePath workspace, TaskListener listener, ConfigurationRotatorBuildAction action ) {
 		listener.getLogger().println( "In post build" );
-		/*
-		SnapshotView view = ((ClearCaseUCMConfiguration)action.getConfiguration()).getView();
-		if( view != null ) {
-			listener.getLogger().println( "View is not null" );
-			try {
-				workspace.act( new EndView( view, listener ) );
-			} catch( Exception e ) {
-				ExceptionUtils.print( e, listener.getLogger(), false );
-			}
-		} else {
-			listener.getLogger().println( "View is null" );
-		}
-		*/
+        ClearCaseUCMConfiguration current = action.getConfiguration(ClearCaseUCMConfiguration.class);
+        
+        try {
+            if(current != null) {
+                ConfigurationRotator rotator = (ConfigurationRotator)action.getBuild().getProject().getScm();
+                if(current.getChangedComponent() == null) {
+                    action.setDescription("New Configuration - no changes yet");
+                } else {
+                    int currentComponentIndex = current.getChangedComponentIndex();
+                    String currentBaseline = current.getChangedComponent().getBaseline().getNormalizedName();
+                    ConfigurationRotatorBuildAction previous = rotator.getAcrs().getLastResult(action.getBuild().getProject(), ClearCaseUCM.class);
+                    String previousBaseline = previous.getConfiguration(ClearCaseUCMConfiguration.class).getList().get(currentComponentIndex).getBaseline().getNormalizedName();
+
+                    action.setDescription(String.format("Baseline changed from %s to %s", previousBaseline, currentBaseline));
+                }    
+            }
+        } catch (Exception ex) {
+            listener.getLogger().println("Failed to create description for job: "+ex);
+        }
 		return true;
 	}
 
