@@ -21,7 +21,6 @@ import org.kohsuke.stapler.StaplerRequest;
 import javax.servlet.ServletException;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,67 +60,27 @@ public class Git extends AbstractConfigurationRotatorSCM<GitConfiguration> imple
         }
 
         @Override
-        public GitConfiguration getInitialConfiguration() throws AbortException {
-            GitConfiguration inputconfiguration = null;
-            try {
-                inputconfiguration = GitConfiguration.getConfigurationFromTargets( getTargets(), workspace, listener );
-            } catch( Exception e ) {
-                out.println( ConfigurationRotator.LOGGERNAME + "Unable to parse or load configuration: " + e.getMessage() );
-                logger.log( Level.WARNING, "Unable to parse or load configuration" + e );
-                throw new AbortException();
-            }
-
-            return inputconfiguration;
+        public GitConfiguration getInitialConfiguration() throws ConfigurationRotatorException {
+            return GitConfiguration.getConfigurationFromTargets( getTargets(), workspace, listener );
         }
 
         @Override
-        public GitConfiguration getNextConfiguration( ConfigurationRotatorBuildAction action ) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        public GitConfiguration getNextConfiguration( ConfigurationRotatorBuildAction action ) throws ConfigurationRotatorException {
+            GitConfiguration oldconfiguration = action.getConfiguration( GitConfiguration.class );
+            return nextConfiguration(listener, oldconfiguration, workspace );
         }
 
         @Override
-        public boolean checkConfiguration( GitConfiguration configuration ) {
-            return false;  //To change body of implemented methods use File | Settings | File Templates.
+        public void checkConfiguration( GitConfiguration configuration ) {
+            /* No such thing yet */
         }
 
         @Override
         public void createWorkspace( GitConfiguration configuration ) {
-            //To change body of implemented methods use File | Settings | File Templates.
+            /* No need */
         }
     }
 
-    @Override
-    public boolean perform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, boolean reconfigure ) throws IOException {
-        logger.fine("Perform");
-
-        PrintStream out = listener.getLogger();
-
-        ConfigurationRotatorBuildAction action = getLastResult( build.getProject(), Git.class );
-        out.println( ConfigurationRotator.LOGGERNAME + "Getting configuration" );
-        logger.fine( "Getting configuration" );
-
-        /* If there's no action, this is the first run */
-        if( action == null || reconfigure ) {
-            GitConfiguration inputconfiguration = null;
-            try {
-                inputconfiguration = GitConfiguration.getConfigurationFromTargets( getTargets(), workspace, listener );
-            } catch( ConfigurationRotatorException e ) {
-                out.println(ConfigurationRotator.LOGGERNAME + "Unable to parse or load configuration: " + e.getMessage() );
-                logger.log( Level.WARNING, "Unable to parse or load configuration" + e );
-                throw new AbortException();
-            }
-
-            projectConfiguration = inputconfiguration;
-        } else { // There is a configuration, ROTATE!
-            GitConfiguration oldconfiguration = action.getConfiguration(GitConfiguration.class);
-        }
-
-        logger.fine( "Adding action" );
-        final ConfigurationRotatorBuildAction action1 = new ConfigurationRotatorBuildAction( build, Git.class, projectConfiguration );
-        build.addAction( action1 );
-
-        return true;
-    }
 
     @Override
     public void setConfigurationByAction( AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action ) throws IOException {

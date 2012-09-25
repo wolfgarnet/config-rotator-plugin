@@ -20,7 +20,7 @@ public class GitConfiguration extends AbstractConfiguration<GitConfigurationComp
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public static GitConfiguration getConfigurationFromTargets( List<GitTarget> targets, FilePath workspace, TaskListener listener ) throws ConfigurationRotatorException, IOException {
+    public static GitConfiguration getConfigurationFromTargets( List<GitTarget> targets, FilePath workspace, TaskListener listener ) throws ConfigurationRotatorException {
         PrintStream out = listener.getLogger();
 
         GitConfiguration config = new GitConfiguration();
@@ -31,7 +31,7 @@ public class GitConfiguration extends AbstractConfiguration<GitConfigurationComp
             GitConfigurationComponent c = null;
             try {
                 c = workspace.act( new ResolveConfigurationComponent( target.getRepository(), target.getBranch(), target.getCommitId(), target.getFixed() ) );
-            } catch( InterruptedException e ) {
+            } catch( Exception e ) {
                 throw new ConfigurationRotatorException( "Unable to get component for " + target, e );
             }
             config.list.add( c );

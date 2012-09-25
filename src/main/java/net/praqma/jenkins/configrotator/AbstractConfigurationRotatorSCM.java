@@ -47,11 +47,10 @@ public abstract class AbstractConfigurationRotatorSCM<C> implements Describable<
      * @param launcher
      * @param workspace
      * @param listener
-     * @param reconfigure
      * @return
      * @throws IOException
      */
-	public abstract boolean perform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, boolean reconfigure ) throws IOException;
+	//public abstract boolean perform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, boolean reconfigure ) throws IOException;
 
     public abstract Performer<C> getPerform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener ) throws IOException;
 
@@ -72,10 +71,10 @@ public abstract class AbstractConfigurationRotatorSCM<C> implements Describable<
             this.out = listener.getLogger();
         }
 
-        public abstract C getInitialConfiguration() throws AbortException;
-        public abstract C getNextConfiguration( ConfigurationRotatorBuildAction action ) throws AbortException;
-        public abstract boolean checkConfiguration( C configuration ) throws AbortException;
-        public abstract void createWorkspace( C configuration ) throws AbortException;
+        public abstract C getInitialConfiguration() throws ConfigurationRotatorException, IOException;
+        public abstract C getNextConfiguration( ConfigurationRotatorBuildAction action ) throws ConfigurationRotatorException;
+        public abstract void checkConfiguration( C configuration ) throws ConfigurationRotatorException;
+        public abstract void createWorkspace( C configuration ) throws ConfigurationRotatorException;
         public Class getSCMClass() {
                 return this.getClass();
         }

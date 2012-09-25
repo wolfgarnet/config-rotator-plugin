@@ -113,55 +113,30 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM<ClearCaseUCMCo
         }
 
         @Override
-        public ClearCaseUCMConfiguration getInitialConfiguration() throws AbortException {
-            ClearCaseUCMConfiguration inputconfiguration = null;
-            logger.fine( "Obtaining a configuration based on targets" );
-            try {
-                inputconfiguration = ClearCaseUCMConfiguration.getConfigurationFromTargets( getTargets(), workspace, listener );
-            } catch( Exception e ) {
-                out.println( ConfigurationRotator.LOGGERNAME + "Unable to parse or load configuration: " + e.getMessage() );
-                logger.log( Level.WARNING, "Unable to parse or load configuration: ", e.getMessage() );
-                throw new AbortException();
-            }
-
-            return inputconfiguration;
+        public ClearCaseUCMConfiguration getInitialConfiguration() throws IOException, ConfigurationRotatorException {
+            return ClearCaseUCMConfiguration.getConfigurationFromTargets( getTargets(), workspace, listener );
         }
 
         @Override
-        public ClearCaseUCMConfiguration getNextConfiguration( ConfigurationRotatorBuildAction action ) throws AbortException {
+        public ClearCaseUCMConfiguration getNextConfiguration( ConfigurationRotatorBuildAction action ) throws ConfigurationRotatorException {
             ClearCaseUCMConfiguration oldconfiguration = action.getConfiguration( ClearCaseUCMConfiguration.class );
-            /* Get next configuration */
             try {
-                logger.fine( "Obtaining new configuration based on old" );
-                /* No new baselines */
                 return nextConfiguration( listener, oldconfiguration, workspace );
-            } catch( Exception e ) {
-                out.println( ConfigurationRotator.LOGGERNAME + "Unable to get next configuration: " + e.getMessage() );
-                logger.fine( "Unable to get next configuration: " + e.getMessage() );
-                throw new AbortException();
+            } catch( IOException e ) {
+                throw new ConfigurationRotatorException( e );
+            } catch( InterruptedException e ) {
+                throw new ConfigurationRotatorException( e );
             }
         }
 
         @Override
-        public boolean checkConfiguration( ClearCaseUCMConfiguration configuration ) throws AbortException {
-            try {
-                // This check is need to ensure some simple check that the configuration
-                // is valid in Config Rotator context. Though the configuration above can be
-                // loaded with clearcase and found, does not ensure it is valid for rotation.
-                simpleCheckOfConfiguration( projectConfiguration );
-                out.println( ConfigurationRotator.LOGGERNAME + "Found configuration - doing a simple check." );
-                logger.fine( "Found configuration - doing a simple check." );
+        public void checkConfiguration( ClearCaseUCMConfiguration configuration ) throws ConfigurationRotatorException {
+               simpleCheckOfConfiguration( projectConfiguration );
 
-                return true;
-            } catch( AbortException ae ) {
-                out.println( ConfigurationRotator.LOGGERNAME + "Simple check of configuration failed." );
-                logger.fine( "Simple check of configuration failed." );
-                throw ae;
-            }
         }
 
         @Override
-        public void createWorkspace( ClearCaseUCMConfiguration configuration ) throws AbortException {
+        public void createWorkspace( ClearCaseUCMConfiguration configuration ) throws ConfigurationRotatorException {
             try {
                 out.println( ConfigurationRotator.LOGGERNAME + "Creating view" );
                 logger.fine( "Creating view" );
@@ -171,7 +146,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM<ClearCaseUCMCo
                 out.println( ConfigurationRotator.LOGGERNAME + "Unable to create view" );
                 logger.fine( ConfigurationRotator.LOGGERNAME + "Unable to create view, message is: "
                         + e.getMessage() + ". Cause was: " + ( e.getCause() == null ? "unknown" : e.getCause().getMessage() ) );
-                throw new AbortException( ConfigurationRotator.LOGGERNAME + "Unable to create view: " + e.getMessage() );
+                throw new ConfigurationRotatorException( "Unable to create view", e );
             }
         }
     }
@@ -218,6 +193,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM<ClearCaseUCMCo
             }
         }
 
+        /*
         try {
             // This check is need to ensure some simple check that the configuration
             // is valid in Config Rotator context. Though the configuration above can be
@@ -230,6 +206,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM<ClearCaseUCMCo
             logger.fine( "Simple check of configuration failed." );
             throw ae;
         }
+        */
 
         printConfiguration( out, projectConfiguration );
 
@@ -302,7 +279,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM<ClearCaseUCMCo
      * @param cfg config rotator configuration
      * @throws AbortException
      */
-    public void simpleCheckOfConfiguration( AbstractConfiguration cfg ) throws AbortException {
+    public void simpleCheckOfConfiguration( AbstractConfiguration cfg ) throws ConfigurationRotatorException {
         if( cfg instanceof ClearCaseUCMConfiguration ) {
             ClearCaseUCMConfiguration config = (ClearCaseUCMConfiguration) cfg;
             Set<Component> ccucmcfgset = new HashSet<Component>();
@@ -322,11 +299,11 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM<ClearCaseUCMCo
                 } else {
                     String errorMessage = ConfigurationRotator.LOGGERNAME + "Simple check of configuration failed because component used more than once in configuration. Component is: \n";
                     errorMessage += " * " + c.getBaseline().getComponent() + ", " + c.getBaseline().getStream() + ", " + c.getBaseline().getNormalizedName();
-                    throw new AbortException( errorMessage );
+                    throw new ConfigurationRotatorException( errorMessage );
                 }
             }
         } else {
-            throw new AbortException( ConfigurationRotator.LOGGERNAME + "simpleCheckOfconfiguration was not passed an instance of a ClearCaseUCMConfiguration" );
+            throw new ConfigurationRotatorException( ConfigurationRotator.LOGGERNAME + "simpleCheckOfconfiguration was not passed an instance of a ClearCaseUCMConfiguration" );
         }
     }
 
