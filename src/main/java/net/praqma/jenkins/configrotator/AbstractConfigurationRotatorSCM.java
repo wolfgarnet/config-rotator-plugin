@@ -1,14 +1,12 @@
 package net.praqma.jenkins.configrotator;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import hudson.*;
 import jenkins.model.Jenkins;
-import hudson.DescriptorExtensionList;
-import hudson.ExtensionPoint;
-import hudson.FilePath;
-import hudson.Launcher;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
@@ -21,7 +19,7 @@ import java.util.logging.Logger;
 
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
 
-public abstract class AbstractConfigurationRotatorSCM implements Describable<AbstractConfigurationRotatorSCM>, ExtensionPoint {
+public abstract class AbstractConfigurationRotatorSCM<C> implements Describable<AbstractConfigurationRotatorSCM>, ExtensionPoint {
 	
 	private static Logger logger = Logger.getLogger( AbstractConfigurationRotatorSCM.class.getName()  );
 
@@ -54,6 +52,34 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
      * @throws IOException
      */
 	public abstract boolean perform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, boolean reconfigure ) throws IOException;
+
+    public abstract Performer<C> getPerform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener ) throws IOException;
+
+    public static abstract class Performer<C> {
+        protected AbstractBuild<?, ?> build;
+        protected Launcher launcher;
+        protected FilePath workspace;
+        protected BuildListener listener;
+
+        protected PrintStream out;
+
+        public Performer( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener ) {
+            this.build = build;
+            this.launcher = launcher;
+            this.workspace = workspace;
+            this.listener = listener;
+
+            this.out = listener.getLogger();
+        }
+
+        public abstract C getInitialConfiguration() throws AbortException;
+        public abstract C getNextConfiguration();
+        public abstract boolean checkConfiguration( C configuration );
+        public abstract void createWorkspace( C configuration );
+        public Class getSCMClass() {
+                return this.getClass();
+        }
+    }
 	
 	public abstract void setConfigurationByAction( AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action ) throws IOException;
 	

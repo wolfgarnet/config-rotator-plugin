@@ -126,7 +126,27 @@ public class ConfigurationRotator extends SCM {
 
 		boolean performResult = false;
 		try {
-			performResult = acrs.perform( build, launcher, workspace, listener, reconfigure );
+            AbstractConfigurationRotatorSCM.Performer<AbstractConfiguration<?>> p = acrs.getPerform( build, launcher, workspace, listener );
+
+            ConfigurationRotatorBuildAction action = acrs.getLastResult( build.getProject(), p.getSCMClass() );
+
+            AbstractConfiguration<?> configuration = null;
+            if( reconfigure || action == null ) {
+                out.println( LOGGERNAME + "Configuration from scratch" );
+                configuration = p.getInitialConfiguration();
+            } else {
+                out.println( LOGGERNAME + "Getting next configuration" );
+                configuration = p.getNextConfiguration();
+            }
+
+            out.println( LOGGERNAME + "Checking configuration" );
+            p.checkConfiguration( configuration );
+
+            out.println( LOGGERNAME + "Creating workspace" );
+            p.createWorkspace( configuration );
+
+            performResult = true;
+
             try {
                 acrs.writeChangeLog(file, listener, build);
             } catch (ConfigurationRotatorException ex) {
@@ -142,7 +162,7 @@ public class ConfigurationRotator extends SCM {
 			// We fail build if there is now new baseline.
 			// An alternative would be to do like the CCUCM plugin and make the
 			// build result "grey" with an comment "nothing to do".
-			throw new AbortException( "No new baselines found!" );
+			throw new AbortException( "Nothing new" );
 		} else {
 
 			/*
@@ -187,7 +207,7 @@ public class ConfigurationRotator extends SCM {
                 if (project.isInQueue())
                 {
                     out.println("A build already in queue - cancelling poll");
-                    logger.fine("A build already in queue - cancelling poll");
+                    logger.fine( "A build already in queue - cancelling poll" );
                     return PollingResult.NO_CHANGES;
                 }
 		/*
@@ -209,7 +229,7 @@ public class ConfigurationRotator extends SCM {
      */
     @Override
     public ChangeLogParser createChangeLogParser() {
-        logger.fine("Creating change log parser");
+        logger.fine( "Creating change log parser" );
         return acrs.createChangeLogParser();
     }
 

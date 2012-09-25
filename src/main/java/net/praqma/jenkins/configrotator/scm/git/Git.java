@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Git extends AbstractConfigurationRotatorSCM implements Serializable {
+public class Git extends AbstractConfigurationRotatorSCM<GitConfiguration> implements Serializable {
 
     private static Logger logger = Logger.getLogger( Git.class.getName() );
 
@@ -51,6 +51,47 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
     }
 
     @Override
+    public Performer getPerform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener ) throws IOException {
+        return new GitPerformer(build, launcher, workspace, listener);
+    }
+
+    public class GitPerformer extends Performer<GitConfiguration> {
+
+        public GitPerformer( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener ) {
+            super( build, launcher, workspace, listener );
+        }
+
+        @Override
+        public GitConfiguration getInitialConfiguration() throws AbortException {
+            GitConfiguration inputconfiguration = null;
+            try {
+                inputconfiguration = GitConfiguration.getConfigurationFromTargets( getTargets(), workspace, listener );
+            } catch( Exception e ) {
+                out.println( ConfigurationRotator.LOGGERNAME + "Unable to parse or load configuration: " + e.getMessage() );
+                logger.log( Level.WARNING, "Unable to parse or load configuration" + e );
+                throw new AbortException();
+            }
+
+            return inputconfiguration;
+        }
+
+        @Override
+        public GitConfiguration getNextConfiguration() {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        @Override
+        public boolean checkConfiguration( GitConfiguration configuration ) {
+            return false;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        @Override
+        public void createWorkspace( GitConfiguration configuration ) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+    }
+
+    @Override
     public boolean perform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, boolean reconfigure ) throws IOException {
         logger.fine("Perform");
 
@@ -67,7 +108,7 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
                 inputconfiguration = GitConfiguration.getConfigurationFromTargets( getTargets(), workspace, listener );
             } catch( ConfigurationRotatorException e ) {
                 out.println(ConfigurationRotator.LOGGERNAME + "Unable to parse or load configuration: " + e.getMessage() );
-                logger.warning("Unable to parse or load configuration: " + e.getMessage());
+                logger.log( Level.WARNING, "Unable to parse or load configuration" + e );
                 throw new AbortException();
             }
 
