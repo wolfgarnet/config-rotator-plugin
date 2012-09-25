@@ -166,4 +166,8 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
 	private AbstractBuild<?, ?> getLastBuildToBeConsidered( AbstractProject<?, ?> project ) {
 		return project.getLastCompletedBuild();
 	}
+
+    public File getFeedPath() {
+        return new File( ConfigurationRotator.FEED_PATH, getClass().getSimpleName() );
+    }
 }

@@ -73,7 +73,7 @@ public class ResolveConfigurationComponent implements FilePath.FileCallable<GitC
             ObjectId o = repo.resolve( commitId );
             RevCommit commit = w.parseCommit( o );
 
-            return new GitConfigurationComponent( name, commit, fixed );
+            return new GitConfigurationComponent( name, branch, commit, fixed );
 
         } catch( GitAPIException e ) {
             throw new IOException( e );

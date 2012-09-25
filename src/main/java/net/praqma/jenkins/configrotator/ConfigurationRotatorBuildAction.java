@@ -87,6 +87,10 @@ public class ConfigurationRotatorBuildAction implements Action {
     public <T extends AbstractConfiguration> T getConfiguration(Class<T> clazz) {
         return (T)configuration;
     }
+
+    public AbstractConfiguration getConfigurationWithOutCast() {
+        return configuration;
+    }
     
 	@Override
 	public String toString() {

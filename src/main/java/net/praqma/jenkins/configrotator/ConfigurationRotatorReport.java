@@ -64,7 +64,7 @@ public class ConfigurationRotatorReport extends AbstractModelObject implements U
     }
     
     public static String createFeedXmlFile(String pvobName, String componentName) {
-        return ConfigurationRotator.FEED_FULL_PATH + pvobName + ConfigurationRotator.SEPARATOR + componentName + ".xml";
+        return ConfigurationRotator.FEED_PATH + pvobName + ConfigurationRotator.SEPARATOR + componentName + ".xml";
     }
     
     public static String createFeedFolder(String pvobName) {

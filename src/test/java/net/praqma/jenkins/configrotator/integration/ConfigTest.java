@@ -1417,8 +1417,8 @@ public class ConfigTest {
         System.out.println("Checking existance of newly created feed (client-1):" + f2.getAbsolutePath());
         assertTrue(f2.exists());
        
-        Feed modelFeed = Feed.getFeed(new AtomPublisher(), f1);
-        Feed clientFeed = Feed.getFeed(new AtomPublisher(), f2);
+        Feed modelFeed = Feed.getFeedEntry(new AtomPublisher(), f1);
+        Feed clientFeed = Feed.getFeedEntry(new AtomPublisher(), f2);
         
         int modelOneEntries = modelFeed.getEntries().size();
         int clientOneEntries = clientFeed.getEntries().size();
@@ -1429,8 +1429,8 @@ public class ConfigTest {
         
         FreeStyleBuild bTwo = project.scheduleBuild2(0).get();
         
-        modelFeed = Feed.getFeed(new AtomPublisher(), f1);
-        clientFeed = Feed.getFeed(new AtomPublisher(), f2);
+        modelFeed = Feed.getFeedEntry(new AtomPublisher(), f1);
+        clientFeed = Feed.getFeedEntry(new AtomPublisher(), f2);
         
         modelOneEntries = modelFeed.getEntries().size();
         clientOneEntries = clientFeed.getEntries().size();

@@ -1,5 +1,10 @@
 package net.praqma.jenkins.configrotator;
 
+import hudson.model.AbstractBuild;
+import net.praqma.util.xml.feed.Entry;
+import net.praqma.util.xml.feed.Feed;
+
+import java.io.File;
 import java.io.Serializable;
 
 /**
@@ -15,7 +20,7 @@ public abstract class AbstractConfigurationComponent implements Serializable {
     public AbstractConfigurationComponent( boolean fixed ) {
         this.fixed = fixed;
     }
-	
+
 	public boolean isChangedLast() {
 		return changedLast;
 	}
@@ -27,4 +32,8 @@ public abstract class AbstractConfigurationComponent implements Serializable {
     public boolean isFixed() {
         return fixed;
     }
+
+    public abstract File getFeedFile( File path );
+
+    public abstract Entry getFeedEntry( AbstractBuild<?, ?> build );
 }

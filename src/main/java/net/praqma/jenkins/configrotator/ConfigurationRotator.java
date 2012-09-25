@@ -59,12 +59,8 @@ public class ConfigurationRotator extends SCM {
 
 	public static final String SEPARATOR = System.getProperty( "file.separator" );
 	public static final String FEED_DIR = "config-rotator-feeds" + SEPARATOR;
-	public static final String FEED_FULL_PATH = Jenkins.getInstance().getRootDir() + SEPARATOR + FEED_DIR;
 
-	/**
-	 * Added file to feed.
-	 */
-	public static final File FEED_DIRFILE = new File( FEED_FULL_PATH );
+    public static final File FEED_PATH = new File( Jenkins.getInstance().getRootDir(), FEED_DIR );
 
 	/**
 	 * Determines whether a new configuration has been entered. If true, the

@@ -21,4 +21,6 @@ public abstract class AbstractConfiguration<T extends AbstractConfigurationCompo
     public List<T> getList() {
         return list;
     }
+
+    public abstract String toHtml();
 }

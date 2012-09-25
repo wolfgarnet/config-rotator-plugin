@@ -108,13 +108,13 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
             // if no action, build failed someway to set ConfigurationRotatorBuildAction, thus we can not 
             // say anything about configuration.
             if (action != null) {
-                ClearCaseUCMConfiguration configuration = action.getConfiguration(ClearCaseUCMConfiguration.class);
-                List<ClearCaseUCMConfigurationComponent> components = configuration.getList();
+                AbstractConfiguration configuration = action.getConfigurationWithOutCast();
+                List<AbstractConfigurationComponent> components = configuration.getList();
                 
                 try {
                                         
-                    for (ClearCaseUCMConfigurationComponent component : components) {
-                        String componentName = component.getBaseline().getComponent().getShortname();    
+                    for (AbstractConfigurationComponent component : components) {
+                        String componentName = component.getBaseline().getComponent().getShortname();
                         // default feed file to use if we can not get component Pvob name
                         // the file will show up on the feed page
                         File feedFile = new File(ConfigurationRotatorReport.createFeedXmlFile("ConfigRotatorDefaultFeedFile","ConfigRotatorDefaultFeedFile.xml"));
