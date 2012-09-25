@@ -104,6 +104,7 @@ public class Git extends AbstractConfigurationRotatorSCM<GitConfiguration> imple
 
 
     public GitConfiguration nextConfiguration( TaskListener listener, GitConfiguration configuration, FilePath workspace ) throws ConfigurationRotatorException {
+        logger.fine("Getting next Git configuration");
 
         RevCommit oldest = null;
         GitConfigurationComponent chosen = null;

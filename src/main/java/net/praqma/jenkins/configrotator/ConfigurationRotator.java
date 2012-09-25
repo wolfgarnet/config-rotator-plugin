@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.sf.json.JSONObject;
@@ -146,6 +147,8 @@ public class ConfigurationRotator extends SCM {
                 out.println( LOGGERNAME + "Creating workspace" );
                 p.createWorkspace( configuration );
 
+                p.save( configuration );
+
                 performResult = true;
 
                 try {
@@ -154,9 +157,9 @@ public class ConfigurationRotator extends SCM {
                     out.println("Cleartool Checkout exception: "+ex);
                 }
             }
-		} catch( AbortException e ) {
-			out.println( LOGGERNAME + "Failed to check out" );
-			throw e;
+		} catch( Exception e ) {
+			logger.log( Level.SEVERE, "Unable to create configuration", e );
+			throw new AbortException( e.getMessage() );
 		}
 
 		if( !performResult ) {
