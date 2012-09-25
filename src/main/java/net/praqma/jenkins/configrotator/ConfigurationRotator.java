@@ -4,11 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
+import java.util.logging.Logger;
 
-import net.praqma.util.debug.Logger;
-import net.praqma.util.debug.Logger.LogLevel;
-import net.praqma.util.debug.appenders.Appender;
-import net.praqma.util.debug.appenders.StreamAppender;
 import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -25,20 +22,14 @@ import hudson.scm.SCMDescriptor;
 import hudson.scm.SCMRevisionState;
 import hudson.scm.SCM;
 import hudson.tasks.Publisher;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Date;
 import jenkins.model.Jenkins;
-import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseGetBaseLineCompare;
-import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration;
-import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigurationComponent;
 
 public class ConfigurationRotator extends SCM {
 
 	private AbstractConfigurationRotatorSCM acrs;
         // public to be able to print the name in debug everywhere
-	public static Logger logger = Logger.getLogger();
-	private boolean printDebug;
+	public static Logger logger = Logger.getLogger( ConfigurationRotator.class.getName()  );
+	private boolean printDebug = false;
 
 	public enum ResultType {
 
@@ -81,11 +72,15 @@ public class ConfigurationRotator extends SCM {
 	public boolean reconfigure;
 
 	@DataBoundConstructor
-	public ConfigurationRotator( AbstractConfigurationRotatorSCM acrs, boolean printDebug ) {
+	public ConfigurationRotator( AbstractConfigurationRotatorSCM acrs ) {
 		this.acrs = acrs;
 		this.justConfigured = true;
-		this.printDebug = printDebug;
 	}
+
+    public ConfigurationRotator( AbstractConfigurationRotatorSCM acrs, boolean debug ) {
+        this.acrs = acrs;
+        this.justConfigured = true;
+    }
 
 	public AbstractConfigurationRotatorSCM getAcrs() {
 		return acrs;
@@ -120,25 +115,11 @@ public class ConfigurationRotator extends SCM {
 		out.println( "Config-rotator version: " + Jenkins.getInstance().getPlugin( "config-rotator" ).getWrapper().getVersion() );
 
 		/*
-		 * Configure debugger
-		 */
-		if( printDebug ) {
-			Appender app = new StreamAppender( out );
-			app.setMinimumLevel( LogLevel.DEBUG );
-			app.setTemplate( "[%level]%space %message%newline" );
-			app.lockToCurrentThread();
-			Logger.addAppender( app );
-		}
-        
-       
-        
-       
-		/*
 		 * Determine if the job was reconfigured
 		 */
 		if( justConfigured ) {
 			reconfigure = acrs.wasReconfigured( build.getProject() );
-			logger.debug( "Was reconfigured: " + reconfigure );
+			logger.fine( "Was reconfigured: " + reconfigure );
 		}
         
 
@@ -206,7 +187,7 @@ public class ConfigurationRotator extends SCM {
                 if (project.isInQueue())
                 {
                     out.println("A build already in queue - cancelling poll");
-                    logger.debug("A build already in queue - cancelling poll");
+                    logger.fine("A build already in queue - cancelling poll");
                     return PollingResult.NO_CHANGES;
                 }
 		/*
@@ -214,7 +195,7 @@ public class ConfigurationRotator extends SCM {
 		 */
 		if( justConfigured ) {
 			reconfigure = acrs.wasReconfigured( project );
-			logger.debug( "Was reconfigured: " + reconfigure );
+			logger.fine( "Was reconfigured: " + reconfigure );
 		}
 
 		PollingResult result = acrs.poll( project, launcher, workspace, listener, reconfigure );
@@ -228,7 +209,7 @@ public class ConfigurationRotator extends SCM {
      */
     @Override
     public ChangeLogParser createChangeLogParser() {
-        logger.debug("Creating change log parser");
+        logger.fine("Creating change log parser");
         return acrs.createChangeLogParser();
     }
 

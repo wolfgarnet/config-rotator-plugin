@@ -2,9 +2,9 @@ package net.praqma.jenkins.configrotator;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.logging.Logger;
 
 import net.praqma.jenkins.configrotator.ConfigurationRotator.ResultType;
-import net.praqma.util.debug.Logger;
 import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.StaplerRequest;
@@ -23,7 +23,7 @@ import hudson.tasks.Publisher;
 
 public class ConfigurationRotatorPublisher extends Notifier {
 
-	private static Logger logger = Logger.getLogger();
+	private static Logger logger = Logger.getLogger( ConfigurationRotatorPublisher.class.getName() );
 
 	public ConfigurationRotatorPublisher() {
 
@@ -40,10 +40,10 @@ public class ConfigurationRotatorPublisher extends Notifier {
 
 		/* This must be ConfigRotator job */
 		if( build.getProject().getScm() instanceof ConfigurationRotator ) {
-			logger.debug( "SCM is part of ConfigRotator" );
+			logger.fine( "SCM is part of ConfigRotator" );
 
 			ConfigurationRotatorBuildAction action = build.getAction( ConfigurationRotatorBuildAction.class );
-			logger.debug( "Action object is: " + action );
+			logger.fine( "Action object is: " + action );
 			if( action != null ) {
 				
 				if( build.getResult().isBetterOrEqualTo( Result.SUCCESS ) ) {

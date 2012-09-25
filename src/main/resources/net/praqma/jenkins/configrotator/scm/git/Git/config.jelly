@@ -1,0 +1,35 @@
+<j:jelly xmlns:j="jelly:core"
+         xmlns:f="/lib/form">
+
+
+    <f:entry title="${%Git repositories}">
+
+        <f:repeatable var="targets" varStatus="instStatus" items="${descriptor.getTargets(instance)}">
+            <table width="80%">
+
+                    <tr>
+                        <td align="left" style="width:50%">
+                            ${%Repository}
+                            <f:textbox name="git.target.repository" value="${targets.repository}"/>
+                        </td>
+                        <td align="left" style="width:10%">
+                            ${%Branch}
+                            <f:textbox name="git.target.branch" value="${targets.branch}"/>
+                        </td>
+                        <td align="left" style="width:35%">
+                            ${%Commit}
+                            <f:textbox name="git.target.commitId" value="${targets.commitId}"/>
+                        </td>
+                        <td align="left">
+                            ${%Fixed}
+                            <f:checkbox name="git.target.fixed" checked="${targets.fixed}"/>
+                        </td>
+                        <td>
+                            <f:repeatableDeleteButton/>
+                        </td>
+                    </tr>
+            </table>
+        </f:repeatable>
+
+    </f:entry>
+</j:jelly>

@@ -10,22 +10,18 @@ public class ClearCaseUCMConfigurationComponent extends AbstractConfigurationCom
 	
 	private Baseline baseline;
 	private PromotionLevel plevel;
-	private boolean fixed;
-	
+
 	public ClearCaseUCMConfigurationComponent( Baseline baseline, PromotionLevel plevel, boolean fixed ) {
+        super( fixed );
 		this.baseline = baseline;
 		this.plevel = plevel;
-		this.fixed = fixed;
 	}
 	
-	public ClearCaseUCMConfigurationComponent( String baseline, String plevel, String fixed ) throws ClearCaseException {
+	public ClearCaseUCMConfigurationComponent( String baseline, String plevel, boolean fixed ) throws ClearCaseException {
+        super( fixed );
 		this.baseline = Baseline.get( baseline ).load();
 		this.plevel = Project.PromotionLevel.valueOf( plevel );
-		if( fixed.equalsIgnoreCase( "manual" ) || fixed.matches( "^\\s*$" ) || fixed.matches( "^(?i)fixed*$" ) || fixed.matches( "^(?i)true*$" ) ) {
-			this.fixed = true;
-		} else {
-			this.fixed = false;
-		}
+
 	}
     
 	@Override
@@ -45,10 +41,6 @@ public class ClearCaseUCMConfigurationComponent extends AbstractConfigurationCom
 	
 	public PromotionLevel getPlevel() {
 		return plevel;
-	}
-	
-	public boolean isFixed() {
-		return fixed;
 	}
 	
     @Override

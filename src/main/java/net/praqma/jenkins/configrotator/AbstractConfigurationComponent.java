@@ -10,6 +10,11 @@ import java.io.Serializable;
  */
 public abstract class AbstractConfigurationComponent implements Serializable {
 	protected boolean changedLast = false;
+    protected boolean fixed = false;
+
+    public AbstractConfigurationComponent( boolean fixed ) {
+        this.fixed = fixed;
+    }
 	
 	public boolean isChangedLast() {
 		return changedLast;
@@ -18,4 +23,8 @@ public abstract class AbstractConfigurationComponent implements Serializable {
 	public void setChangedLast( boolean b ) {
 		this.changedLast = b;
 	}
+
+    public boolean isFixed() {
+        return fixed;
+    }
 }

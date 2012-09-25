@@ -19,11 +19,10 @@ import net.praqma.jenkins.configrotator.ConfigurationRotatorException;
 public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUCMConfigurationComponent> {
 
 	private SnapshotView view;
-	
+
 	public ClearCaseUCMConfiguration() {
-		list = new ArrayList<ClearCaseUCMConfigurationComponent>();
 	}
-    
+
     /**
      * Gets the changed component
      * 
@@ -56,8 +55,7 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUC
 	public ClearCaseUCMConfiguration clone() {
 		ClearCaseUCMConfiguration n = new ClearCaseUCMConfiguration();
 		n.view = this.view;
-		
-		n.list = new ArrayList<ClearCaseUCMConfigurationComponent>();
+
 		//n.list.addAll( this.list );
 		for( ClearCaseUCMConfigurationComponent cc : this.list ) {
 			n.list.add( cc.clone() );
