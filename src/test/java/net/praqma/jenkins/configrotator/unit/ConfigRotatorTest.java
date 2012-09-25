@@ -221,34 +221,7 @@ public class ConfigRotatorTest extends TestCase {
 	}
 
 	
-	@Test
-	public void testPerform() throws IOException, InterruptedException, ConfigurationRotatorException, UnableToInitializeEntityException {
-		ClearCaseUCM ccucm = new ClearCaseUCM( "" );
-		ClearCaseUCM spy = Mockito.spy( ccucm );
-		
-		/* ClearCase mock */
-		List<ClearCaseUCMConfigurationComponent> comps = new ArrayList<ClearCaseUCMConfigurationComponent>();
-		comps.add( new ClearCaseUCMConfigurationComponent( Baseline.get( "bl2@\\pvob" ), PromotionLevel.INITIAL, false ) );
-		ClearCaseUCMConfiguration ccc = new ClearCaseUCMConfiguration( comps );
-		ConfigurationRotatorBuildAction action = new ConfigurationRotatorBuildAction( build, ClearCaseUCM.class, ccc );
-		
-		/* Behaviour */		
-		PowerMockito.doReturn( action ).when( spy ).getLastResult( Mockito.any( AbstractProject.class ), Mockito.any( Class.class ) );
-		
-		Mockito.doNothing().when( spy ).printConfiguration( Mockito.any( PrintStream.class ), Mockito.any( AbstractConfiguration.class ) );
-		Mockito.doNothing().when( spy ).simpleCheckOfConfiguration(Mockito.any( AbstractConfiguration.class));
-        
-		PowerMockito.doReturn( ccc ).when( spy ).nextConfiguration( Mockito.any( TaskListener.class ), Mockito.any( ClearCaseUCMConfiguration.class ), Mockito.any( FilePath.class ) );
-		
-		PowerMockito.doReturn( null ).when( spy ).createView( Mockito.any( TaskListener.class ), Mockito.any( FreeStyleBuild.class ), Mockito.any( ClearCaseUCMConfiguration.class ), Mockito.any( FilePath.class ), Mockito.any( PVob.class ) );
 
-        AbstractConfigurationRotatorSCM.Performer<ClearCaseUCMConfiguration> p = spy.getPerform( build, launcher, workspace, buildlistener );
-        ClearCaseUCMConfiguration c = p.getInitialConfiguration();
-
-        assertNotNull( c );
-	}
-
-	
 	@Test
 	public void testReconfigure() throws IOException, InterruptedException, ConfigurationRotatorException, UnableToInitializeEntityException {
 		ClearCaseUCM ccucm = new ClearCaseUCM( "" );
