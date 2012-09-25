@@ -38,7 +38,7 @@ import java.util.logging.Logger;
 
 import net.praqma.clearcase.ucm.entities.Component;
 
-public class ClearCaseUCM extends AbstractConfigurationRotatorSCM<ClearCaseUCMConfiguration> implements Serializable {
+public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Serializable {
 
     private static Logger logger = Logger.getLogger( ClearCaseUCM.class.getName() );
 
@@ -148,6 +148,11 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM<ClearCaseUCMCo
                         + e.getMessage() + ". Cause was: " + ( e.getCause() == null ? "unknown" : e.getCause().getMessage() ) );
                 throw new ConfigurationRotatorException( "Unable to create view", e );
             }
+        }
+
+        @Override
+        public void print( ClearCaseUCMConfiguration configuration ) {
+            printConfiguration( out, configuration );
         }
     }
 

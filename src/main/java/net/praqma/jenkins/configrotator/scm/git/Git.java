@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Git extends AbstractConfigurationRotatorSCM<GitConfiguration> implements Serializable {
+public class Git extends AbstractConfigurationRotatorSCM implements Serializable {
 
     private static Logger logger = Logger.getLogger( Git.class.getName() );
 
@@ -72,12 +72,17 @@ public class Git extends AbstractConfigurationRotatorSCM<GitConfiguration> imple
 
         @Override
         public void checkConfiguration( GitConfiguration configuration ) {
-            /* No such thing yet */
+            /* TODO: implement */
         }
 
         @Override
         public void createWorkspace( GitConfiguration configuration ) {
             /* No need */
+        }
+
+        @Override
+        public void print( GitConfiguration configuration ) {
+            /* TODO: implement */
         }
     }
 
