@@ -170,4 +170,8 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
     public File getFeedPath() {
         return new File( ConfigurationRotator.FEED_PATH, getClass().getSimpleName() );
     }
+
+    public String getFeedURL() {
+        return ConfigurationRotator.FEED_URL + "/" + getClass().getSimpleName() + "/";
+    }
 }

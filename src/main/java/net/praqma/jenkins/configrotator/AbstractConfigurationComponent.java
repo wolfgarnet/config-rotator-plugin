@@ -3,9 +3,12 @@ package net.praqma.jenkins.configrotator;
 import hudson.model.AbstractBuild;
 import net.praqma.util.xml.feed.Entry;
 import net.praqma.util.xml.feed.Feed;
+import net.praqma.util.xml.feed.FeedException;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Abstract class defining one component of a configuration
@@ -35,5 +38,7 @@ public abstract class AbstractConfigurationComponent implements Serializable {
 
     public abstract File getFeedFile( File path );
 
-    public abstract Entry getFeedEntry( AbstractBuild<?, ?> build );
+    public abstract Feed getFeed( File feedFile, String url, Date updated ) throws FeedException, IOException;
+
+    public abstract Entry getFeedEntry( AbstractBuild<?, ?> build, Date updated );
 }

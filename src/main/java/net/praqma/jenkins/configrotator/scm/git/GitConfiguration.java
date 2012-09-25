@@ -47,4 +47,9 @@ public class GitConfiguration extends AbstractConfiguration<GitConfigurationComp
 
         return n;
     }
+
+    @Override
+    public String toHtml() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

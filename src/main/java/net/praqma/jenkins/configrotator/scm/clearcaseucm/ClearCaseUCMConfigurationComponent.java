@@ -10,10 +10,10 @@ import net.praqma.jenkins.configrotator.AbstractConfiguration;
 import net.praqma.jenkins.configrotator.AbstractConfigurationComponent;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorBuildAction;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorReport;
-import net.praqma.util.xml.feed.Entry;
-import net.praqma.util.xml.feed.Person;
+import net.praqma.util.xml.feed.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -80,7 +80,17 @@ public class ClearCaseUCMConfigurationComponent extends AbstractConfigurationCom
     }
 
     @Override
-    public Entry getFeedEntry( AbstractBuild<?, ?> build ) {
+    public Feed getFeed( File feedFile, String url, Date updated ) throws FeedException, IOException {
+        String feedId = url + "feed/?component=" + baseline.getComponent().getShortname() + "&pvob=" + baseline.getPVob().getName();
+        String feedTitle = baseline.getComponent().getShortname();
+
+        Feed feed = ConfigurationRotatorReport.getFeedFromFile( feedFile, feedTitle, feedId, updated );
+
+        return feed;
+    }
+
+    @Override
+    public Entry getFeedEntry( AbstractBuild<?, ?> build, Date updated ) {
 
         ConfigurationRotatorBuildAction action = build.getAction( ConfigurationRotatorBuildAction.class );
         AbstractConfiguration configuration = action.getConfigurationWithOutCast();
@@ -92,7 +102,7 @@ public class ClearCaseUCMConfigurationComponent extends AbstractConfigurationCom
 
         String id = "'" + build.getParent().getDisplayName() + "'#" + build.getNumber() + ":" + componentName + "@" + componentPVob;
 
-        Entry entry = new Entry( componentName + " in new " + action.getResult().toString() + " configuration", id, new Date() );
+        Entry entry = new Entry( componentName + " in new " + action.getResult().toString() + " configuration", id, updated );
         entry.summary = componentName + " found to be " + action.getResult().toString() + " with "
                 + components.size() + " other components";
 
