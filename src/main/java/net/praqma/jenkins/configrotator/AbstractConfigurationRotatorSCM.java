@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
 
-public abstract class AbstractConfigurationRotatorSCM<C> implements Describable<AbstractConfigurationRotatorSCM>, ExtensionPoint {
+public abstract class AbstractConfigurationRotatorSCM<CC extends AbstractConfigurationComponent, C extends AbstractConfiguration<CC>> implements Describable<AbstractConfigurationRotatorSCM<CC, C>>, ExtensionPoint {
 	
 	private static Logger logger = Logger.getLogger( AbstractConfigurationRotatorSCM.class.getName()  );
 
@@ -103,20 +103,27 @@ public abstract class AbstractConfigurationRotatorSCM<C> implements Describable<
     
 		
 	@Override
-	public Descriptor<AbstractConfigurationRotatorSCM> getDescriptor() {
-		return (ConfigurationRotatorSCMDescriptor<?>) Jenkins.getInstance().getDescriptorOrDie( getClass() );
+	public Descriptor<AbstractConfigurationRotatorSCM<CC, C>> getDescriptor() {
+		return (ConfigurationRotatorSCMDescriptor) Jenkins.getInstance().getDescriptorOrDie( getClass() );
 	}
     
 	/**
 	 * All registered {@link AbstractConfigurationRotatorSCM}s.
 	 */
-	public static DescriptorExtensionList<AbstractConfigurationRotatorSCM, ConfigurationRotatorSCMDescriptor<AbstractConfigurationRotatorSCM>> all() {
-		return Jenkins.getInstance().<AbstractConfigurationRotatorSCM, ConfigurationRotatorSCMDescriptor<AbstractConfigurationRotatorSCM>> getDescriptorList( AbstractConfigurationRotatorSCM.class );
+
+    /*
+	public static <CC extends AbstractConfigurationComponent, C extends AbstractConfiguration<?>> DescriptorExtensionList<AbstractConfigurationRotatorSCM<CC, C>, ConfigurationRotatorSCMDescriptor<AbstractConfigurationRotatorSCM<T>>> all() {
+		return Jenkins.getInstance().<AbstractConfigurationRotatorSCM<?, ?>, ConfigurationRotatorSCMDescriptor<?, ?, AbstractConfigurationRotatorSCM<?, ?>>> getDescriptorList( AbstractConfigurationRotatorSCM.class );
 	}
-	
-	public static List<ConfigurationRotatorSCMDescriptor<?>> getDescriptors() {
-		List<ConfigurationRotatorSCMDescriptor<?>> list = new ArrayList<ConfigurationRotatorSCMDescriptor<?>>();
-		for( ConfigurationRotatorSCMDescriptor<?> d : all() ) {
+	*/
+
+    public static <CC extends AbstractConfigurationComponent, C extends AbstractConfiguration<CC>> DescriptorExtensionList<AbstractConfigurationRotatorSCM<CC, C>, ConfigurationRotatorSCMDescriptor<CC, C, AbstractConfigurationRotatorSCM<CC, C>>> all() {
+        return Jenkins.getInstance().<AbstractConfigurationRotatorSCM<CC, C>, ConfigurationRotatorSCMDescriptor<CC, C, AbstractConfigurationRotatorSCM<CC, C>>>getDescriptorList( AbstractConfigurationRotatorSCM.class);
+    }
+
+	public static List<ConfigurationRotatorSCMDescriptor<?, ?, ?>> getDescriptors() {
+		List<ConfigurationRotatorSCMDescriptor<?, ?, ?>> list = new ArrayList<ConfigurationRotatorSCMDescriptor<?, ?, ?>>();
+		for( ConfigurationRotatorSCMDescriptor<?, ?, ?> d : all() ) {
 			list.add( d );
 		}
 		
