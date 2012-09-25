@@ -12,7 +12,6 @@ import hudson.scm.PollingResult;
 import hudson.util.FormValidation;
 import net.praqma.jenkins.configrotator.*;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
-import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -76,7 +75,7 @@ public class Git extends AbstractConfigurationRotatorSCM<GitConfiguration> imple
         }
 
         @Override
-        public GitConfiguration getNextConfiguration() {
+        public GitConfiguration getNextConfiguration( ConfigurationRotatorBuildAction action ) {
             return null;  //To change body of implemented methods use File | Settings | File Templates.
         }
 

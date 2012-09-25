@@ -21,9 +21,7 @@ import javax.servlet.ServletException;
 import net.praqma.clearcase.PVob;
 import net.praqma.clearcase.ucm.entities.Baseline;
 import net.praqma.clearcase.ucm.entities.Project;
-import net.praqma.clearcase.ucm.entities.Stream;
 import net.praqma.clearcase.ucm.view.SnapshotView;
-import net.praqma.clearcase.util.ExceptionUtils;
 import net.praqma.jenkins.configrotator.*;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
 import net.praqma.jenkins.utils.remoting.DetermineProject;
@@ -130,18 +128,51 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM<ClearCaseUCMCo
         }
 
         @Override
-        public ClearCaseUCMConfiguration getNextConfiguration() {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        public ClearCaseUCMConfiguration getNextConfiguration( ConfigurationRotatorBuildAction action ) throws AbortException {
+            ClearCaseUCMConfiguration oldconfiguration = action.getConfiguration( ClearCaseUCMConfiguration.class );
+            /* Get next configuration */
+            try {
+                logger.fine( "Obtaining new configuration based on old" );
+                /* No new baselines */
+                return nextConfiguration( listener, oldconfiguration, workspace );
+            } catch( Exception e ) {
+                out.println( ConfigurationRotator.LOGGERNAME + "Unable to get next configuration: " + e.getMessage() );
+                logger.fine( "Unable to get next configuration: " + e.getMessage() );
+                throw new AbortException();
+            }
         }
 
         @Override
-        public boolean checkConfiguration( ClearCaseUCMConfiguration configuration ) {
-            return false;  //To change body of implemented methods use File | Settings | File Templates.
+        public boolean checkConfiguration( ClearCaseUCMConfiguration configuration ) throws AbortException {
+            try {
+                // This check is need to ensure some simple check that the configuration
+                // is valid in Config Rotator context. Though the configuration above can be
+                // loaded with clearcase and found, does not ensure it is valid for rotation.
+                simpleCheckOfConfiguration( projectConfiguration );
+                out.println( ConfigurationRotator.LOGGERNAME + "Found configuration - doing a simple check." );
+                logger.fine( "Found configuration - doing a simple check." );
+
+                return true;
+            } catch( AbortException ae ) {
+                out.println( ConfigurationRotator.LOGGERNAME + "Simple check of configuration failed." );
+                logger.fine( "Simple check of configuration failed." );
+                throw ae;
+            }
         }
 
         @Override
-        public void createWorkspace( ClearCaseUCMConfiguration configuration ) {
-            //To change body of implemented methods use File | Settings | File Templates.
+        public void createWorkspace( ClearCaseUCMConfiguration configuration ) throws AbortException {
+            try {
+                out.println( ConfigurationRotator.LOGGERNAME + "Creating view" );
+                logger.fine( "Creating view" );
+                SnapshotView view = createView( listener, build, projectConfiguration, workspace, pvob );
+                projectConfiguration.setView( view );
+            } catch( Exception e ) {
+                out.println( ConfigurationRotator.LOGGERNAME + "Unable to create view" );
+                logger.fine( ConfigurationRotator.LOGGERNAME + "Unable to create view, message is: "
+                        + e.getMessage() + ". Cause was: " + ( e.getCause() == null ? "unknown" : e.getCause().getMessage() ) );
+                throw new AbortException( ConfigurationRotator.LOGGERNAME + "Unable to create view: " + e.getMessage() );
+            }
         }
     }
 

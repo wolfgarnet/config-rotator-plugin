@@ -73,11 +73,16 @@ public abstract class AbstractConfigurationRotatorSCM<C> implements Describable<
         }
 
         public abstract C getInitialConfiguration() throws AbortException;
-        public abstract C getNextConfiguration();
-        public abstract boolean checkConfiguration( C configuration );
-        public abstract void createWorkspace( C configuration );
+        public abstract C getNextConfiguration( ConfigurationRotatorBuildAction action ) throws AbortException;
+        public abstract boolean checkConfiguration( C configuration ) throws AbortException;
+        public abstract void createWorkspace( C configuration ) throws AbortException;
         public Class getSCMClass() {
                 return this.getClass();
+        }
+
+        public void save( C configuration ) {
+            final ConfigurationRotatorBuildAction action1 = new ConfigurationRotatorBuildAction( build, getSCMClass(), (AbstractConfiguration) configuration );
+            build.addAction( action1 );
         }
     }
 	

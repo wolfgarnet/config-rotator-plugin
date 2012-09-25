@@ -136,21 +136,23 @@ public class ConfigurationRotator extends SCM {
                 configuration = p.getInitialConfiguration();
             } else {
                 out.println( LOGGERNAME + "Getting next configuration" );
-                configuration = p.getNextConfiguration();
+                configuration = p.getNextConfiguration( action );
             }
 
-            out.println( LOGGERNAME + "Checking configuration" );
-            p.checkConfiguration( configuration );
+            if( configuration != null ) {
+                out.println( LOGGERNAME + "Checking configuration" );
+                p.checkConfiguration( configuration );
 
-            out.println( LOGGERNAME + "Creating workspace" );
-            p.createWorkspace( configuration );
+                out.println( LOGGERNAME + "Creating workspace" );
+                p.createWorkspace( configuration );
 
-            performResult = true;
+                performResult = true;
 
-            try {
-                acrs.writeChangeLog(file, listener, build);
-            } catch (ConfigurationRotatorException ex) {
-                out.println("Cleartool Checkout exception: "+ex);
+                try {
+                    acrs.writeChangeLog(file, listener, build);
+                } catch (ConfigurationRotatorException ex) {
+                    out.println("Cleartool Checkout exception: "+ex);
+                }
             }
 		} catch( AbortException e ) {
 			out.println( LOGGERNAME + "Failed to check out" );
