@@ -28,7 +28,6 @@ import net.praqma.jenkins.configrotator.*;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
 import net.praqma.jenkins.utils.remoting.DetermineProject;
 import net.praqma.jenkins.utils.remoting.GetBaselines;
-import net.praqma.util.debug.Logger;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -36,12 +35,14 @@ import org.kohsuke.stapler.StaplerRequest;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.praqma.clearcase.ucm.entities.Component;
 
 public class ClearCaseUCM extends AbstractConfigurationRotatorSCM<ClearCaseUCMConfiguration> implements Serializable {
 
-    private static Logger logger = Logger.getLogger();
+    private static Logger logger = Logger.getLogger( ClearCaseUCM.class.getName() );
 
     public ClearCaseUCMConfiguration projectConfiguration;
 
@@ -80,13 +81,13 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM<ClearCaseUCMCo
 
         /* Check if the project configuration is even set */
         if( configuration == null ) {
-            logger.debug( ConfigurationRotator.LOGGERNAME + "Configuration was null" );
+            logger.fine( "Configuration was null" );
             return true;
         }
 
         /* Check if the sizes are equal */
         if( targets.size() != configuration.getList().size() ) {
-            logger.debug( ConfigurationRotator.LOGGERNAME + "Size was not equal" );
+            logger.fine( "Size was not equal" );
             return true;
         }
 
@@ -94,7 +95,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM<ClearCaseUCMCo
         List<ClearCaseUCMTarget> list = getConfigurationAsTargets( configuration );
         for( int i = 0; i < targets.size(); ++i ) {
             if( !targets.get( i ).equals( list.get( i ) ) ) {
-                logger.debug( ConfigurationRotator.LOGGERNAME + "Configuration was not equal" );
+                logger.fine( "Configuration was not equal" );
                 return true;
             }
         }
@@ -102,6 +103,47 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM<ClearCaseUCMCo
         return false;
     }
 
+    @Override
+    public Performer<ClearCaseUCMConfiguration> getPerform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener ) throws IOException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public class UCMPerformer extends Performer<ClearCaseUCMConfiguration> {
+
+        public UCMPerformer( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener ) {
+            super( build, launcher, workspace, listener );
+        }
+
+        @Override
+        public ClearCaseUCMConfiguration getInitialConfiguration() throws AbortException {
+            ClearCaseUCMConfiguration inputconfiguration = null;
+            logger.fine( "Obtaining a configuration based on targets" );
+            try {
+                inputconfiguration = ClearCaseUCMConfiguration.getConfigurationFromTargets( getTargets(), workspace, listener );
+            } catch( Exception e ) {
+                out.println( ConfigurationRotator.LOGGERNAME + "Unable to parse or load configuration: " + e.getMessage() );
+                logger.log( Level.WARNING, "Unable to parse or load configuration: ", e.getMessage() );
+                throw new AbortException();
+            }
+
+            return inputconfiguration;
+        }
+
+        @Override
+        public ClearCaseUCMConfiguration getNextConfiguration() {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        @Override
+        public boolean checkConfiguration( ClearCaseUCMConfiguration configuration ) {
+            return false;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        @Override
+        public void createWorkspace( ClearCaseUCMConfiguration configuration ) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+    }
 
     @Override
     public boolean perform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, boolean reconfigure ) throws IOException {
@@ -109,38 +151,38 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM<ClearCaseUCMCo
 
         ConfigurationRotatorBuildAction action = getLastResult( build.getProject(), ClearCaseUCM.class );
         out.println( ConfigurationRotator.LOGGERNAME + "Getting configuration" );
-        logger.debug( ConfigurationRotator.LOGGERNAME + "Getting configuration" );
+        logger.fine( "Getting configuration" );
 
         /* If there's no action, this is the first run */
         if( action == null || reconfigure ) {
-            logger.debug( ConfigurationRotator.LOGGERNAME + "Action was NULL - first run" );
+            logger.fine( "Action was NULL - first run" );
 
             /* Resolve the configuration */
             ClearCaseUCMConfiguration inputconfiguration = null;
-            logger.debug( ConfigurationRotator.LOGGERNAME + "Obtaining a configuration based on targets" );
+            logger.fine( "Obtaining a configuration based on targets" );
             try {
                 inputconfiguration = ClearCaseUCMConfiguration.getConfigurationFromTargets( getTargets(), workspace, listener );
             } catch( ConfigurationRotatorException e ) {
                 out.println( ConfigurationRotator.LOGGERNAME + "Unable to parse or load configuration: " + e.getMessage() );
-                logger.debug( ConfigurationRotator.LOGGERNAME + "Unable to parse or load configuration: " + e.getMessage() );
+                logger.log( Level.WARNING, "Unable to parse or load configuration", e );
                 throw new AbortException();
             }
 
             projectConfiguration = inputconfiguration;
         } else {
-            logger.debug( ConfigurationRotator.LOGGERNAME + "Action was NOT null" );
+            logger.fine( "Action was NOT null" );
             /* Get the configuration from the action */
             ClearCaseUCMConfiguration oldconfiguration = action.getConfiguration( ClearCaseUCMConfiguration.class );
             /* Get next configuration */
             try {
-                logger.debug( ConfigurationRotator.LOGGERNAME + "Obtaining new configuration based on old" );
+                logger.fine( "Obtaining new configuration based on old" );
                 /* No new baselines */
                 if( ( projectConfiguration = nextConfiguration( listener, oldconfiguration, workspace ) ) == null ) {
                     return false;
                 }
             } catch( Exception e ) {
                 out.println( ConfigurationRotator.LOGGERNAME + "Unable to get next configuration: " + e.getMessage() );
-                logger.debug( ConfigurationRotator.LOGGERNAME + "Unable to get next configuration: " + e.getMessage() );
+                logger.fine( "Unable to get next configuration: " + e.getMessage() );
                 throw new AbortException();
             }
         }
@@ -151,10 +193,10 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM<ClearCaseUCMCo
             // loaded with clearcase and found, does not ensure it is valid for rotation.
             simpleCheckOfConfiguration( projectConfiguration );
             out.println( ConfigurationRotator.LOGGERNAME + "Found configuration - doing a simple check." );
-            logger.debug( ConfigurationRotator.LOGGERNAME + "Found configuration - doing a simple check." );
+            logger.fine( "Found configuration - doing a simple check." );
         } catch( AbortException ae ) {
             out.println( ConfigurationRotator.LOGGERNAME + "Simple check of configuration failed." );
-            logger.debug( ConfigurationRotator.LOGGERNAME + "Simple check of configuration failed." );
+            logger.fine( "Simple check of configuration failed." );
             throw ae;
         }
 
@@ -163,18 +205,18 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM<ClearCaseUCMCo
         /* Create the view */
         try {
             out.println( ConfigurationRotator.LOGGERNAME + "Creating view" );
-            logger.debug( ConfigurationRotator.LOGGERNAME + "Creating view" );
+            logger.fine( ConfigurationRotator.LOGGERNAME + "Creating view" );
             SnapshotView view = createView( listener, build, projectConfiguration, workspace, pvob );
             projectConfiguration.setView( view );
         } catch( Exception e ) {
             out.println( ConfigurationRotator.LOGGERNAME + "Unable to create view" );
-            logger.debug( ConfigurationRotator.LOGGERNAME + "Unable to create view, message is: "
+            logger.fine( ConfigurationRotator.LOGGERNAME + "Unable to create view, message is: "
                     + e.getMessage() + ". Cause was: " + ( e.getCause() == null ? "unknown" : e.getCause().getMessage() ) );
             throw new AbortException();
         }
 
         /* Just try to save */
-        logger.debug( ConfigurationRotator.LOGGERNAME + "Adding action" );
+        logger.fine( ConfigurationRotator.LOGGERNAME + "Adding action" );
         final ConfigurationRotatorBuildAction action1 = new ConfigurationRotatorBuildAction( build, ClearCaseUCM.class, projectConfiguration );
         build.addAction( action1 );
 
@@ -189,7 +231,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM<ClearCaseUCMCo
      * @throws IOException
      */
     public void reconfigure( FilePath workspace, TaskListener listener ) throws IOException {
-        logger.debug( "Getting configuration" );
+        logger.fine( "Getting configuration" );
         PrintStream out = listener.getLogger();
 
         /* Resolve the configuration */
@@ -206,15 +248,15 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM<ClearCaseUCMCo
 
     public void printConfiguration( PrintStream out, AbstractConfiguration cfg ) {
         out.println( ConfigurationRotator.LOGGERNAME + "The configuration is:" );
-        logger.debug( ConfigurationRotator.LOGGERNAME + "The configuration is:" );
+        logger.fine( ConfigurationRotator.LOGGERNAME + "The configuration is:" );
         if( cfg instanceof ClearCaseUCMConfiguration ) {
             ClearCaseUCMConfiguration config = (ClearCaseUCMConfiguration) cfg;
             for( ClearCaseUCMConfigurationComponent c : config.getList() ) {
                 out.println( " * " + c.getBaseline().getComponent() + ", " + c.getBaseline().getStream() + ", " + c.getBaseline().getNormalizedName() );
-                logger.debug( " * " + c.getBaseline().getComponent() + ", " + c.getBaseline().getStream() + ", " + c.getBaseline().getNormalizedName() );
+                logger.fine( " * " + c.getBaseline().getComponent() + ", " + c.getBaseline().getStream() + ", " + c.getBaseline().getNormalizedName() );
             }
             out.println( "" );
-            logger.debug( "" );
+            logger.fine( "" );
         }
     }
 
@@ -265,17 +307,17 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM<ClearCaseUCMCo
 
         ClearCaseUCMConfiguration nconfig = configuration.clone();
 
-        logger.debug( "Foreach configuration component" );
+        logger.fine( "Foreach configuration component" );
         for( ClearCaseUCMConfigurationComponent config : nconfig.getList() ) {
-            logger.debug( ConfigurationRotator.LOGGERNAME + " * " + config );
+            logger.fine( ConfigurationRotator.LOGGERNAME + " * " + config );
             /* This configuration is not fixed */
             if( !config.isFixed() ) {
-                logger.debug( ConfigurationRotator.LOGGERNAME + "Wasn't fixed: " + config.getBaseline().getNormalizedName() );
+                logger.fine( ConfigurationRotator.LOGGERNAME + "Wasn't fixed: " + config.getBaseline().getNormalizedName() );
 
                 try {
                     current = workspace.act( new GetBaselines( listener, config.getBaseline().getComponent(), config.getBaseline().getStream(), config.getPlevel(), 1, config.getBaseline() ) ).get( 0 ); //.get(0) newest baseline, they are sorted!
                     if( oldest == null || current.getDate().before( oldest.getDate() ) ) {
-                        logger.debug( ConfigurationRotator.LOGGERNAME + "Was older: " + current );
+                        logger.fine( ConfigurationRotator.LOGGERNAME + "Was older: " + current );
                         oldest = current;
                         chosen = config;
                     }
@@ -285,17 +327,17 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM<ClearCaseUCMCo
 
                 } catch( Exception e ) {
                     /* No baselines found .get(0) above throws exception if no new baselines*/
-                    logger.debug( ConfigurationRotator.LOGGERNAME + "No baselines found: " + e.getMessage() );
+                    logger.fine( ConfigurationRotator.LOGGERNAME + "No baselines found: " + e.getMessage() );
                 }
 
             }
         }
 
         /**/
-        logger.debug( ConfigurationRotator.LOGGERNAME + "chosen: " + chosen );
-        logger.debug( ConfigurationRotator.LOGGERNAME + "oldest: " + oldest );
+        logger.fine( ConfigurationRotator.LOGGERNAME + "chosen: " + chosen );
+        logger.fine( ConfigurationRotator.LOGGERNAME + "oldest: " + oldest );
         if( chosen != null && oldest != null ) {
-            logger.debug( ConfigurationRotator.LOGGERNAME + "There was a new baseline: " + oldest );
+            logger.fine( ConfigurationRotator.LOGGERNAME + "There was a new baseline: " + oldest );
             listener.getLogger().println( ConfigurationRotator.LOGGERNAME + "There was a new baseline: " + oldest );
             chosen.setBaseline( oldest );
             chosen.setChangedLast( true );
@@ -310,16 +352,16 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM<ClearCaseUCMCo
     public SnapshotView createView( TaskListener listener, AbstractBuild<?, ?> build, ClearCaseUCMConfiguration configuration, FilePath workspace, PVob pvob ) throws IOException, InterruptedException {
         Project project = null;
 
-        logger.debug( ConfigurationRotator.LOGGERNAME + "Getting project" );
+        logger.fine( ConfigurationRotator.LOGGERNAME + "Getting project" );
         project = workspace.act( new DetermineProject( Arrays.asList( new String[]{ "jenkins", "Jenkins", "hudson", "Hudson" } ), pvob ) );
 
-        logger.debug( ConfigurationRotator.LOGGERNAME + "Project is " + project );
+        logger.fine( ConfigurationRotator.LOGGERNAME + "Project is " + project );
 
         /* Create baselines list */
         List<Baseline> selectedBaselines = new ArrayList<Baseline>();
-        logger.debug( ConfigurationRotator.LOGGERNAME + "Selected baselines:" );
+        logger.fine( ConfigurationRotator.LOGGERNAME + "Selected baselines:" );
         for( ClearCaseUCMConfigurationComponent config : configuration.getList() ) {
-            logger.debug( ConfigurationRotator.LOGGERNAME + config.getBaseline().getNormalizedName() );
+            logger.fine( ConfigurationRotator.LOGGERNAME + config.getBaseline().getNormalizedName() );
             selectedBaselines.add( config.getBaseline() );
         }
 
@@ -392,67 +434,57 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM<ClearCaseUCMCo
     @Override
     public PollingResult poll( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener, boolean reconfigure ) throws IOException, InterruptedException {
         PrintStream out = listener.getLogger();
-        out.println( ConfigurationRotator.LOGGERNAME + "Polling started" );
-        logger.debug( ConfigurationRotator.LOGGERNAME + "Polling started" );
+        logger.fine( ConfigurationRotator.LOGGERNAME + "Polling started" );
 
         ClearCaseUCMConfiguration configuration = null;
         if( projectConfiguration == null ) {
             if( reconfigure ) {
                 try {
-                    out.println( ConfigurationRotator.LOGGERNAME + "Project is reconfigured" );
-                    logger.debug( ConfigurationRotator.LOGGERNAME + "Project is reconfigured" );
+                    logger.fine( ConfigurationRotator.LOGGERNAME + "Project was reconfigured" );
                     configuration = ClearCaseUCMConfiguration.getConfigurationFromTargets( getTargets(), workspace, listener );
                 } catch( ConfigurationRotatorException e ) {
-                    logger.debug( "Unable to get configurations from targets: Exception message: ", e.getMessage() );
+                    logger.log( Level.WARNING, "Unable to get configurations from targets: Exception message", e );
                     throw new AbortException( ConfigurationRotator.LOGGERNAME + "Unable to get configurations from targets. " + e.getMessage() );
                 }
             } else {
-                out.println( ConfigurationRotator.LOGGERNAME + "Project has no configuration, using configuration from last result" );
-                logger.debug( ConfigurationRotator.LOGGERNAME + "Project has no configuration, using configuration from last result" );
+                logger.fine( ConfigurationRotator.LOGGERNAME + "Project has no configuration, using configuration from last result" );
                 ConfigurationRotatorBuildAction action = getLastResult( project, ClearCaseUCM.class );
 
                 if( action == null ) {
-                    out.println( ConfigurationRotator.LOGGERNAME + "No last result, build now" );
-                    logger.debug( ConfigurationRotator.LOGGERNAME + "No last result, build now" );
+                    logger.fine( ConfigurationRotator.LOGGERNAME + "No last result, build now" );
                     return PollingResult.BUILD_NOW;
                 }
 
                 configuration = action.getConfiguration( ClearCaseUCMConfiguration.class );
             }
         } else {
-            out.println( ConfigurationRotator.LOGGERNAME + "Project configuration found" );
-            logger.debug( ConfigurationRotator.LOGGERNAME + "Project configuration found" );
+            logger.fine( ConfigurationRotator.LOGGERNAME + "Project configuration found" );
             configuration = this.projectConfiguration;
         }
 
         /* Only look ahead if the build was NOT reconfigured */
         if( configuration != null && !reconfigure ) {
-            out.println( ConfigurationRotator.LOGGERNAME + "Looking for changes" );
-            logger.debug( ConfigurationRotator.LOGGERNAME + "Looking for changes" );
+            logger.fine( "Looking for changes" );
             try {
                 ClearCaseUCMConfiguration other;
                 other = nextConfiguration( listener, configuration, workspace );
                 if( other != null ) {
-                    out.println( ConfigurationRotator.LOGGERNAME + "Found changes" );
-                    logger.debug( ConfigurationRotator.LOGGERNAME + "Found changes" );
+                    logger.fine( ConfigurationRotator.LOGGERNAME + "Found changes" );
                     printConfiguration( out, other );
                     return PollingResult.BUILD_NOW;
                 } else {
-                    out.println( ConfigurationRotator.LOGGERNAME + "No changes!" );
-                    logger.debug( ConfigurationRotator.LOGGERNAME + "No changes!" );
+                    logger.fine( ConfigurationRotator.LOGGERNAME + "No changes!" );
                     return PollingResult.NO_CHANGES;
                 }
             } catch( ConfigurationRotatorException e ) {
-                logger.debug( "Unable to poll, exception message: ", e.getMessage() );
+                logger.log( Level.WARNING, "Unable to poll", e );
                 throw new AbortException( ConfigurationRotator.LOGGERNAME + "Unable to poll: " + e.getMessage() );
             } catch( Exception e ) {
-                out.println( ConfigurationRotator.LOGGERNAME + "Polling caught unhandled exception. Message was: " + e.getMessage() );
-                logger.debug( ConfigurationRotator.LOGGERNAME + "Polling caught unhandled exception. Message was: " + e.getMessage() );
+                logger.log( Level.WARNING, "Polling caught unhandled exception. Message was", e );
                 throw new AbortException( ConfigurationRotator.LOGGERNAME + "Polling caught unhandled exception! Message was: " + e.getMessage() );
             }
         } else {
-            out.println( ConfigurationRotator.LOGGERNAME + "Starting first build" );
-            logger.debug( ConfigurationRotator.LOGGERNAME + "Starting first build" );
+            logger.fine( "Starting first build" );
             return PollingResult.BUILD_NOW;
         }
     }
