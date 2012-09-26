@@ -15,7 +15,7 @@ public class ClearCaseUCMPostBuild extends AbstractPostConfigurationRotator {
 	@Override
 	public boolean perform( FilePath workspace, TaskListener listener, ConfigurationRotatorBuildAction action ) {
 		listener.getLogger().println( "In post build" );
-        ClearCaseUCMConfiguration current = action.getConfiguration(ClearCaseUCMConfiguration.class);
+        ClearCaseUCMConfiguration current = action.getConfiguration();
         
         try {
             if(current != null) {
@@ -26,7 +26,7 @@ public class ClearCaseUCMPostBuild extends AbstractPostConfigurationRotator {
                     int currentComponentIndex = current.getChangedComponentIndex();
                     String currentBaseline = ((ClearCaseUCMConfigurationComponent)current.getChangedComponent()).getBaseline().getNormalizedName();
                     ConfigurationRotatorBuildAction previous = rotator.getAcrs().getLastResult(action.getBuild().getProject(), ClearCaseUCM.class);
-                    String previousBaseline = previous.getConfiguration(ClearCaseUCMConfiguration.class).getList().get(currentComponentIndex).getBaseline().getNormalizedName();
+                    String previousBaseline = ((ClearCaseUCMConfiguration)previous.getConfiguration()).getList().get(currentComponentIndex).getBaseline().getNormalizedName();
 
                     action.setDescription(String.format("Baseline changed from %s to %s", previousBaseline, currentBaseline));
                 }    

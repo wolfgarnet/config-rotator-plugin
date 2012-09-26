@@ -180,7 +180,7 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUC
                 int currentComponentIndex = getChangedComponentIndex();
                 String currentBaseline = ((ClearCaseUCMConfigurationComponent)getChangedComponent()).getBaseline().getNormalizedName();
                 ConfigurationRotatorBuildAction previous = rotator.getAcrs().getLastResult(build.getProject(), ClearCaseUCM.class);
-                String previousBaseline = previous.getConfiguration(ClearCaseUCMConfiguration.class).getList().get(currentComponentIndex).getBaseline().getNormalizedName();
+                String previousBaseline = ((ClearCaseUCMConfiguration)previous.getConfiguration()).getList().get(currentComponentIndex).getBaseline().getNormalizedName();
 
                 return String.format("Baseline changed from %s to %s", previousBaseline, currentBaseline);
             }

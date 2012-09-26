@@ -80,13 +80,9 @@ public class ConfigurationRotatorBuildAction implements Action {
 		return build;
 	}
 	
-	public <T extends AbstractConfiguration> AbstractConfiguration<AbstractConfigurationComponent> getConfiguration() {
+	public <T extends AbstractConfiguration<? extends AbstractConfigurationComponent>> T getConfiguration() {
 		return (T)configuration;
 	}
-    
-    public <T extends AbstractConfiguration> T getConfiguration(Class<T> clazz) {
-        return (T)configuration;
-    }
 
     public AbstractConfiguration getConfigurationWithOutCast() {
         return configuration;

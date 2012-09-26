@@ -75,7 +75,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
             return true;
         }
 
-        ClearCaseUCMConfiguration configuration = action.getConfiguration( ClearCaseUCMConfiguration.class );
+        ClearCaseUCMConfiguration configuration = action.getConfiguration();
 
         /* Check if the project configuration is even set */
         if( configuration == null ) {
@@ -119,7 +119,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 
         @Override
         public ClearCaseUCMConfiguration getNextConfiguration( ConfigurationRotatorBuildAction action ) throws ConfigurationRotatorException {
-            ClearCaseUCMConfiguration oldconfiguration = action.getConfiguration( ClearCaseUCMConfiguration.class );
+            ClearCaseUCMConfiguration oldconfiguration = action.getConfiguration();
             try {
                 return nextConfiguration( listener, oldconfiguration, workspace );
             } catch( IOException e ) {
@@ -339,7 +339,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 
     @Override
     public void setConfigurationByAction( AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action ) throws IOException {
-        ClearCaseUCMConfiguration c = action.getConfiguration( ClearCaseUCMConfiguration.class );
+        ClearCaseUCMConfiguration c = action.getConfiguration();
         if( c == null ) {
             throw new AbortException( ConfigurationRotator.LOGGERNAME + "Not a valid configuration" );
         } else {
@@ -388,7 +388,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
                     return PollingResult.BUILD_NOW;
                 }
 
-                configuration = action.getConfiguration( ClearCaseUCMConfiguration.class );
+                configuration = action.getConfiguration();
             }
         } else {
             logger.fine( ConfigurationRotator.LOGGERNAME + "Project configuration found" );
@@ -433,10 +433,10 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
         if( crbac == null ) {
 
         } else {
-            List<AbstractConfigurationComponent> currentComponentList = null;
+            List<ClearCaseUCMConfigurationComponent> currentComponentList = null;
             ConfigurationRotatorBuildAction current = build.getAction( ConfigurationRotatorBuildAction.class );
             if( current != null ) {
-                currentComponentList = current.getConfiguration().getList();
+                currentComponentList = ((ClearCaseUCMConfiguration)current.getConfiguration()).getList();
             }
 
             int compareIndex = -1;
@@ -455,7 +455,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 
             } else {
                 if( currentComponentList.get( compareIndex ) instanceof ClearCaseUCMConfigurationComponent ) {
-                    changes = build.getWorkspace().act( new ClearCaseGetBaseLineCompare( listener, current.getConfiguration( ClearCaseUCMConfiguration.class ), crbac.getConfiguration( ClearCaseUCMConfiguration.class ) ) );
+                    changes = build.getWorkspace().act( new ClearCaseGetBaseLineCompare( listener, (ClearCaseUCMConfiguration)current.getConfiguration(), (ClearCaseUCMConfiguration)crbac.getConfiguration() ) );
                 }
             }
         }

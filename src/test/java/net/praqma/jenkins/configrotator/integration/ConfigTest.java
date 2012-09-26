@@ -176,7 +176,7 @@ public class ConfigTest {
         System.out.println(debugLine + "action.isCompatible: " + action.isCompatible());
         assertTrue(action.isCompatible());
 
-        ClearCaseUCMConfiguration configuration = action.getConfiguration(ClearCaseUCMConfiguration.class);
+        ClearCaseUCMConfiguration configuration = action.getConfiguration();
         System.out.println(debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname());
         assertEquals("model-1", configuration.getList().get(0).getBaseline().getShortname());
 
@@ -233,7 +233,7 @@ public class ConfigTest {
         System.out.println(debugLine + "action.isCompatible: " + action.isCompatible());
         assertTrue(action.isCompatible());
 
-        configuration = action.getConfiguration(ClearCaseUCMConfiguration.class);
+        configuration = action.getConfiguration();
         System.out.println(debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname());
         assertEquals("model-1", configuration.getList().get(0).getBaseline().getShortname());
         System.out.println(debugLine + "configuration.getList().size(): " + configuration.getList().size());
@@ -322,7 +322,7 @@ public class ConfigTest {
         System.out.println(debugLine + "action.isCompatible: " + action.isCompatible());
         assertTrue(action.isCompatible());
 
-        ClearCaseUCMConfiguration configuration = action.getConfiguration(ClearCaseUCMConfiguration.class);
+        ClearCaseUCMConfiguration configuration = action.getConfiguration();
         System.out.println(debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname());
         System.out.println(debugLine + "getShortname(): " + configuration.getList().get(1).getBaseline().getShortname());
         assertEquals("model-1", configuration.getList().get(0).getBaseline().getShortname());
@@ -423,7 +423,7 @@ public class ConfigTest {
         System.out.println(debugLine + "action.isCompatible: " + action.isCompatible());
         assertTrue(action.isCompatible());
 
-        ClearCaseUCMConfiguration configuration = action.getConfiguration(ClearCaseUCMConfiguration.class);
+        ClearCaseUCMConfiguration configuration = action.getConfiguration();
         System.out.println(debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname());
         System.out.println(debugLine + "getShortname(): " + configuration.getList().get(1).getBaseline().getShortname());
         assertEquals("model-1", configuration.getList().get(0).getBaseline().getShortname());
@@ -493,7 +493,7 @@ public class ConfigTest {
         System.out.println(debugLine + "action.isCompatible: " + action3.isCompatible());
         assertTrue(action3.isCompatible());
 
-        ClearCaseUCMConfiguration configuration3 = action.getConfiguration(ClearCaseUCMConfiguration.class);
+        ClearCaseUCMConfiguration configuration3 = action.getConfiguration();
         System.out.println(debugLine + "getShortname(): " + configuration3.getList().get(0).getBaseline().getShortname());
         System.out.println(debugLine + "getShortname(): " + configuration3.getList().get(1).getBaseline().getShortname());
         assertEquals("model-1", configuration3.getList().get(0).getBaseline().getShortname());
@@ -788,7 +788,7 @@ public class ConfigTest {
         System.out.println(debugLine + "action.isCompatible: " + action.isCompatible());
         assertTrue(action.isCompatible());
 
-        ClearCaseUCMConfiguration configuration = action.getConfiguration(ClearCaseUCMConfiguration.class);
+        ClearCaseUCMConfiguration configuration = action.getConfiguration();
         System.out.println(debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname());
         System.out.println(debugLine + "getShortname(): " + configuration.getList().get(1).getBaseline().getShortname());
         assertEquals("model-1", configuration.getList().get(0).getBaseline().getShortname());
@@ -897,7 +897,7 @@ public class ConfigTest {
 		//The assertion above assumes that the result is 'INCOMPATIBLE'...
         assertFalse(action.isCompatible());
 
-        ClearCaseUCMConfiguration configuration = action.getConfiguration(ClearCaseUCMConfiguration.class);
+        ClearCaseUCMConfiguration configuration = action.getConfiguration();
         System.out.println(debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname());
         System.out.println(debugLine + "getShortname(): " + configuration.getList().get(1).getBaseline().getShortname());
 		assertEquals("model-1", configuration.getList().get(0).getBaseline().getShortname());
@@ -984,7 +984,7 @@ public class ConfigTest {
         System.out.println(debugLine + "action.isCompatible: " + action.isCompatible());
         assertTrue(action.isCompatible());
 
-        ClearCaseUCMConfiguration configuration = action.getConfiguration(ClearCaseUCMConfiguration.class);
+        ClearCaseUCMConfiguration configuration = action.getConfiguration();
         System.out.println(debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname());
         System.out.println(debugLine + "getShortname(): " + configuration.getList().get(1).getBaseline().getShortname());
         assertEquals("model-1", configuration.getList().get(0).getBaseline().getShortname());
@@ -1022,7 +1022,7 @@ public class ConfigTest {
         System.out.println(debugLine + "action.isCompatible: " + action.isCompatible());
         assertTrue(action.isCompatible());
 
-        configuration = action.getConfiguration(ClearCaseUCMConfiguration.class);
+        configuration = action.getConfiguration();
         System.out.println(debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname());
         System.out.println(debugLine + "getShortname(): " + configuration.getList().get(1).getBaseline().getShortname());
         assertEquals("model-1", configuration.getList().get(0).getBaseline().getShortname());
@@ -1060,7 +1060,7 @@ public class ConfigTest {
         System.out.println(debugLine + "action.isCompatible: " + action.isCompatible());
         assertTrue(action.isCompatible());
 
-        configuration = action.getConfiguration(ClearCaseUCMConfiguration.class);
+        configuration = action.getConfiguration();
         System.out.println(debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname());
         System.out.println(debugLine + "getShortname(): " + configuration.getList().get(1).getBaseline().getShortname());
         assertEquals("model-1", configuration.getList().get(0).getBaseline().getShortname());
@@ -1149,7 +1149,7 @@ public class ConfigTest {
         System.out.println(debugLine + "action.isCompatible: " + action.isCompatible());
         assertTrue(action.isCompatible());
 
-        ClearCaseUCMConfiguration configuration = action.getConfiguration(ClearCaseUCMConfiguration.class);
+        ClearCaseUCMConfiguration configuration = action.getConfiguration();
         System.out.println(debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname());
         System.out.println(debugLine + "getShortname(): " + configuration.getList().get(1).getBaseline().getShortname());
         assertEquals("model-1", configuration.getList().get(0).getBaseline().getShortname());
@@ -1191,7 +1191,7 @@ public class ConfigTest {
         System.out.println(debugLine + "action.isCompatible: " + action.isCompatible());
         assertTrue(action.isCompatible());
 
-        configuration = action.getConfiguration(ClearCaseUCMConfiguration.class);
+        configuration = action.getConfiguration();
         System.out.println(debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname());
         System.out.println(debugLine + "getShortname(): " + configuration.getList().get(1).getBaseline().getShortname());
         assertEquals("model-2", configuration.getList().get(0).getBaseline().getShortname());
@@ -1233,7 +1233,7 @@ public class ConfigTest {
         System.out.println(debugLine + "action.isCompatible: " + action.isCompatible());
         assertTrue(action.isCompatible());
 
-        configuration = action.getConfiguration(ClearCaseUCMConfiguration.class);
+        configuration = action.getConfiguration();
         System.out.println(debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname());
         System.out.println(debugLine + "getShortname(): " + configuration.getList().get(1).getBaseline().getShortname());
         assertEquals("model-3", configuration.getList().get(0).getBaseline().getShortname());
@@ -1275,7 +1275,7 @@ public class ConfigTest {
         System.out.println(debugLine + "action.isCompatible: " + action.isCompatible());
         assertTrue(action.isCompatible());
 
-        configuration = action.getConfiguration(ClearCaseUCMConfiguration.class);
+        configuration = action.getConfiguration();
         System.out.println(debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname());
         System.out.println(debugLine + "getShortname(): " + configuration.getList().get(1).getBaseline().getShortname());
         assertEquals("model-3", configuration.getList().get(0).getBaseline().getShortname());
@@ -1315,7 +1315,7 @@ public class ConfigTest {
         System.out.println(debugLine + "action.isCompatible: " + action.isCompatible());
         assertTrue(action.isCompatible());
 
-        configuration = action.getConfiguration(ClearCaseUCMConfiguration.class);
+        configuration = action.getConfiguration();
         System.out.println(debugLine + "getShortname(): " + configuration.getList().get(0).getBaseline().getShortname());
         System.out.println(debugLine + "getShortname(): " + configuration.getList().get(1).getBaseline().getShortname());
         assertEquals("model-3", configuration.getList().get(0).getBaseline().getShortname());

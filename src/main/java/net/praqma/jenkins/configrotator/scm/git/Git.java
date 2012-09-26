@@ -12,9 +12,6 @@ import hudson.scm.PollingResult;
 import hudson.util.FormValidation;
 import net.praqma.jenkins.configrotator.*;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
-import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration;
-import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigurationComponent;
-import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMTarget;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -69,7 +66,7 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
 
         @Override
         public GitConfiguration getNextConfiguration( ConfigurationRotatorBuildAction action ) throws ConfigurationRotatorException {
-            GitConfiguration oldconfiguration = action.getConfiguration( GitConfiguration.class );
+            GitConfiguration oldconfiguration = action.getConfiguration();
             return nextConfiguration(listener, oldconfiguration, workspace );
         }
 
@@ -93,7 +90,13 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
 
     @Override
     public void setConfigurationByAction( AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action ) throws IOException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        GitConfiguration c = action.getConfiguration();
+        if( c == null ) {
+            throw new AbortException( ConfigurationRotator.LOGGERNAME + "Not a valid configuration" );
+        } else {
+            this.projectConfiguration = c;
+            project.save();
+        }
     }
 
     @Override
@@ -104,7 +107,7 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
             return true;
         }
 
-        GitConfiguration configuration = action.getConfiguration( GitConfiguration.class );
+        GitConfiguration configuration = action.getConfiguration();
 
         /* Check if the project configuration is even set */
         if( configuration == null ) {
