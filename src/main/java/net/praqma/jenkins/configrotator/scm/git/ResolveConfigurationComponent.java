@@ -37,7 +37,7 @@ public class ResolveConfigurationComponent implements FilePath.FileCallable<GitC
     public GitConfigurationComponent invoke( File workspace, VirtualChannel channel ) throws IOException, InterruptedException {
         Logger logger = Logger.getLogger( ResolveConfigurationComponent.class.getName() );
 
-        if( name == null ) {
+        if( name == null || name.equals("") ) {
             name = repository.substring( repository.lastIndexOf( "/" ) );
 
             logger.fine("NAME1: " + name);
