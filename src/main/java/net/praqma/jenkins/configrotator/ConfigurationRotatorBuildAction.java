@@ -98,33 +98,6 @@ public class ConfigurationRotatorBuildAction implements Action {
 	}
 
     /**
-     * @return the description
-     */
-    public String getDescription() {
-        /**
-         * Ensure backwards compatability
-         */
-        if(description == null) {
-            ClearCaseUCMConfiguration current = this.getConfiguration(ClearCaseUCMConfiguration.class);
-        
-            if(current != null) {
-                ConfigurationRotator rotator = (ConfigurationRotator)this.getBuild().getProject().getScm();
-                if(current.getChangedComponent() == null) {
-                    return "New Configuration - no changes yet";
-                } else {
-                    int currentComponentIndex = current.getChangedComponentIndex();
-                    String currentBaseline = current.getChangedComponent().getBaseline().getNormalizedName();
-                    ConfigurationRotatorBuildAction previous = rotator.getAcrs().getLastResult(this.getBuild().getProject(), ClearCaseUCM.class);
-                    String previousBaseline = previous.getConfiguration(ClearCaseUCMConfiguration.class).getList().get(currentComponentIndex).getBaseline().getNormalizedName();
-
-                    return String.format("Baseline changed from %s to %s", previousBaseline, currentBaseline);
-                }
-            }    
-        }  
-        return description;
-    }
-
-    /**
      * @param description the description to set
      */
     public void setDescription(String description) {

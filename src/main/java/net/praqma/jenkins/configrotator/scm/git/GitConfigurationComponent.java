@@ -16,21 +16,43 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class GitConfigurationComponent extends AbstractConfigurationComponent {
-    private RevCommit commit;
+
+    private static Logger logger = Logger.getLogger( GitConfigurationComponent.class.getName() );
+
+    private transient RevCommit commit;
+    private String commitId;
     private String name;
     private String branch;
+    private String repository;
 
-    public GitConfigurationComponent( String name, String branch, RevCommit commit, boolean fixed ) {
+    private GitConfigurationComponent( String name, String repository, String branch, String commitId, boolean fixed ) {
         super( fixed );
-        this.commit = commit;
         this.name = name;
+        this.repository = repository;
         this.branch = branch;
+        this.commitId = commitId;
     }
 
-    public void setCommit( RevCommit commit ) {
+    public GitConfigurationComponent( String name, String repository, String branch, RevCommit commit, boolean fixed ) {
+        super( fixed );
         this.commit = commit;
+        if( commit != null ) {
+            this.commitId = commit.getName();
+        }
+        this.name = name;
+        this.branch = branch;
+        this.repository = repository;
+    }
+
+    public String getBranch() {
+        return branch;
+    }
+
+    public String getRepository() {
+        return repository;
     }
 
     public String getName() {
@@ -39,6 +61,25 @@ public class GitConfigurationComponent extends AbstractConfigurationComponent {
 
     public RevCommit getCommit() {
         return commit;
+    }
+
+    public void setCommitId( String commitId ) {
+        this.commitId = commitId;
+    }
+
+    public String getCommitId() {
+        return commitId;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        GitConfigurationComponent gcc = new GitConfigurationComponent( name, repository, branch, commitId, fixed );
+        return  gcc;
+    }
+
+    @Override
+    public String toString() {
+        return "GitComponent[" + name + ": " + repository + ", " + branch + ", " + commitId + "]";
     }
 
     @Override

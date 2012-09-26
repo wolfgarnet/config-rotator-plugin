@@ -65,15 +65,19 @@ public class ResolveConfigurationComponent implements FilePath.FileCallable<GitC
             repo.updateRef( branch );
             RevWalk w = new RevWalk( repo );
 
+            logger.fine( "REPO: " + repo );
+            logger.fine( "WALK: " + w );
+
             if( commitId == null ) {
                 commitId = "HEAD";
             }
 
-            logger.fine("Getting commit " + commitId);
+            logger.fine("Getting commit \"" + commitId +"\"");
             ObjectId o = repo.resolve( commitId );
+            logger.fine("OBJECT IS " + o);
             RevCommit commit = w.parseCommit( o );
 
-            return new GitConfigurationComponent( name, branch, commit, fixed );
+            return new GitConfigurationComponent( name, repository, branch, commit, fixed );
 
         } catch( GitAPIException e ) {
             throw new IOException( e );

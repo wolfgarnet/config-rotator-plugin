@@ -12,6 +12,9 @@ import hudson.scm.PollingResult;
 import hudson.util.FormValidation;
 import net.praqma.jenkins.configrotator.*;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigurationComponent;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMTarget;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -72,6 +75,7 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
 
         @Override
         public void checkConfiguration( GitConfiguration configuration ) {
+            projectConfiguration = configuration;
             /* TODO: implement */
         }
 
@@ -94,7 +98,39 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
 
     @Override
     public boolean wasReconfigured( AbstractProject<?, ?> project ) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        ConfigurationRotatorBuildAction action = getLastResult( project, Git.class );
+
+        if( action == null ) {
+            return true;
+        }
+
+        GitConfiguration configuration = action.getConfiguration( GitConfiguration.class );
+
+        /* Check if the project configuration is even set */
+        if( configuration == null ) {
+            logger.fine( "Configuration was null" );
+            return true;
+        }
+
+        /* Check if the sizes are equal */
+        if( targets.size() != configuration.getList().size() ) {
+            logger.fine( "Size was not equal" );
+            return true;
+        }
+
+        /**/
+        for( int i = 0; i < targets.size(); ++i ) {
+            GitTarget t = targets.get( i );
+            GitConfigurationComponent c = configuration.getList().get( i );
+            if( !t.getBranch().equals( c.getBranch()) ||
+                !t.getRepository().equals( c.getRepository() ) ||
+                !t.getCommitId().equals( c.getCommitId() )) {
+                logger.finer( "Configuration was not equal" );
+                return true;
+            }
+        }
+
+        return false;
     }
 
     @Override
@@ -109,7 +145,7 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
 
 
     public GitConfiguration nextConfiguration( TaskListener listener, GitConfiguration configuration, FilePath workspace ) throws ConfigurationRotatorException {
-        logger.fine("Getting next Git configuration");
+        logger.fine("Getting next Git configuration: " + configuration);
 
         RevCommit oldest = null;
         GitConfigurationComponent chosen = null;
@@ -124,8 +160,11 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
         for( GitConfigurationComponent config : nconfig.getList() ) {
             if( !config.isFixed() ) {
                 try {
-                    RevCommit commit = workspace.act( new ResolveNextCommit(config.getName(), config.getCommit() ) );
-                    if( oldest != null && commit.getCommitTime() < oldest.getCommitTime() ) {
+                    logger.fine("Config: " + config);
+                    RevCommit commit = workspace.act( new ResolveNextCommit( config.getName(), config.getCommitId() ) );
+                    logger.fine( "Commit1: " + commit );
+                    logger.fine( "Commit2: " + config.getCommitId() );
+                    if( oldest == null || commit.getCommitTime() < oldest.getCommitTime() ) {
                         oldest = commit;
                         chosen = config;
                     }
@@ -144,7 +183,7 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
         if( chosen != null && oldest != null ) {
             logger.fine( "There was a new commit: " + oldest );
             listener.getLogger().println( "Next commit: " + oldest );
-            chosen.setCommit( oldest );
+            chosen.setCommitId( oldest.getName() );
             chosen.setChangedLast( true );
         } else {
             listener.getLogger().println( "No new commits" );
@@ -155,8 +194,32 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
     }
 
 
+    private List<GitTarget> getConfigurationAsTargets( GitConfiguration config ) {
+        List<GitTarget> list = new ArrayList<GitTarget>();
+        if( config.getList() != null && config.getList().size() > 0 ) {
+            for( GitConfigurationComponent c : config.getList() ) {
+                if( c != null ) {
+                    //list.add( new ClearCaseUCMTarget( c.getBaseline().getNormalizedName() + ", " + c.getPlevel().toString() + ", " + c.isFixed() ) );
+                    list.add( new GitTarget( c.getRepository(), c.getBranch(), c.getCommitId(), c.isFixed() ) );
+                } else {
+                    /* A null!? The list is corrupted, return targets */
+                    return targets;
+                }
+            }
+
+            return list;
+        } else {
+            return targets;
+        }
+    }
+
     public List<GitTarget> getTargets() {
-        return targets;
+        if( projectConfiguration != null ) {
+            return getConfigurationAsTargets( projectConfiguration );
+        } else {
+            return targets;
+        }
+
     }
 
 

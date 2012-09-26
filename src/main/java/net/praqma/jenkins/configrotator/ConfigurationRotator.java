@@ -160,6 +160,7 @@ public class ConfigurationRotator extends SCM {
             }
 		} catch( Exception e ) {
 			logger.log( Level.SEVERE, "Unable to create configuration", e );
+            logger.severe( e.getMessage() );
 			throw new AbortException( e.getMessage() );
 		}
 

@@ -13,10 +13,7 @@ import net.praqma.clearcase.exceptions.*;
 import net.praqma.clearcase.ucm.entities.Activity;
 import net.praqma.clearcase.ucm.entities.Version;
 import net.praqma.clearcase.ucm.view.SnapshotView;
-import net.praqma.jenkins.configrotator.AbstractConfiguration;
-import net.praqma.jenkins.configrotator.AbstractConfigurationComponent;
-import net.praqma.jenkins.configrotator.ConfigurationRotator;
-import net.praqma.jenkins.configrotator.ConfigurationRotatorException;
+import net.praqma.jenkins.configrotator.*;
 
 public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUCMConfigurationComponent> {
 
@@ -194,6 +191,28 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUC
         builder.append( "</thead>" );
         builder.append( "</table>" );
         return builder.toString();
+    }
+
+    @Override
+    public String getDescription() {
+        /**
+         * Ensure backwards compatability
+         */
+        if(description == null) {
+
+            ConfigurationRotator rotator = (ConfigurationRotator)this.getBuild().getProject().getScm();
+            if(getChangedComponent() == null) {
+                return "New Configuration - no changes yet";
+            } else {
+                int currentComponentIndex = getChangedComponentIndex();
+                String currentBaseline = getChangedComponent().getBaseline().getNormalizedName();
+                ConfigurationRotatorBuildAction previous = rotator.getAcrs().getLastResult(this.getBuild().getProject(), ClearCaseUCM.class);
+                String previousBaseline = previous.getConfiguration(ClearCaseUCMConfiguration.class).getList().get(currentComponentIndex).getBaseline().getNormalizedName();
+
+                return String.format("Baseline changed from %s to %s", previousBaseline, currentBaseline);
+            }
+        }
+        return description;
     }
 
     /**

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class GitConfiguration extends AbstractConfiguration<GitConfigurationComponent> {
@@ -21,6 +22,7 @@ public class GitConfiguration extends AbstractConfiguration<GitConfigurationComp
     }
 
     public static GitConfiguration getConfigurationFromTargets( List<GitTarget> targets, FilePath workspace, TaskListener listener ) throws ConfigurationRotatorException {
+        logger.finest( "Getting configurations from targets: " + targets );
         PrintStream out = listener.getLogger();
 
         GitConfiguration config = new GitConfiguration();
@@ -32,8 +34,11 @@ public class GitConfiguration extends AbstractConfiguration<GitConfigurationComp
             try {
                 c = workspace.act( new ResolveConfigurationComponent( target.getRepository(), target.getBranch(), target.getCommitId(), target.getFixed() ) );
             } catch( Exception e ) {
+                logger.log( Level.WARNING, "Whoops", e );
                 throw new ConfigurationRotatorException( "Unable to get component for " + target, e );
             }
+
+            logger.fine("Adding " + c);
             config.list.add( c );
         }
 
@@ -43,10 +48,15 @@ public class GitConfiguration extends AbstractConfiguration<GitConfigurationComp
     @Override
     protected Object clone() throws CloneNotSupportedException {
         GitConfiguration n = new GitConfiguration();
-        n.list.addAll( list );
+
+        for( GitConfigurationComponent gc : this.list ) {
+            n.list.add( (GitConfigurationComponent) gc.clone() );
+        }
 
         return n;
     }
+
+
 
     @Override
     public String toHtml() {

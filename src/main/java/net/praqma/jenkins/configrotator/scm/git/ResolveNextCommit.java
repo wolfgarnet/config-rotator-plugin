@@ -4,8 +4,10 @@ import hudson.FilePath;
 import hudson.remoting.VirtualChannel;
 import org.eclipse.jgit.api.*;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevSort;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
@@ -15,11 +17,11 @@ import java.util.logging.Logger;
 
 public class ResolveNextCommit implements FilePath.FileCallable<RevCommit> {
 
-    private RevCommit commit;
+    private String commitId;
     private String name;
 
-    public ResolveNextCommit( String name, RevCommit commit ) {
-        this.commit = commit;
+    public ResolveNextCommit( String name, String commitId ) {
+        this.commitId = commitId;
         this.name = name;
     }
 
@@ -27,6 +29,8 @@ public class ResolveNextCommit implements FilePath.FileCallable<RevCommit> {
     public RevCommit invoke( File workspace, VirtualChannel virtualChannel ) throws IOException, InterruptedException {
 
         Logger logger = Logger.getLogger( ResolveNextCommit.class.getName() );
+
+        logger.fine("NAME IS " + name);
 
         File local = new File( workspace, name );
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
@@ -40,10 +44,38 @@ public class ResolveNextCommit implements FilePath.FileCallable<RevCommit> {
             throw new IOException( e );
         }
 
-        logger.fine( "Finding next commit" );
         RevWalk w = new RevWalk( repo );
-        w.markStart( commit );
 
-        return w.next();
+        ObjectId ohead = repo.resolve( "HEAD" );
+        ObjectId ostart = repo.resolve( commitId );
+        RevCommit commithead = w.parseCommit( ohead );
+        RevCommit commit = w.parseCommit( ostart );
+
+        logger.fine( "Commit start: " + commitId );
+        logger.fine( "Commit head: " + commithead );
+
+        w.markStart( commithead );
+
+        RevCommit next = null;
+
+        for( RevCommit c : w ) {
+            logger.fine("COMMITITITIT: " + c);
+            if( c != null && c.equals(commit) ) {
+                break;
+            }
+
+            if( c == null ) {
+                break;
+            }
+
+            next = c;
+        }
+
+        w.dispose();
+
+        logger.fine( "Next is " + next );
+
+        return next;
     }
+
 }

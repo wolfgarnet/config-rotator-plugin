@@ -9,13 +9,15 @@ public abstract class AbstractConfiguration<T extends AbstractConfigurationCompo
     public abstract List<? extends Serializable> difference(AbstractConfiguration<T> configuration) throws ConfigurationRotatorException;
     protected List<T> list = new ArrayList<T>();
 
+    protected String description = null;
+
 	public String getView( Class<?> clazz ) {
 		return clazz.getName().replace( '.', '/' ).replace( '$', '/' ) + "/" + "cr.jelly";
 	}
 
     @Override
 	public String toString() {
-		return "This is just the configuration base class";
+		return getClass().getSimpleName() + "[" + list + "]";
 	}
     
     public List<T> getList() {
@@ -23,4 +25,8 @@ public abstract class AbstractConfiguration<T extends AbstractConfigurationCompo
     }
 
     public abstract String toHtml();
+
+    public String getDescription() {
+        return "Blaha";
+    }
 }

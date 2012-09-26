@@ -1,0 +1,29 @@
+<j:jelly xmlns:j="jelly:core"
+        >
+
+    <table style="padding:0px;margin:0px;border-collapse:collapse">
+        <tr>
+            <td style="font-weight:bold">Repository</td>
+            <td style="font-weight:bold">Branch</td>
+            <td style="font-weight:bold">Commit</td>
+            <td style="font-weight:bold">Fixed</td>
+        </tr>
+        <j:forEach var="component" items="${it.getList()}">
+
+            <!-- <b>${component.getBaseline().getComponent()}, ${component.getBaseline().getStream()}, ${component.getBaseline()}</b>, ${component.getPlevel()}, <j:if test="${component.isFixed()}">Fixed</j:if><j:if test="${!component.isFixed()}">Auto</j:if><br /> -->
+
+            <j:set var="highlight" value=""/>
+            <j:if test="${component.isChangedLast()}">
+                <j:set var="highlight" value="font-weight:bold;border-bottom-style:solid;background-color:#FF6633"/>
+            </j:if>
+            <tr>
+                <td style="padding-right:10px;${highlight};">${component.getRepository()}</td>
+                <td style="padding-right:10px;${highlight};">${component.getBranch()}</td>
+                <td style="padding-right:10px;${highlight};">${component.getCommitId()}</td>
+                <td style="${highlight};">${component.isFixed()}</td>
+            </tr>
+
+        </j:forEach>
+    </table>
+
+</j:jelly>
