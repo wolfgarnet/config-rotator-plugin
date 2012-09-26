@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 public class GitTarget implements Serializable {
 
+    private String name;
 	private String repository;
     private String branch;
     private String commitId;
@@ -18,11 +19,20 @@ public class GitTarget implements Serializable {
 
 
     @DataBoundConstructor
-    public GitTarget( String repository, String branch, String commitId, boolean fixed ) {
+    public GitTarget( String name, String repository, String branch, String commitId, boolean fixed ) {
+        this.name = name;
         this.repository = repository;
         this.branch = branch;
         this.commitId = commitId;
         this.fixed = fixed;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName( String name ) {
+        this.name = name;
     }
 
     public String getRepository() {

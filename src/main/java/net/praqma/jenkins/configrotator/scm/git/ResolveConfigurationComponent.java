@@ -19,12 +19,14 @@ import java.util.logging.Logger;
  */
 public class ResolveConfigurationComponent implements FilePath.FileCallable<GitConfigurationComponent> {
 
+    private String name;
     private String repository;
     private String branch;
     private String commitId;
     private boolean fixed;
 
-    public ResolveConfigurationComponent( String repository, String branch, String commitId, boolean fixed ) {
+    public ResolveConfigurationComponent( String name, String repository, String branch, String commitId, boolean fixed ) {
+        this.name = name;
         this.repository = repository;
         this.branch = branch;
         this.commitId = commitId;
@@ -34,16 +36,19 @@ public class ResolveConfigurationComponent implements FilePath.FileCallable<GitC
     @Override
     public GitConfigurationComponent invoke( File workspace, VirtualChannel channel ) throws IOException, InterruptedException {
         Logger logger = Logger.getLogger( ResolveConfigurationComponent.class.getName() );
-        String name = repository.substring( repository.lastIndexOf( "/" ) );
 
-        logger.fine("NAME1: " + name);
+        if( name == null ) {
+            name = repository.substring( repository.lastIndexOf( "/" ) );
 
-        if( name.matches( ".*?\\.git$" ) ) {
-            name = name.substring( 0, name.length() - 4 );
-        }
+            logger.fine("NAME1: " + name);
 
-        if( name.startsWith( "/" ) ) {
-            name = name.substring( 1 );
+            if( name.matches( ".*?\\.git$" ) ) {
+                name = name.substring( 0, name.length() - 4 );
+            }
+
+            if( name.startsWith( "/" ) ) {
+                name = name.substring( 1 );
+            }
         }
 
         logger.fine("NAME2: " + name);

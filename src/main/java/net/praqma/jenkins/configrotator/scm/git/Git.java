@@ -203,7 +203,7 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
             for( GitConfigurationComponent c : config.getList() ) {
                 if( c != null ) {
                     //list.add( new ClearCaseUCMTarget( c.getBaseline().getNormalizedName() + ", " + c.getPlevel().toString() + ", " + c.isFixed() ) );
-                    list.add( new GitTarget( c.getRepository(), c.getBranch(), c.getCommitId(), c.isFixed() ) );
+                    list.add( new GitTarget( c.getName(), c.getRepository(), c.getBranch(), c.getCommitId(), c.isFixed() ) );
                 } else {
                     /* A null!? The list is corrupted, return targets */
                     return targets;

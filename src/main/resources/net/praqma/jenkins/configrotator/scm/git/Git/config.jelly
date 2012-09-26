@@ -8,6 +8,10 @@
             <table width="80%">
 
                     <tr>
+                        <td align="left">
+                            ${%Name}
+                            <f:textbox name="git.target.name" value="${targets.name}"/>
+                        </td>
                         <td align="left" style="width:50%">
                             ${%Repository}
                             <f:textbox name="git.target.repository" value="${targets.repository}"/>
