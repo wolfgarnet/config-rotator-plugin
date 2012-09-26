@@ -1,29 +1,18 @@
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
-	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+<j:jelly xmlns:j="jelly:core"
+         xmlns:l="/lib/layout">
  <l:layout title="Config Rotator">
      <l:main-panel>
-        <h1>List of available component feeds</h1>
         <table>
             <thead>
                 <th>
-                    <span style="font-size:15px;">Component vob</span>
-                </th>
-                <th>
-                    <span style="font-size:15px;">Component name</span>
-                </th>
-                <th>
-                    <span style="font-size:15px;">Feed link</span>
+                    <span style="font-size:28px;">Available Modules</span>
                 </th>
             </thead>
             <tbody>
-                <j:forEach var="folder" items="${it.listVobs()}">
-                    <j:forEach var="file" items="${it.listComponents(folder)}">
-                        <tr>
-                            <td>${it.getVobName(folder)}</td>
-                            <td>${it.getComponentName(file)}</td>
-                            <td><a href="${it.getFeedUrl(it.getVobName(folder),it.getComponentName(file))}">${it.getComponentName(file)}</a></td> 
-                        </tr>
-                    </j:forEach>
+                <j:forEach var="scm" items="${it.getSCMs()}">
+                    <tr>
+                        <td><a href="/${it.getUrl(scm)}">${scm.getDisplayName()}</a></td>
+                    </tr>
                 </j:forEach>
             </tbody>
         </table>

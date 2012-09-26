@@ -5,27 +5,24 @@ import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 
+import hudson.DescriptorExtensionList;
+import hudson.model.*;
+import net.praqma.jenkins.configrotator.scm.git.GitFeedAction;
+import net.praqma.jenkins.configrotator.scm.git.targets.GitFeedTarget;
 import net.praqma.util.xml.feed.AtomPublisher;
 import net.praqma.util.xml.feed.Feed;
 import net.praqma.util.xml.feed.FeedException;
-import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.*;
 
 import hudson.Extension;
-import hudson.model.AbstractBuild;
-import hudson.model.UnprotectedRootAction;
-import hudson.model.AbstractModelObject;
+
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+
 import jenkins.model.Jenkins;
 
 @Extension
-public class ConfigurationRotatorReport extends AbstractModelObject implements UnprotectedRootAction {
+public class ConfigurationRotatorReport extends Actionable implements UnprotectedRootAction {
     
     private static final String XML_EXTENSION = ".xml";
     private static final int PORT = 8080;
@@ -51,7 +48,24 @@ public class ConfigurationRotatorReport extends AbstractModelObject implements U
 		return getUrlName();
 	}
 
+    /*
+    @Override
+    public Object getTarget() {
+        return new GitFeedTarget();
+    }
+    */
 
+    @Override
+    public synchronized List<Action> getActions() {
+        //return (List<Action>) Collections.singletonList( new GitFeedAction() );
+        List<Action> actions = new ArrayList<Action>();
+        actions.add( new GitFeedAction() );
+        return actions;
+    }
+
+    public String getUrl( ConfigurationRotatorSCMDescriptor<AbstractConfigurationRotatorSCM> scm ) {
+        return ConfigurationRotator.URL_NAME + "/" + scm.getFeedModuleName();
+    }
 
 
     public static Feed getFeedFromFile( File feedFile, String name, String feedId, Date feedUpdated ) throws FeedException, IOException {
@@ -92,6 +106,10 @@ public class ConfigurationRotatorReport extends AbstractModelObject implements U
         ArrayList<String> list = new ArrayList<String>();
         list.addAll(Arrays.asList(ConfigurationRotator.FEED_PATH.list()));
         return list;
+    }
+
+    public DescriptorExtensionList<AbstractConfigurationRotatorSCM, ConfigurationRotatorSCMDescriptor<AbstractConfigurationRotatorSCM>> getSCMs() {
+        return AbstractConfigurationRotatorSCM.all();
     }
 
 

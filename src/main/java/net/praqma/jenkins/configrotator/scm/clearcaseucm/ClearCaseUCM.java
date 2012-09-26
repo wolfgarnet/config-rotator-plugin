@@ -501,7 +501,12 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 
         @Override
         public String getDisplayName() {
-            return "ClearCase UCM";
+            return "ClearCase UCM Components";
+        }
+
+        @Override
+        public String getFeedModuleName() {
+            return ClearCaseUCM.class.getSimpleName();
         }
 
         public FormValidation doTest() throws IOException, ServletException {

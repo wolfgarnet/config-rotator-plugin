@@ -10,7 +10,8 @@ import hudson.model.Descriptor.FormException;
 public abstract class ConfigurationRotatorSCMDescriptor<T extends AbstractConfigurationRotatorSCM> extends Descriptor<AbstractConfigurationRotatorSCM> {
 
 	public AbstractConfigurationRotatorSCM newInstance( StaplerRequest req, JSONObject formData, AbstractConfigurationRotatorSCM instance ) throws FormException {
-		System.out.println( "IN HERE" );
 		return super.newInstance( req, formData );
 	}
+
+    public abstract String getFeedModuleName();
 }

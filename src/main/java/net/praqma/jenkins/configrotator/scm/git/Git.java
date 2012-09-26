@@ -231,7 +231,12 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
 
         @Override
         public String getDisplayName() {
-            return "Git repositories";
+            return "Git Repositories";
+        }
+
+        @Override
+        public String getFeedModuleName() {
+            return Git.class.getSimpleName();
         }
 
         public FormValidation doTest(  ) throws IOException, ServletException {
