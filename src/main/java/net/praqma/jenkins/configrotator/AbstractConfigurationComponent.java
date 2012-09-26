@@ -41,4 +41,6 @@ public abstract class AbstractConfigurationComponent implements Serializable {
     public abstract Feed getFeed( File feedFile, String url, Date updated ) throws FeedException, IOException;
 
     public abstract Entry getFeedEntry( AbstractBuild<?, ?> build, Date updated );
+
+    public abstract String prettyPrint();
 }

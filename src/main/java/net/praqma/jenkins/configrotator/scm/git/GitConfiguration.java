@@ -60,25 +60,6 @@ public class GitConfiguration extends AbstractConfiguration<GitConfigurationComp
     }
 
     @Override
-    public String getDescription( AbstractBuild<?, ?> build ) {
-        if( description == null ) {
-            ConfigurationRotator rotator = (ConfigurationRotator)build.getProject().getScm();
-            if(getChangedComponent() == null) {
-                return "New Configuration - no changes yet";
-            } else {
-                int currentComponentIndex = getChangedComponentIndex();
-                String currentCommit = ((GitConfigurationComponent)getChangedComponent()).getCommitId();
-                ConfigurationRotatorBuildAction previous = rotator.getAcrs().getPreviousResult(build, Git.class);
-                String previousCommit = previous.getConfiguration(GitConfiguration.class).getList().get(currentComponentIndex).getCommitId();
-
-                return String.format("Commit changed from %s to %s", previousCommit, currentCommit);
-            }
-        }
-
-        return description;
-    }
-
-    @Override
     public String toHtml() {
         return "";
     }

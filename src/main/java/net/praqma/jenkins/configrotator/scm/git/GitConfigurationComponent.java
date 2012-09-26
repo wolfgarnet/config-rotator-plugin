@@ -83,6 +83,11 @@ public class GitConfigurationComponent extends AbstractConfigurationComponent {
     }
 
     @Override
+    public String prettyPrint() {
+        return name + ": " + repository + ", " + branch + ", " + commitId;
+    }
+
+    @Override
     public File getFeedFile( File path ) {
         return new File( new File( path, name ), branch );
     }

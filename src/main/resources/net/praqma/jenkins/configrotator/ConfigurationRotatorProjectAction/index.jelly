@@ -11,12 +11,12 @@
                         <td style="font-size:14px;text-align:left">
                         <j:choose>
                             <j:when test="${action.isCompatible()}">
-                                <b>${action.getDescription()}</b>
+                                <b>${action.getConfiguration().getDescription( action.getBuild() )}</b>
                                 <br/>
                                 <span style="font-size:12px;">${%This configuration is compatible}</span>
                             </j:when>
                             <j:otherwise>
-                                <b>${action.getDescription()}</b>
+                                <b>${action.getConfiguration().getDescription( action.getBuild() )}</b>
                                 <br/>
                                 <span style="font-size:12px;">${%This configuration is not compatible}</span>
                             </j:otherwise>

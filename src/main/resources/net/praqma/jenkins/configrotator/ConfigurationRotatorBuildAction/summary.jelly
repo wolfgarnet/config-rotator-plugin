@@ -2,9 +2,7 @@
 	xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
 	
 	<j:set var="lastResult" value="${it.getResult()}" />
-	
-	
-	
+
 	<j:if test="${lastResult != null}">
 		<table>
 			<tr>

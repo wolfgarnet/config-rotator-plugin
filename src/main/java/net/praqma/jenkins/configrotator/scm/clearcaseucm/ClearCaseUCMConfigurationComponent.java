@@ -60,6 +60,11 @@ public class ClearCaseUCMConfigurationComponent extends AbstractConfigurationCom
     }
 
     @Override
+    public String prettyPrint() {
+        return baseline.getNormalizedName() + "@" + plevel;
+    }
+
+    @Override
     public boolean equals( Object other ) {
         if( other == this ) {
             return true;

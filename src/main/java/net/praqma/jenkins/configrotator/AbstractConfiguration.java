@@ -7,15 +7,16 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public abstract class AbstractConfiguration<T extends AbstractConfigurationComponent> implements Serializable {   
-    public abstract List<? extends Serializable> difference(AbstractConfiguration<T> configuration) throws ConfigurationRotatorException;
+public abstract class AbstractConfiguration<T extends AbstractConfigurationComponent> implements Serializable {
+    public abstract List<? extends Serializable> difference( AbstractConfiguration<T> configuration ) throws ConfigurationRotatorException;
+
     protected List<T> list = new ArrayList<T>();
 
     protected String description = null;
 
-	public String getView( Class<?> clazz ) {
-		return clazz.getName().replace( '.', '/' ).replace( '$', '/' ) + "/" + "cr.jelly";
-	}
+    public String getView( Class<?> clazz ) {
+        return clazz.getName().replace( '.', '/' ).replace( '$', '/' ) + "/" + "cr.jelly";
+    }
 
     public AbstractConfigurationComponent getChangedComponent() {
         for( AbstractConfigurationComponent configuration : this.getList() ) {
@@ -44,10 +45,10 @@ public abstract class AbstractConfiguration<T extends AbstractConfigurationCompo
     }
 
     @Override
-	public String toString() {
-		return getClass().getSimpleName() + "[" + list + "]";
-	}
-    
+    public String toString() {
+        return getClass().getSimpleName() + "[" + list + "]";
+    }
+
     public List<T> getList() {
         return list;
     }
@@ -55,6 +56,18 @@ public abstract class AbstractConfiguration<T extends AbstractConfigurationCompo
     public abstract String toHtml();
 
     public String getDescription( AbstractBuild<?, ?> build ) {
-        return "Result from " + build;
+        if( description == null ) {
+            ConfigurationRotator rotator = (ConfigurationRotator) build.getProject().getScm();
+            if( getChangedComponent() == null ) {
+                return "New Configuration - no changes yet";
+            } else {
+                ConfigurationRotatorBuildAction previous = rotator.getAcrs().getPreviousResult( build, null );
+
+                //return String.format( "Commit changed:<br/>%s<br/>%s", previous.getConfigurationWithOutCast().getList().get( getChangedComponentIndex() ).prettyPrint(), getChangedComponent().prettyPrint() );
+                return String.format( "Component changed:<br/>%s<br/>%s", ((T)previous.getConfigurationWithOutCast().getList().get( getChangedComponentIndex() ) ).prettyPrint(), getChangedComponent().prettyPrint() );
+            }
+        }
+
+        return description;
     }
 }
