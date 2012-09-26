@@ -505,7 +505,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
         }
 
         @Override
-        public String getFeedModuleName() {
+        public String getFeedComponentName() {
             return ClearCaseUCM.class.getSimpleName();
         }
 

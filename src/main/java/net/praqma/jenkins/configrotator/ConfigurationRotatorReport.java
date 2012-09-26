@@ -8,7 +8,6 @@ import javax.servlet.ServletException;
 import hudson.DescriptorExtensionList;
 import hudson.model.*;
 import net.praqma.jenkins.configrotator.scm.git.GitFeedAction;
-import net.praqma.jenkins.configrotator.scm.git.targets.GitFeedTarget;
 import net.praqma.util.xml.feed.AtomPublisher;
 import net.praqma.util.xml.feed.Feed;
 import net.praqma.util.xml.feed.FeedException;
@@ -48,12 +47,9 @@ public class ConfigurationRotatorReport extends Actionable implements Unprotecte
 		return getUrlName();
 	}
 
-    /*
-    @Override
-    public Object getTarget() {
-        return new GitFeedTarget();
+    public DescriptorExtensionList<AbstractConfigurationRotatorSCM, ConfigurationRotatorSCMDescriptor<AbstractConfigurationRotatorSCM>> getSCMs() {
+        return AbstractConfigurationRotatorSCM.all();
     }
-    */
 
     @Override
     public synchronized List<Action> getActions() {
@@ -64,7 +60,7 @@ public class ConfigurationRotatorReport extends Actionable implements Unprotecte
     }
 
     public String getUrl( ConfigurationRotatorSCMDescriptor<AbstractConfigurationRotatorSCM> scm ) {
-        return ConfigurationRotator.URL_NAME + "/" + scm.getFeedModuleName();
+        return ConfigurationRotator.URL_NAME + "/" + scm.getFeedComponentName();
     }
 
 
@@ -106,10 +102,6 @@ public class ConfigurationRotatorReport extends Actionable implements Unprotecte
         ArrayList<String> list = new ArrayList<String>();
         list.addAll(Arrays.asList(ConfigurationRotator.FEED_PATH.list()));
         return list;
-    }
-
-    public DescriptorExtensionList<AbstractConfigurationRotatorSCM, ConfigurationRotatorSCMDescriptor<AbstractConfigurationRotatorSCM>> getSCMs() {
-        return AbstractConfigurationRotatorSCM.all();
     }
 
 

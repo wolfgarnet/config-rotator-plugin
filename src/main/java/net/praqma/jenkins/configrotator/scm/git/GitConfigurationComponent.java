@@ -89,7 +89,7 @@ public class GitConfigurationComponent extends AbstractConfigurationComponent {
 
     @Override
     public File getFeedFile( File path ) {
-        return new File( new File( path, name ), branch );
+        return new File( new File( path, name ), branch + ".xml" );
     }
 
     @Override
@@ -112,10 +112,11 @@ public class GitConfigurationComponent extends AbstractConfigurationComponent {
         String id = "'" + build.getParent().getDisplayName() + "'#" + build.getNumber() + ":" + branch + "@" + name;
 
         Entry entry = new Entry( name + " in new " + action.getResult().toString() + " configuration", id, updated );
-        entry.summary = name + " found to be " + action.getResult().toString() + " with "
-                + components.size() + " other components";
+        int l = components.size() - 1;
+        entry.summary = name + " is " + action.getResult().toString() + " with "
+                + l + " other component" + ( l == 1 ? "" : "s" );
 
-        entry.author = new Person( "Jenkins job using config-rotator. Job: "
+        entry.author = new Person( "Jenkins config-rotator job: "
                 + build.getParent().getDisplayName() + ", build: #" + build.getNumber() );
 
         entry.content = configuration.getDescription( build );

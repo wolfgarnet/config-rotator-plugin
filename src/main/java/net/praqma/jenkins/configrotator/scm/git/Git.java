@@ -235,7 +235,7 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
         }
 
         @Override
-        public String getFeedModuleName() {
+        public String getFeedComponentName() {
             return Git.class.getSimpleName();
         }
 

@@ -13,5 +13,5 @@ public abstract class ConfigurationRotatorSCMDescriptor<T extends AbstractConfig
 		return super.newInstance( req, formData );
 	}
 
-    public abstract String getFeedModuleName();
+    public abstract String getFeedComponentName();
 }
