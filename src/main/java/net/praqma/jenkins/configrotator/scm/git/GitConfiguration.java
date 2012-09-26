@@ -1,8 +1,11 @@
 package net.praqma.jenkins.configrotator.scm.git;
 
 import hudson.FilePath;
+import hudson.model.AbstractBuild;
 import hudson.model.TaskListener;
 import net.praqma.jenkins.configrotator.AbstractConfiguration;
+import net.praqma.jenkins.configrotator.ConfigurationRotator;
+import net.praqma.jenkins.configrotator.ConfigurationRotatorBuildAction;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorException;
 
 import java.io.IOException;
@@ -56,10 +59,27 @@ public class GitConfiguration extends AbstractConfiguration<GitConfigurationComp
         return n;
     }
 
+    @Override
+    public String getDescription( AbstractBuild<?, ?> build ) {
+        if( description == null ) {
+            ConfigurationRotator rotator = (ConfigurationRotator)build.getProject().getScm();
+            if(getChangedComponent() == null) {
+                return "New Configuration - no changes yet";
+            } else {
+                int currentComponentIndex = getChangedComponentIndex();
+                String currentCommit = ((GitConfigurationComponent)getChangedComponent()).getCommitId();
+                ConfigurationRotatorBuildAction previous = rotator.getAcrs().getPreviousResult(build, Git.class);
+                String previousCommit = previous.getConfiguration(GitConfiguration.class).getList().get(currentComponentIndex).getCommitId();
 
+                return String.format("Commit changed from %s to %s", previousCommit, currentCommit);
+            }
+        }
+
+        return description;
+    }
 
     @Override
     public String toHtml() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return "";
     }
 }

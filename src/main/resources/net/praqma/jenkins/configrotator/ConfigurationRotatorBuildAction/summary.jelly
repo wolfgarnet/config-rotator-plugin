@@ -6,7 +6,6 @@
 	
 	
 	<j:if test="${lastResult != null}">
-	
 		<table>
 			<tr>
 				<td rowspan="2" style="padding:10px"><img src="${rootURL}/plugin/config-rotator/images/rotate.png" /></td>
@@ -14,12 +13,12 @@
 				<j:choose>
 					<j:when test="${from.isCompatible()}">
 						<!--<b>${%This configuration is compatible}</b> -->
-                        <b>${from.getDescription()}</b>
+                        <b>${it.getConfiguration().getDescription(it.getBuild())}</b>
                         <br/>
                         ${%This configuration is compatible}
 					</j:when>
 					<j:otherwise>
-                        <b>${from.getDescription()}</b>
+                        <b>${it.getConfiguration().getDescription(it.getBuild())}</b>
                         <br/>
 						 ${%This configuration is not compatible}
 					</j:otherwise>

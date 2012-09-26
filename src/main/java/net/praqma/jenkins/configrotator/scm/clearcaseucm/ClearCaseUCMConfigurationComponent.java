@@ -109,7 +109,7 @@ public class ClearCaseUCMConfigurationComponent extends AbstractConfigurationCom
         entry.author = new Person( "Jenkins job using config-rotator. Job: "
                 + build.getParent().getDisplayName() + ", build: #" + build.getNumber() );
 
-        entry.content = action.getDescription();
+        entry.content = configuration.getDescription( build );
         Html.Break br1 = new Html.Break();
         Html.Anchor linkFeeds = new Html.Anchor( ConfigurationRotatorReport.FeedFrontpageUrl(), "Click here for a list of available feeds" );
         Html.Break br2 = new Html.Break();

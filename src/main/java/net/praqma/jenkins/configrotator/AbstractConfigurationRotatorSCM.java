@@ -54,7 +54,7 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
 
     public abstract Performer getPerform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener ) throws IOException;
 
-    public static abstract class Performer<C> {
+    public abstract class Performer<C> {
         protected AbstractBuild<?, ?> build;
         protected Launcher launcher;
         protected FilePath workspace;
@@ -76,7 +76,7 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
         public abstract void checkConfiguration( C configuration ) throws ConfigurationRotatorException;
         public abstract void createWorkspace( C configuration ) throws ConfigurationRotatorException;
         public Class getSCMClass() {
-                return this.getClass();
+                return AbstractConfigurationRotatorSCM.this.getClass();
         }
 
         public abstract void print( C configuration );
@@ -133,10 +133,11 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
 	}
 	
 	public ConfigurationRotatorBuildAction getLastResult( AbstractProject<?, ?> project, Class<? extends AbstractConfigurationRotatorSCM> clazz ) {
-		logger.fine( "Getting last result" );
+		logger.fine( "Getting last result: " + project );
 		
 		for( AbstractBuild<?, ?> b = getLastBuildToBeConsidered( project ); b != null; b = b.getPreviousBuild() ) {
 			ConfigurationRotatorBuildAction r = b.getAction( ConfigurationRotatorBuildAction.class );
+
 			if( r != null ) {
 				if( r.isDetermined() && ( clazz == null || r.getClazz().equals( clazz ) ) ) {
 					return r;
@@ -146,6 +147,22 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
 		
 		return null;
 	}
+
+    public ConfigurationRotatorBuildAction getPreviousResult( AbstractBuild<?, ?> build, Class<? extends AbstractConfigurationRotatorSCM> clazz ) {
+        logger.fine( "Getting previous result: " + build );
+
+        for( AbstractBuild<?, ?> b = build.getPreviousBuild(); b != null; b = b.getPreviousBuild() ) {
+            ConfigurationRotatorBuildAction r = b.getAction( ConfigurationRotatorBuildAction.class );
+
+            if( r != null ) {
+                if( r.isDetermined() && ( clazz == null || r.getClazz().equals( clazz ) ) ) {
+                    return r;
+                }
+            }
+        }
+
+        return null;
+    }
     
     public ArrayList<ConfigurationRotatorBuildAction> getLastResults(AbstractProject<?, ?> project, Class<? extends AbstractConfigurationRotatorSCM> clazz, int limit) {
         ArrayList<ConfigurationRotatorBuildAction> actions = new ArrayList<ConfigurationRotatorBuildAction>();

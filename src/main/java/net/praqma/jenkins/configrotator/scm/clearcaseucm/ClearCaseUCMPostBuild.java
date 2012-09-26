@@ -24,7 +24,7 @@ public class ClearCaseUCMPostBuild extends AbstractPostConfigurationRotator {
                     action.setDescription("New Configuration - no changes yet");
                 } else {
                     int currentComponentIndex = current.getChangedComponentIndex();
-                    String currentBaseline = current.getChangedComponent().getBaseline().getNormalizedName();
+                    String currentBaseline = ((ClearCaseUCMConfigurationComponent)current.getChangedComponent()).getBaseline().getNormalizedName();
                     ConfigurationRotatorBuildAction previous = rotator.getAcrs().getLastResult(action.getBuild().getProject(), ClearCaseUCM.class);
                     String previousBaseline = previous.getConfiguration(ClearCaseUCMConfiguration.class).getList().get(currentComponentIndex).getBaseline().getNormalizedName();
 

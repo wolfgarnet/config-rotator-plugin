@@ -1,6 +1,7 @@
 package net.praqma.jenkins.configrotator.scm.clearcaseucm;
 
 import hudson.FilePath;
+import hudson.model.AbstractBuild;
 import hudson.model.TaskListener;
 
 import java.io.File;
@@ -22,34 +23,6 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUC
     public ClearCaseUCMConfiguration() {
     }
 
-    /**
-     * Gets the changed component
-     */
-    public ClearCaseUCMConfigurationComponent getChangedComponent() {
-        for( AbstractConfigurationComponent configuration : this.getList() ) {
-            if( configuration.isChangedLast() ) {
-                return (ClearCaseUCMConfigurationComponent) configuration;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Gets the index of the changed component.
-     *
-     * @return the index of the changed component. If there is no changed component default return value is -1
-     */
-    public int getChangedComponentIndex() {
-        int index = -1;
-
-        for( AbstractConfigurationComponent configuration : this.getList() ) {
-            if( configuration.isChangedLast() ) {
-                index = getList().indexOf( configuration );
-            }
-        }
-
-        return index;
-    }
 
     public ClearCaseUCMConfiguration clone() {
         ClearCaseUCMConfiguration n = new ClearCaseUCMConfiguration();
@@ -194,19 +167,19 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUC
     }
 
     @Override
-    public String getDescription() {
+    public String getDescription( AbstractBuild<?, ?> build ) {
         /**
          * Ensure backwards compatability
          */
         if(description == null) {
 
-            ConfigurationRotator rotator = (ConfigurationRotator)this.getBuild().getProject().getScm();
+            ConfigurationRotator rotator = (ConfigurationRotator)build.getProject().getScm();
             if(getChangedComponent() == null) {
                 return "New Configuration - no changes yet";
             } else {
                 int currentComponentIndex = getChangedComponentIndex();
-                String currentBaseline = getChangedComponent().getBaseline().getNormalizedName();
-                ConfigurationRotatorBuildAction previous = rotator.getAcrs().getLastResult(this.getBuild().getProject(), ClearCaseUCM.class);
+                String currentBaseline = ((ClearCaseUCMConfigurationComponent)getChangedComponent()).getBaseline().getNormalizedName();
+                ConfigurationRotatorBuildAction previous = rotator.getAcrs().getLastResult(build.getProject(), ClearCaseUCM.class);
                 String previousBaseline = previous.getConfiguration(ClearCaseUCMConfiguration.class).getList().get(currentComponentIndex).getBaseline().getNormalizedName();
 
                 return String.format("Baseline changed from %s to %s", previousBaseline, currentBaseline);
