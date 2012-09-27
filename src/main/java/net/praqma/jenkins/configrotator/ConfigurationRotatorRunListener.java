@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.praqma.html.Html;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration;
@@ -63,6 +65,8 @@ import net.praqma.util.xml.feed.*;
 @Extension
 public class ConfigurationRotatorRunListener extends RunListener<Run> {
 
+    private static Logger logger = Logger.getLogger( ConfigurationRotatorReport.class.getName() );
+
     private TaskListener localListener;
 
     public ConfigurationRotatorRunListener() {
@@ -103,8 +107,9 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
         localListener = listener;
 
         AbstractBuild<?, ?> build = (AbstractBuild<?, ?>) run;
-
+        logger.fine("RUN: " + run);
         if( build.getProject().getScm() instanceof ConfigurationRotator ) {
+
             AbstractConfigurationRotatorSCM acscm = ((ConfigurationRotator)build.getProject().getScm()).getAcrs();
             ConfigurationRotatorBuildAction action = build.getAction( ConfigurationRotatorBuildAction.class );
             // if no action, build failed someway to set ConfigurationRotatorBuildAction, thus we can not 
@@ -116,8 +121,9 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                 try {
 
                     for( AbstractConfigurationComponent component : components ) {
-
+                        logger.fine("Component: " + component);
                         File feedFile = component.getFeedFile( acscm.getFeedPath() );
+                        logger.fine("feed file: " + feedFile);
                         Date updated = new Date();
 
                         Feed feed = component.getFeed( feedFile, acscm.getFeedURL(), updated );
@@ -128,6 +134,7 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
                         writeFeedToFile( feed, feedFile );
                     }
                 } catch( Exception fe ) {
+                    logger.log( Level.SEVERE, "Feed error", fe );
                     localListener.getLogger().println( "ConfigRotator RunListener - caught FeedException, not feeding anything for build: "
                             + build.getDisplayName() + ", #" + build.getNumber()
                             + ". Exception was: " + fe.getMessage() );

@@ -36,9 +36,20 @@ public abstract class AbstractConfigurationComponent implements Serializable {
         return fixed;
     }
 
-    public abstract File getFeedFile( File path );
+    public abstract String getComponentName();
 
-    public abstract Feed getFeed( File feedFile, String url, Date updated ) throws FeedException, IOException;
+    public File getFeedFile( File path ) {
+        return new File( path, ConfigurationRotatorReport.urlTtransform( getComponentName() ) + ".xml" );
+    }
+
+    public Feed getFeed( File feedFile, String url, Date updated ) throws FeedException, IOException {
+        String feedId = url + "feed/?component=" + ConfigurationRotatorReport.urlTtransform( getComponentName() );
+        String feedTitle = getComponentName();
+
+        Feed feed = ConfigurationRotatorReport.getFeedFromFile( feedFile, feedTitle, feedId, updated );
+
+        return feed;
+    }
 
     public abstract Entry getFeedEntry( AbstractBuild<?, ?> build, Date updated );
 

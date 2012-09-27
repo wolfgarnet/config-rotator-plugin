@@ -75,7 +75,11 @@ public class ConfigurationRotatorReport extends Actionable implements Unprotecte
     /**
      * Factory to create url when subscribing to feeds
      * 
-     */ 
+     */
+
+    public static String urlTtransform( String url ) {
+        return url.replaceAll( "[^a-zA-Z0-9]", "_" );
+    }
 
     public static String FeedFrontpageUrl() {
         String url = (Jenkins.getInstance() == null || Jenkins.getInstance().getRootUrl() == null) ? DEFAULT_URL : Jenkins.getInstance().getRootUrl();

@@ -20,17 +20,4 @@ public class GitFeedAction extends ConfigurationRotatorFeedAction {
     public String getComponentName() {
         return Git.class.getSimpleName();
     }
-
-    @Override
-    protected File getFeedFile( StaplerRequest req ) {
-        String component = req.getParameter( "component" );
-        String element = req.getParameter( "element" );
-
-        if( component != null && element != null ) {
-            File path = new File( new File( new File( ConfigurationRotator.FEED_PATH, getComponentName() ), component ), element + ".xml" );
-            return path;
-        } else {
-            return null;
-        }
-    }
 }

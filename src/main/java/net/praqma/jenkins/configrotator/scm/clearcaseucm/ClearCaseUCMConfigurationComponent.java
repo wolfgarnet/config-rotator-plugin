@@ -80,18 +80,8 @@ public class ClearCaseUCMConfigurationComponent extends AbstractConfigurationCom
     }
 
     @Override
-    public File getFeedFile( File path ) {
-        return new File( new File( path, baseline.getPVob().getName() ), baseline.getComponent().getShortname() );
-    }
-
-    @Override
-    public Feed getFeed( File feedFile, String url, Date updated ) throws FeedException, IOException {
-        String feedId = url + "feed/?component=" + baseline.getComponent().getShortname() + "&pvob=" + baseline.getPVob().getName();
-        String feedTitle = baseline.getComponent().getShortname();
-
-        Feed feed = ConfigurationRotatorReport.getFeedFromFile( feedFile, feedTitle, feedId, updated );
-
-        return feed;
+    public String getComponentName() {
+        return baseline.getNormalizedName();
     }
 
     @Override

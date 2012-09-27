@@ -1,6 +1,9 @@
 package net.praqma.jenkins.configrotator;
 
 import hudson.model.Action;
+import net.praqma.util.xml.feed.AtomPublisher;
+import net.praqma.util.xml.feed.Feed;
+import net.praqma.util.xml.feed.FeedException;
 import org.apache.commons.io.FileUtils;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
@@ -35,66 +38,53 @@ public abstract class ConfigurationRotatorFeedAction implements Action {
     }
     */
 
-    public String getFeedUrl( String component, String element ) {
-        return ConfigurationRotator.FEED_URL + getComponentName() + "/feed?component=" + component + "&element=" + element;
+    public String getFeedUrl( String component ) {
+        return ConfigurationRotator.FEED_URL + getComponentName() + "/feed?component=" + component;
     }
 
-    public String getElementName( String fileName ) {
+    public String getComponentName( String fileName ) {
         return fileName.substring( 0, fileName.lastIndexOf( "." ) );
     }
 
     public ArrayList<File> getComponents() {
-        FileFilter listDirsFilter = new FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                return pathname.isDirectory();
-            }
-        };
-        return getComponents( null, listDirsFilter );
-    }
-
-    public ArrayList<File> getElements( String component ) {
         FileFilter xmlFilter = new FileFilter() {
             @Override
             public boolean accept(File file) {
                 return file.isFile() && file.getName().endsWith( ".xml" );
             }
         };
-        return getComponents( Collections.singletonList( component ), xmlFilter );
+        return getComponents( xmlFilter );
     }
 
-
-    public ArrayList<File> getComponents( List<String> elements, FileFilter filter ) {
-        if( elements == null) {
-            elements = Collections.emptyList();
+    public String getFeedTitle( File feed ) {
+        String title = "Unknown";
+        try {
+            title = Feed.getFeed( new AtomPublisher(), feed ).title;
+        } catch( Exception e ) {
+            /* No op */
         }
 
-        logger.info("ELEMENTS: " + elements);
+        return title;
+    }
 
-
+    public ArrayList<File> getComponents( FileFilter filter ) {
 
         ArrayList<File> list = new ArrayList<File>();
 
         File path = new File( ConfigurationRotator.FEED_PATH, getComponentName() );
-        for( String e : elements ) {
-            path = new File( path, e );
-        }
-
-        logger.info("PATH: " + path);
 
         for( File f : path.listFiles( filter ) ) {
             list.add( f );
         }
 
-        logger.info("LIST: " + list);
-
         return list;
     }
 
-    protected abstract File getFeedFile( StaplerRequest req );
 
     public void doFeed( StaplerRequest req, StaplerResponse rsp ) throws IOException, ServletException {
-        File file = getFeedFile(req);
+        String component = req.getParameter( "component" );
+        File file = new File( new File( ConfigurationRotator.FEED_PATH, getComponentName() ), component + ".xml" );
+
         if( file != null && file.exists() ) {
             rsp.serveFile( req, FileUtils.openInputStream( file ), file.lastModified(), file.getTotalSpace(), file.getName() );
         } else {

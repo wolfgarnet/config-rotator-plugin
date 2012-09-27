@@ -10,22 +10,16 @@
                         <span style="font-size:15px;">Component</span>
                     </th>
                     <th class="components">
-                        <span style="font-size:15px;">branch</span>
-                    </th>
-                    <th class="components">
-                        <span style="font-size:15px;">Feed link</span>
+                        <span style="font-size:15px;"></span>
                     </th>
                 </thead>
                 <tbody>
                     <j:forEach var="component" items="${it.getComponents()}">
-
-                        <j:forEach var="branches" items="${it.getElements(component.getName())}">
-                            <tr>
-                                <td class="components">${component.getName()}</td>
-                                <td class="components">${it.getElementName(branches.getName())}</td>
-                                <td class="components"><a href="${it.getFeedUrl(component.getName(), it.getElementName(branches.getName()))}">${component.getName()}/${it.getElementName(branches.getName())} feed</a></td>
-                            </tr>
-                        </j:forEach>
+                        <j:set var="title" value="${it.getFeedTitle(component)}" />
+                        <tr>
+                            <td class="components">${title}</td>
+                            <td class="components"><a href="${it.getFeedUrl(it.getComponentName(component.getName()))}">Feed link</a></td>
+                        </tr>
 
                     </j:forEach>
                 </tbody>

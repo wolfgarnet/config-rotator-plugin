@@ -72,6 +72,11 @@ public class GitConfigurationComponent extends AbstractConfigurationComponent {
     }
 
     @Override
+    public String getComponentName() {
+        return repository;
+    }
+
+    @Override
     protected Object clone() throws CloneNotSupportedException {
         GitConfigurationComponent gcc = new GitConfigurationComponent( name, repository, branch, commitId, fixed );
         return  gcc;
@@ -85,21 +90,6 @@ public class GitConfigurationComponent extends AbstractConfigurationComponent {
     @Override
     public String prettyPrint() {
         return name + ": " + repository + ", " + branch + ", " + commitId;
-    }
-
-    @Override
-    public File getFeedFile( File path ) {
-        return new File( new File( path, name ), branch + ".xml" );
-    }
-
-    @Override
-    public Feed getFeed( File feedFile, String url, Date updated ) throws FeedException, IOException {
-        String feedId = url + "feed/?component=" + name + "&branch=" + branch;
-        String feedTitle = name;
-
-        Feed feed = ConfigurationRotatorReport.getFeedFromFile( feedFile, feedTitle, feedId, updated );
-
-        return feed;
     }
 
     @Override
