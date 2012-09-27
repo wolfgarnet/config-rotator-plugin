@@ -61,6 +61,21 @@ public class GitConfiguration extends AbstractConfiguration<GitConfigurationComp
 
     @Override
     public String toHtml() {
-        return "";
+        StringBuilder builder = new StringBuilder();
+
+        builder.append( "<table border=\"0\" style=\"text-align:left;\">" );
+        builder.append( "<thead>" );
+        builder.append( "<th>" ).append( "Repository" ).append( "</th>" );
+        builder.append( "<th>" ).append( "Branch" ).append( "</th>" );
+        builder.append( "<th>" ).append( "Commit" ).append( "</th>" );
+        builder.append( "<th>" ).append( "Fixed" ).append( "</th>" );
+
+        for( GitConfigurationComponent comp : getList() ) {
+            builder.append( comp.toHtml() );
+        }
+
+        builder.append( "</thead>" );
+        builder.append( "</table>" );
+        return builder.toString();
     }
 }

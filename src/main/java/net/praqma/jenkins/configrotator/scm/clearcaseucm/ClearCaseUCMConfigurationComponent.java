@@ -85,41 +85,20 @@ public class ClearCaseUCMConfigurationComponent extends AbstractConfigurationCom
     }
 
     @Override
-    public Entry getFeedEntry( AbstractBuild<?, ?> build, Date updated ) {
+    public String getFeedName() {
+        return baseline.getComponent().getNormalizedName();
+    }
 
-        ConfigurationRotatorBuildAction action = build.getAction( ConfigurationRotatorBuildAction.class );
-        AbstractConfiguration configuration = action.getConfigurationWithOutCast();
-        List<AbstractConfigurationComponent> components = configuration.getList();
-
-        String componentPVob = baseline.getPVob().getName();
-        String componentName = baseline.getComponent().getShortname();
-
-
-        String id = "'" + build.getParent().getDisplayName() + "'#" + build.getNumber() + ":" + componentName + "@" + componentPVob;
-
-        Entry entry = new Entry( componentName + " in new " + action.getResult().toString() + " configuration", id, updated );
-        entry.summary = componentName + " found to be " + action.getResult().toString() + " with "
-                + components.size() + " other components";
-
-        entry.author = new Person( "Jenkins job using config-rotator. Job: "
-                + build.getParent().getDisplayName() + ", build: #" + build.getNumber() );
-
-        entry.content = configuration.getDescription( build );
-        Html.Break br1 = new Html.Break();
-        Html.Anchor linkFeeds = new Html.Anchor( ConfigurationRotatorReport.FeedFrontpageUrl(), "Click here for a list of available feeds" );
-        Html.Break br2 = new Html.Break();
-        Html.Anchor joblink = new Html.Anchor( ConfigurationRotatorReport.GenerateJobUrl( build ), "Click here to go to the build that created this feed" );
-
-        entry.content += configuration.toHtml() + br1 + linkFeeds + br2 + joblink;
-
-        return entry;
+    @Override
+    public String getFeedId() {
+        return baseline.getComponent().getNormalizedName();
     }
 
     /**
-     * Test method...
      *
      * @return a html'ified version of this clearcase components. In this case it is a table row.
      */
+    @Override
     public String toHtml() {
         StringBuilder builder = new StringBuilder();
         builder.append( "<tr>" );

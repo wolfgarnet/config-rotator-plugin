@@ -1,21 +1,8 @@
 package net.praqma.jenkins.configrotator.scm.git;
 
-import hudson.model.AbstractBuild;
-import net.praqma.html.Html;
-import net.praqma.jenkins.configrotator.AbstractConfiguration;
 import net.praqma.jenkins.configrotator.AbstractConfigurationComponent;
-import net.praqma.jenkins.configrotator.ConfigurationRotatorBuildAction;
-import net.praqma.jenkins.configrotator.ConfigurationRotatorReport;
-import net.praqma.util.xml.feed.Entry;
-import net.praqma.util.xml.feed.Feed;
-import net.praqma.util.xml.feed.FeedException;
-import net.praqma.util.xml.feed.Person;
 import org.eclipse.jgit.revwalk.RevCommit;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
 import java.util.logging.Logger;
 
 public class GitConfigurationComponent extends AbstractConfigurationComponent {
@@ -83,6 +70,16 @@ public class GitConfigurationComponent extends AbstractConfigurationComponent {
     }
 
     @Override
+    public String getFeedId() {
+        return repository;
+    }
+
+    @Override
+    public String getFeedName() {
+        return repository;
+    }
+
+    @Override
     public String toString() {
         return "GitComponent[" + name + ": " + repository + ", " + branch + ", " + commitId + "]";
     }
@@ -93,30 +90,18 @@ public class GitConfigurationComponent extends AbstractConfigurationComponent {
     }
 
     @Override
-    public Entry getFeedEntry( AbstractBuild<?, ?> build, Date updated ) {
-        ConfigurationRotatorBuildAction action = build.getAction( ConfigurationRotatorBuildAction.class );
-        AbstractConfiguration configuration = action.getConfigurationWithOutCast();
-        List<AbstractConfigurationComponent> components = configuration.getList();
-
-
-        String id = "'" + build.getParent().getDisplayName() + "'#" + build.getNumber() + ":" + branch + "@" + name;
-
-        Entry entry = new Entry( name + " in new " + action.getResult().toString() + " configuration", id, updated );
-        int l = components.size() - 1;
-        entry.summary = name + " is " + action.getResult().toString() + " with "
-                + l + " other component" + ( l == 1 ? "" : "s" );
-
-        entry.author = new Person( "Jenkins config-rotator job: "
-                + build.getParent().getDisplayName() + ", build: #" + build.getNumber() );
-
-        entry.content = configuration.getDescription( build );
-        Html.Break br1 = new Html.Break();
-        Html.Anchor linkFeeds = new Html.Anchor( ConfigurationRotatorReport.FeedFrontpageUrl(), "Click here for a list of available feeds" );
-        Html.Break br2 = new Html.Break();
-        Html.Anchor joblink = new Html.Anchor( ConfigurationRotatorReport.GenerateJobUrl( build ), "Click here to go to the build that created this feed" );
-
-        entry.content += configuration.toHtml() + br1 + linkFeeds + br2 + joblink;
-
-        return entry;
+    public String toHtml() {
+        StringBuilder builder = new StringBuilder();
+        builder.append( "<tr>" );
+        builder.append( "<td style=\"padding:5px 10px;\">" ).append( repository ).append( "</td>" );
+        builder.append( "<td style=\"padding:5px 10px;\">" ).append( branch ).append( "</td>" );
+        if( isChangedLast() ) {
+            builder.append( "<td style=\"font-weight:bold;color:#FF6633;padding:5px 10px;\">" ).append( commitId ).append( "</td>" );
+        } else {
+            builder.append( "<td style=\"padding:5px 10px;\">" ).append( commitId ).append( "</td>" );
+        }
+        builder.append( "<td style=\"padding:5px 10px;\">" ).append( fixed ).append( "</td>" ).append( "</tr>" );
+        return builder.toString();
     }
+
 }
