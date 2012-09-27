@@ -114,7 +114,7 @@ public class ConfigurationRotator extends SCM {
     public boolean checkout( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, File file ) throws IOException, InterruptedException {
         PrintStream out = listener.getLogger();
 
-        out.println( "Config-rotator version: " + Jenkins.getInstance().getPlugin( "config-rotator" ).getWrapper().getVersion() );
+        out.println( LOGGERNAME + "Version: " + Jenkins.getInstance().getPlugin( "config-rotator" ).getWrapper().getVersion() );
 
         /*
            * Determine if the job was reconfigured
@@ -140,6 +140,8 @@ public class ConfigurationRotator extends SCM {
                 configuration = p.getNextConfiguration( action );
             }
 
+            acrs.printConfiguration( out, configuration );
+
             if( configuration != null ) {
                 out.println( LOGGERNAME + "Checking configuration" );
                 p.checkConfiguration( configuration );
@@ -154,7 +156,7 @@ public class ConfigurationRotator extends SCM {
                 try {
                     acrs.writeChangeLog( file, listener, build );
                 } catch( ConfigurationRotatorException ex ) {
-                    out.println( "Cleartool Checkout exception: " + ex );
+                    out.println( "Checkout exception: " + ex );
                 }
             }
         } catch( Exception e ) {

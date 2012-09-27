@@ -176,8 +176,12 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
                 try {
                     logger.fine("Config: " + config);
                     RevCommit commit = workspace.act( new ResolveNextCommit( config.getName(), config.getCommitId() ) );
-                    logger.fine( "Commit1: " + commit );
-                    logger.fine( "Commit2: " + config.getCommitId() );
+                    logger.fine( "Current commit: " + commit.getName() );
+                    logger.fine( "Current commit: " + commit.getCommitTime() );
+                    if( oldest != null ) {
+                        logger.fine( "Oldest  commit: " + oldest.getName() );
+                        logger.fine( "Oldest  commit: " + oldest.getCommitTime() );
+                    }
                     if( oldest == null || commit.getCommitTime() < oldest.getCommitTime() ) {
                         oldest = commit;
                         chosen = config;
@@ -196,7 +200,7 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
         logger.fine( "oldest: " + oldest );
         if( chosen != null && oldest != null ) {
             logger.fine( "There was a new commit: " + oldest );
-            listener.getLogger().println( "Next commit: " + oldest );
+            listener.getLogger().println( ConfigurationRotator.LOGGERNAME + "Next commit: " + chosen );
             chosen.setCommitId( oldest.getName() );
             chosen.setChangedLast( true );
         } else {
