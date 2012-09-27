@@ -73,4 +73,24 @@ public abstract class AbstractConfiguration<T extends AbstractConfigurationCompo
 
         return description;
     }
+
+
+    public String basicHtml( StringBuilder builder, String ... titles ) {
+
+        builder.append( "<table style=\"text-align:left;border-solid:hidden;border-collapse:collapse;\">" );
+        builder.append( "<thead>" );
+        for( String title : titles ) {
+            builder.append( "<th style=\"padding-right:15px\">" ).append( title ).append( "</th>" );
+        }
+        builder.append( "</thead>" );
+
+        builder.append( "<tbody>" );
+        for( T comp : getList() ) {
+            builder.append( comp.toHtml() );
+        }
+        builder.append( "</tbody>" );
+
+        builder.append( "</table>" );
+        return builder.toString();
+    }
 }

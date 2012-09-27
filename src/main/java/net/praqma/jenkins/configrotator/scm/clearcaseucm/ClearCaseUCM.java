@@ -8,7 +8,6 @@ import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.model.TaskListener;
-import hudson.scm.PollingResult;
 import hudson.util.FormValidation;
 
 import java.io.*;
@@ -33,7 +32,6 @@ import org.kohsuke.stapler.StaplerRequest;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.praqma.clearcase.ucm.entities.Component;
@@ -41,8 +39,6 @@ import net.praqma.clearcase.ucm.entities.Component;
 public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Serializable {
 
     private static Logger logger = Logger.getLogger( ClearCaseUCM.class.getName() );
-
-    //public ClearCaseUCMConfiguration projectConfiguration;
 
     public List<ClearCaseUCMTarget> targets;
 
@@ -103,12 +99,12 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 
     @Override
     public Poller getPoller( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener, boolean reconfigure ) {
-        return new CCUCMPoller(project, launcher, workspace, listener, reconfigure);
+        return new UCMPoller(project, launcher, workspace, listener, reconfigure);
     }
 
-    public class CCUCMPoller extends Poller<ClearCaseUCMConfiguration, ClearCaseUCMTarget> {
+    public class UCMPoller extends Poller<ClearCaseUCMConfiguration, ClearCaseUCMTarget> {
 
-        public CCUCMPoller( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener, boolean reconfigure ) {
+        public UCMPoller( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener, boolean reconfigure ) {
             super( project, launcher, workspace, listener, reconfigure );
         }
 
@@ -125,7 +121,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 
     @Override
     public Performer<ClearCaseUCMConfiguration> getPerform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener ) throws IOException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return new UCMPerformer(build, launcher, workspace, listener);
     }
 
     public class UCMPerformer extends Performer<ClearCaseUCMConfiguration> {

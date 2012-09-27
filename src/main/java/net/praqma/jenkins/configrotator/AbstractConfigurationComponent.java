@@ -89,4 +89,27 @@ public abstract class AbstractConfigurationComponent implements Serializable, Fe
 
         return entry;
     }
+
+    public static class Element {
+        public String element;
+        public boolean highlight;
+
+        public Element( String element, boolean highlight ) {
+            this.element = element;
+            this.highlight = highlight;
+        }
+    }
+
+    protected String getBasicHtml( StringBuilder builder, Element ... elements ) {
+        builder.append( "<tr>" );
+        for( Element e : elements ) {
+            if( e.highlight ) {
+                builder.append( "<td style=\"font-weight:bold;color:#FF6633;padding-right:15px\">" ).append( e.element ).append( "</td>" );
+            } else {
+                builder.append( "<td style=\"padding-right:15px\">" ).append( e.element ).append( "</td>" );
+            }
+        }
+        builder.append( "</tr>" );
+        return builder.toString();
+    }
 }

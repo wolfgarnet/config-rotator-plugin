@@ -91,7 +91,12 @@ public class GitConfigurationComponent extends AbstractConfigurationComponent {
 
     @Override
     public String toHtml() {
+
         StringBuilder builder = new StringBuilder();
+
+        return getBasicHtml( builder, new Element( repository, isChangedLast() ), new Element( branch, isChangedLast() ), new Element( commitId, isChangedLast() ), new Element( fixed+"", isChangedLast() ) );
+        /*
+
         builder.append( "<tr>" );
         builder.append( "<td style=\"padding:5px 10px;\">" ).append( repository ).append( "</td>" );
         builder.append( "<td style=\"padding:5px 10px;\">" ).append( branch ).append( "</td>" );
@@ -102,6 +107,7 @@ public class GitConfigurationComponent extends AbstractConfigurationComponent {
         }
         builder.append( "<td style=\"padding:5px 10px;\">" ).append( fixed ).append( "</td>" ).append( "</tr>" );
         return builder.toString();
+        */
     }
 
 }
