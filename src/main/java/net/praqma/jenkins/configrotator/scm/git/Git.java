@@ -33,7 +33,7 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
     private static Logger logger = Logger.getLogger( Git.class.getName() );
 
     private List<GitTarget> targets = new ArrayList<GitTarget>();
-    public GitConfiguration projectConfiguration;
+    //public GitConfiguration projectConfiguration;
 
     @DataBoundConstructor
     public Git() {
@@ -232,7 +232,7 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
 
     public List<GitTarget> getTargets() {
         if( projectConfiguration != null ) {
-            return getConfigurationAsTargets( projectConfiguration );
+            return getConfigurationAsTargets( (GitConfiguration) projectConfiguration );
         } else {
             return targets;
         }

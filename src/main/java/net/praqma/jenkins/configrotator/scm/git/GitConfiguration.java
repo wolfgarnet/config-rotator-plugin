@@ -42,7 +42,7 @@ public class GitConfiguration extends AbstractConfiguration<GitConfigurationComp
     }
 
     @Override
-    public GitConfiguration clone() throws CloneNotSupportedException {
+    public GitConfiguration clone() {
         GitConfiguration n = new GitConfiguration();
 
         for( GitConfigurationComponent gc : this.list ) {

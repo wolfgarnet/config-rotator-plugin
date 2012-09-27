@@ -31,6 +31,10 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
      */
 	public abstract String getName();
 
+    public void setConfiguration( AbstractConfiguration configuration ) {
+        this.projectConfiguration = configuration;
+    }
+
     //public abstract List<AbstractTarget> getTargets();
     //public abstract <T extends AbstractConfiguration> T getConfigurationFromTargets( List<AbstractTarget> targets, FilePath workspace, TaskListener listener ) throws ConfigurationRotatorException;
     public abstract AbstractConfiguration nextConfiguration( TaskListener listener, AbstractConfiguration configuration, FilePath workspace ) throws ConfigurationRotatorException;
@@ -55,7 +59,7 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
         public abstract C getConfigurationFromTargets( List<T> targets ) throws ConfigurationRotatorException;
         public abstract List<T> getTargets() throws ConfigurationRotatorException;
 
-        public PollingResult poll( C projectConfiguration ) throws AbortException {
+        public PollingResult poll() throws AbortException {
             PrintStream out = listener.getLogger();
             logger.fine( ConfigurationRotator.LOGGERNAME + "Polling started" );
 
@@ -82,7 +86,7 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
                 }
             } else {
                 logger.fine( "Project configuration found" );
-                configuration = projectConfiguration;
+                configuration = (C) projectConfiguration;
             }
 
             /* Only look ahead if the build was NOT reconfigured */

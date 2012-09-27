@@ -64,7 +64,7 @@ public class GitConfigurationComponent extends AbstractConfigurationComponent {
     }
 
     @Override
-    protected Object clone() throws CloneNotSupportedException {
+    protected Object clone() {
         GitConfigurationComponent gcc = new GitConfigurationComponent( name, repository, branch, commitId, fixed );
         return  gcc;
     }

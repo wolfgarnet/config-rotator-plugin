@@ -27,107 +27,106 @@ import jenkins.model.Jenkins;
 
 public class ConfigurationRotator extends SCM {
 
-	private AbstractConfigurationRotatorSCM acrs;
-        // public to be able to print the name in debug everywhere
-	public static Logger logger = Logger.getLogger( ConfigurationRotator.class.getName()  );
-	private boolean printDebug = false;
+    private AbstractConfigurationRotatorSCM acrs;
+    // public to be able to print the name in debug everywhere
+    public static Logger logger = Logger.getLogger( ConfigurationRotator.class.getName() );
+    private boolean printDebug = false;
 
-	public enum ResultType {
+    public enum ResultType {
 
-		/*
-		 * Tested and configuration is compatible
-		 */
-		COMPATIBLE,
-		
-		/*
-		 * Tested and configuration is NOT compatible
-		 */
-		INCOMPATIBLE, 
-		
-		FAILED,
-		
-		 /*
-		 * The tests failed and was unable to determine compatibility
-		 */
-		UNDETERMINED
-	}
+        /*
+           * Tested and configuration is compatible
+           */
+        COMPATIBLE,
+
+        /*
+           * Tested and configuration is NOT compatible
+           */
+        INCOMPATIBLE,
+
+        FAILED,
+
+        /*
+           * The tests failed and was unable to determine compatibility
+           */
+        UNDETERMINED
+    }
 
     public static final String URL_NAME = "config-rotator";
-	public static final String NAME = "ConfigRotator";
-	public static final String LOGGERNAME = "[" + NAME + "] ";
-	public boolean justConfigured = false;
+    public static final String NAME = "ConfigRotator";
+    public static final String LOGGERNAME = "[" + NAME + "] ";
+    public boolean justConfigured = false;
 
-	public static final String SEPARATOR = System.getProperty( "file.separator" );
-	public static final String FEED_DIR = "config-rotator-feeds" + SEPARATOR;
+    public static final String SEPARATOR = System.getProperty( "file.separator" );
+    public static final String FEED_DIR = "config-rotator-feeds" + SEPARATOR;
 
     public static final File FEED_PATH = new File( Jenkins.getInstance().getRootDir(), FEED_DIR );
 
     /* Feed URL */
     private static final int PORT = 8080;
-    private static final String DEFAULT_URL = "http://localhost:"+PORT;
-    public static final String FEED_URL = ( (Jenkins.getInstance() == null || Jenkins.getInstance().getRootUrl() == null) ? DEFAULT_URL : Jenkins.getInstance().getRootUrl() ) + "/" + URL_NAME + "/";
+    private static final String DEFAULT_URL = "http://localhost:" + PORT;
+    public static final String FEED_URL = ( ( Jenkins.getInstance() == null || Jenkins.getInstance().getRootUrl() == null ) ? DEFAULT_URL : Jenkins.getInstance().getRootUrl() ) + "/" + URL_NAME + "/";
 
-	/**
-	 * Determines whether a new configuration has been entered. If true, the
-	 * input is new.
-	 */
-	public boolean reconfigure;
+    /**
+     * Determines whether a new configuration has been entered. If true, the
+     * input is new.
+     */
+    public boolean reconfigure;
 
-	@DataBoundConstructor
-	public ConfigurationRotator( AbstractConfigurationRotatorSCM acrs ) {
-		this.acrs = acrs;
-		this.justConfigured = true;
-	}
+    @DataBoundConstructor
+    public ConfigurationRotator( AbstractConfigurationRotatorSCM acrs ) {
+        this.acrs = acrs;
+        this.justConfigured = true;
+    }
 
     public ConfigurationRotator( AbstractConfigurationRotatorSCM acrs, boolean debug ) {
         this.acrs = acrs;
         this.justConfigured = true;
     }
 
-	public AbstractConfigurationRotatorSCM getAcrs() {
-		return acrs;
-	}
+    public AbstractConfigurationRotatorSCM getAcrs() {
+        return acrs;
+    }
 
-	public boolean doReconfigure() {
-		return reconfigure;
-	}
+    public boolean doReconfigure() {
+        return reconfigure;
+    }
 
-	public void setReconfigure( boolean reconfigure ) {
-		this.reconfigure = reconfigure;
-	}
+    public void setReconfigure( boolean reconfigure ) {
+        this.reconfigure = reconfigure;
+    }
 
-	public boolean doPrintDebug() {
-		return printDebug;
-	}
+    public boolean doPrintDebug() {
+        return printDebug;
+    }
 
-	@Override
-	public SCMRevisionState calcRevisionsFromBuild( AbstractBuild<?, ?> arg0, Launcher arg1, TaskListener arg2 ) throws IOException, InterruptedException {
-		if( !doReconfigure() ) {
-			return new SCMRevisionState() {
-			};
-		} else {
-			return null;
-		}
-	}
+    @Override
+    public SCMRevisionState calcRevisionsFromBuild( AbstractBuild<?, ?> arg0, Launcher arg1, TaskListener arg2 ) throws IOException, InterruptedException {
+        if( !doReconfigure() ) {
+            return new SCMRevisionState() {
+            };
+        } else {
+            return null;
+        }
+    }
 
-	@Override
-	public boolean checkout( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, File file ) throws IOException, InterruptedException {
-		PrintStream out = listener.getLogger();
-		
-		out.println( "Config-rotator version: " + Jenkins.getInstance().getPlugin( "config-rotator" ).getWrapper().getVersion() );
+    @Override
+    public boolean checkout( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, File file ) throws IOException, InterruptedException {
+        PrintStream out = listener.getLogger();
 
-		/*
-		 * Determine if the job was reconfigured
-		 */
-		if( justConfigured ) {
-			reconfigure = acrs.wasReconfigured( build.getProject() );
-			logger.fine( "Was reconfigured: " + reconfigure );
-		}
-        
+        out.println( "Config-rotator version: " + Jenkins.getInstance().getPlugin( "config-rotator" ).getWrapper().getVersion() );
+
+        /*
+           * Determine if the job was reconfigured
+           */
+        if( justConfigured ) {
+            reconfigure = acrs.wasReconfigured( build.getProject() );
+            logger.fine( "Was reconfigured: " + reconfigure );
+        }
 
 
-		boolean performResult = false;
-		try {
+        boolean performResult = false;
+        try {
             AbstractConfigurationRotatorSCM.Performer<AbstractConfiguration<?>> p = acrs.getPerform( build, launcher, workspace, listener );
 
             ConfigurationRotatorBuildAction action = acrs.getLastResult( build.getProject(), p.getSCMClass() );
@@ -153,86 +152,86 @@ public class ConfigurationRotator extends SCM {
                 performResult = true;
 
                 try {
-                    acrs.writeChangeLog(file, listener, build);
-                } catch (ConfigurationRotatorException ex) {
-                    out.println("Cleartool Checkout exception: "+ex);
+                    acrs.writeChangeLog( file, listener, build );
+                } catch( ConfigurationRotatorException ex ) {
+                    out.println( "Cleartool Checkout exception: " + ex );
                 }
             }
-		} catch( Exception e ) {
-			logger.log( Level.SEVERE, "Unable to create configuration", e );
+        } catch( Exception e ) {
+            logger.log( Level.SEVERE, "Unable to create configuration", e );
             logger.severe( e.getMessage() );
-			throw new AbortException( e.getMessage() );
-		}
+            throw new AbortException( e.getMessage() );
+        }
 
-		if( !performResult ) {
-			// ConfigurationRotator.perform will return false only if no new baselines found
-			// We fail build if there is now new baseline.
-			// An alternative would be to do like the CCUCM plugin and make the
-			// build result "grey" with an comment "nothing to do".
-			throw new AbortException( "Nothing new" );
-		} else {
+        if( !performResult ) {
+            // ConfigurationRotator.perform will return false only if no new baselines found
+            // We fail build if there is now new baseline.
+            // An alternative would be to do like the CCUCM plugin and make the
+            // build result "grey" with an comment "nothing to do".
+            throw new AbortException( "Nothing new" );
+        } else {
 
-			/*
-			 * Config is not fresh anymore
-			 */
-			reconfigure = false;
-			justConfigured = false;
-			build.getProject().save();
+            /*
+                * Config is not fresh anymore
+                */
+            reconfigure = false;
+            justConfigured = false;
+            build.getProject().save();
 
-			/*
-			 * If not aborted, add publisher
-			 */
-			boolean added = false;
-			for( Publisher p : build.getParent().getPublishersList() ) {
-				if( p instanceof ConfigurationRotatorPublisher ) {
-					added = true;
-					break;
-				}
-			}
-			if( !added ) {
-				build.getProject().getPublishersList().add( new ConfigurationRotatorPublisher() );
-			}
-
-			return true;
-		}
-	}
-
-	public void setConfigurationByAction( AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action ) throws IOException {
-		acrs.setConfigurationByAction( project, action );
-		reconfigure = true;
-	}
-
-	@Override
-	protected PollingResult compareRemoteRevisionWith( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener, SCMRevisionState arg4 ) throws IOException, InterruptedException {
-                PrintStream out = listener.getLogger();	
-                // This little check ensures changes are not found while building, as
-                // this with many concurrent builds and polling leads to issues where
-                // we saw a build was long in the queue, and when started, the polling found
-                // changed a did schedule the same build with the same changes as last time
-                // between the last one started and finished.
-                //Basically this disables polling while the job has a build in the queue.
-                if (project.isInQueue())
-                {
-                    out.println("A build already in queue - cancelling poll");
-                    logger.fine( "A build already in queue - cancelling poll" );
-                    return PollingResult.NO_CHANGES;
+            /*
+                * If not aborted, add publisher
+                */
+            boolean added = false;
+            for( Publisher p : build.getParent().getPublishersList() ) {
+                if( p instanceof ConfigurationRotatorPublisher ) {
+                    added = true;
+                    break;
                 }
-		/*
-		 * Determine if the job was reconfigured
-		 */
-		if( justConfigured ) {
-			reconfigure = acrs.wasReconfigured( project );
-			logger.fine( "Was reconfigured: " + reconfigure );
-		}
+            }
+            if( !added ) {
+                build.getProject().getPublishersList().add( new ConfigurationRotatorPublisher() );
+            }
 
-		PollingResult result = acrs.poll( project, launcher, workspace, listener, reconfigure );
-		
-		return result;
-	}
+            return true;
+        }
+    }
+
+    public void setConfigurationByAction( AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action ) throws IOException {
+        acrs.setConfigurationByAction( project, action );
+        reconfigure = true;
+    }
+
+    @Override
+    protected PollingResult compareRemoteRevisionWith( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener, SCMRevisionState arg4 ) throws IOException, InterruptedException {
+        PrintStream out = listener.getLogger();
+        // This little check ensures changes are not found while building, as
+        // this with many concurrent builds and polling leads to issues where
+        // we saw a build was long in the queue, and when started, the polling found
+        // changed a did schedule the same build with the same changes as last time
+        // between the last one started and finished.
+        //Basically this disables polling while the job has a build in the queue.
+        if( project.isInQueue() ) {
+            out.println( "A build already in queue - cancelling poll" );
+            logger.fine( "A build already in queue - cancelling poll" );
+            return PollingResult.NO_CHANGES;
+        }
+        /*
+           * Determine if the job was reconfigured
+           */
+        if( justConfigured ) {
+            reconfigure = acrs.wasReconfigured( project );
+            logger.fine( "Was reconfigured: " + reconfigure );
+        }
+
+        AbstractConfigurationRotatorSCM.Poller poller = acrs.getPoller(project, launcher, workspace, listener, reconfigure );
+
+        return poller.poll();
+    }
 
     /**
      * Delegate the change log parser to abstract subtypes.
-     * @return 
+     *
+     * @return
      */
     @Override
     public ChangeLogParser createChangeLogParser() {
@@ -240,30 +239,30 @@ public class ConfigurationRotator extends SCM {
         return acrs.createChangeLogParser();
     }
 
-	@Extension
-	public static final class RotatorDescriptor extends SCMDescriptor<ConfigurationRotator> {
+    @Extension
+    public static final class RotatorDescriptor extends SCMDescriptor<ConfigurationRotator> {
 
-		public RotatorDescriptor() {
-			super( ConfigurationRotator.class, null );
-		}
+        public RotatorDescriptor() {
+            super( ConfigurationRotator.class, null );
+        }
 
-		@Override
-		public String getDisplayName() {
-			return "Config rotator";
-		}
+        @Override
+        public String getDisplayName() {
+            return "Config rotator";
+        }
 
-		@Override
-		public SCM newInstance( StaplerRequest req, JSONObject formData ) throws FormException {
-			System.out.println( "FORM: " + formData.toString( 2 ) );
-			ConfigurationRotator r = (ConfigurationRotator) super.newInstance( req, formData );
-			ConfigurationRotatorSCMDescriptor<AbstractConfigurationRotatorSCM> d = (ConfigurationRotatorSCMDescriptor<AbstractConfigurationRotatorSCM>) r.getAcrs().getDescriptor();
-			r.acrs = d.newInstance( req, formData, r.acrs );
-			save();
-			return r;
-		}
+        @Override
+        public SCM newInstance( StaplerRequest req, JSONObject formData ) throws FormException {
+            System.out.println( "FORM: " + formData.toString( 2 ) );
+            ConfigurationRotator r = (ConfigurationRotator) super.newInstance( req, formData );
+            ConfigurationRotatorSCMDescriptor<AbstractConfigurationRotatorSCM> d = (ConfigurationRotatorSCMDescriptor<AbstractConfigurationRotatorSCM>) r.getAcrs().getDescriptor();
+            r.acrs = d.newInstance( req, formData, r.acrs );
+            save();
+            return r;
+        }
 
-		public List<ConfigurationRotatorSCMDescriptor<?>> getSCMs() {
-			return AbstractConfigurationRotatorSCM.getDescriptors();
-		}
-	}    
+        public List<ConfigurationRotatorSCMDescriptor<?>> getSCMs() {
+            return AbstractConfigurationRotatorSCM.getDescriptors();
+        }
+    }
 }

@@ -61,7 +61,7 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUC
      * @throws ConfigurationRotatorException if target can not be parsed, or if they can not be loaded with ClearCase
      * @throws IOException
      */
-    public static ClearCaseUCMConfiguration getConfigurationFromTargets( List<ClearCaseUCMTarget> targets, FilePath workspace, TaskListener listener ) throws ConfigurationRotatorException, IOException {
+    public static ClearCaseUCMConfiguration getConfigurationFromTargets( List<ClearCaseUCMTarget> targets, FilePath workspace, TaskListener listener ) throws ConfigurationRotatorException {
         PrintStream out = listener.getLogger();
 
         /**/

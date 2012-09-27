@@ -202,7 +202,7 @@ public class ConfigTest {
 
         // This emulates what is none in GUI
         cr.justConfigured = true;
-        ccucm.projectConfiguration = null; // Emulates what GUI saves does, creates all new objects
+        ccucm.setConfiguration( null ); // Emulates what GUI saves does, creates all new objects
         // Try to build
         System.out.println(debugLine + "Scheduling a build for new configuration: model-1 and client-1");
         b = project.scheduleBuild2(0).get();

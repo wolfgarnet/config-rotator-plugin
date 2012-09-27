@@ -1,9 +1,10 @@
 package net.praqma.jenkins.configrotator.scm.clearcaseucm;
 
 import net.praqma.clearcase.ucm.entities.Project;
+import net.praqma.jenkins.configrotator.AbstractTarget;
 import org.kohsuke.stapler.DataBoundConstructor;
 
-public class ClearCaseUCMTarget {
+public class ClearCaseUCMTarget extends AbstractTarget {
 
 	private String component;
     private String baselineName;

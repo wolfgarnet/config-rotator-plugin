@@ -80,64 +80,9 @@ public class ConfigRotatorTest extends TestCase {
 		Mockito.when( buildlistener.getLogger() ).thenReturn( System.out );
 	}
 
-	@Test
-	public void testPollNoProjectNoPrevious() throws IOException, InterruptedException {
-		ClearCaseUCM ccucm = new ClearCaseUCM( "" );
-		
-		/* Jenkins mock */
-		Mockito.when( tasklistener.getLogger() ).thenReturn( System.out );
-		
-		/* ClearCase mock */
-		Mockito.when( ccucm.getLastResult( project, ClearCaseUCM.class ) ).thenReturn( null );
-		
-		PollingResult result = ccucm.poll( project, launcher, workspace, tasklistener, false );
-		
-		assertEquals( PollingResult.BUILD_NOW, result );
-	}
-	
-	@Test
-	public void testPollNoProjectPreviousNoChanges() throws IOException, InterruptedException, ConfigurationRotatorException {
-		ClearCaseUCM ccucm = new ClearCaseUCM( "" );
-		ClearCaseUCM spy = Mockito.spy( ccucm );
-		
-		/* Jenkins mock */		
-		Mockito.when( tasklistener.getLogger() ).thenReturn( System.out );
-		
-		/* ClearCase mock */
-		ClearCaseUCMConfiguration ccc = new ClearCaseUCMConfiguration();
-		ConfigurationRotatorBuildAction action = new ConfigurationRotatorBuildAction( build, ClearCaseUCM.class, ccc );
-		
-		/* Behaviour */
-		Mockito.doReturn( action ).when( spy ).getLastResult( project, ClearCaseUCM.class );
-		Mockito.doReturn( null ).when( spy ).nextConfiguration( tasklistener, ccc, workspace );
-		
-		PollingResult result = spy.poll( project, launcher, workspace, tasklistener, false );
-		
-		assertEquals( PollingResult.NO_CHANGES, result );
-	}
-	
-	@Test
-	public void testPollNoProjectPreviousChanges() throws IOException, InterruptedException, ConfigurationRotatorException {
-		ClearCaseUCM ccucm = new ClearCaseUCM( "" );
-		ClearCaseUCM spy = Mockito.spy( ccucm );
-		
-		/* Jenkins mock */		
-		Mockito.when( tasklistener.getLogger() ).thenReturn( System.out );
-		
-		/* ClearCase mock */
-		ClearCaseUCMConfiguration ccc = new ClearCaseUCMConfiguration();
-		ConfigurationRotatorBuildAction action = new ConfigurationRotatorBuildAction( build, ClearCaseUCM.class, ccc );
-		
-		/* Behaviour */
-		Mockito.doReturn( action ).when( spy ).getLastResult( project, ClearCaseUCM.class );
-		Mockito.doReturn( ccc ).when( spy ).nextConfiguration( tasklistener, ccc, workspace );
-		
-		PollingResult result = spy.poll( project, launcher, workspace, tasklistener, false );
-		
-		assertEquals( PollingResult.BUILD_NOW, result );
-	}
-	
-	
+
+
+
 	
 	@Test
 	public void testWasReconfigured() throws IOException, InterruptedException, ConfigurationRotatorException {
@@ -222,24 +167,7 @@ public class ConfigRotatorTest extends TestCase {
 
 	
 
-	@Test
-	public void testReconfigure() throws IOException, InterruptedException, ConfigurationRotatorException, UnableToInitializeEntityException {
-		ClearCaseUCM ccucm = new ClearCaseUCM( "" );
-		ClearCaseUCM spy = Mockito.spy( ccucm );
-		
-		List<ClearCaseUCMConfigurationComponent> comps = new ArrayList<ClearCaseUCMConfigurationComponent>();
-		comps.add( new ClearCaseUCMConfigurationComponent( Baseline.get( "bl2@\\pvob" ), PromotionLevel.INITIAL, false ) );
-		ClearCaseUCMConfiguration ccc = new ClearCaseUCMConfiguration( comps );
-		
-		/**/
-		PowerMockito.mockStatic( ClearCaseUCMConfiguration.class );
-		PowerMockito.when( ClearCaseUCMConfiguration.getConfigurationFromTargets( Mockito.anyListOf( ClearCaseUCMTarget.class ), Mockito.any( FilePath.class ), Mockito.any( TaskListener.class) ) ).thenReturn( ccc );
-		
-		spy.reconfigure( workspace, tasklistener );
-		
-		assertEquals( ccc, spy.projectConfiguration );
-	}
-	
+
 	@Test( expected=AbortException.class )
 	public void testReconfigureFails() throws IOException, InterruptedException, ConfigurationRotatorException, UnableToInitializeEntityException {
 		ClearCaseUCM ccucm = new ClearCaseUCM( "" );
