@@ -31,83 +31,13 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
      */
 	public abstract String getName();
 
-    public abstract List<AbstractTarget> getTargets();
-    public abstract <T extends AbstractConfiguration> T getConfigurationFromTargets( List<AbstractTarget> targets, FilePath workspace, TaskListener listener ) throws ConfigurationRotatorException;
+    //public abstract List<AbstractTarget> getTargets();
+    //public abstract <T extends AbstractConfiguration> T getConfigurationFromTargets( List<AbstractTarget> targets, FilePath workspace, TaskListener listener ) throws ConfigurationRotatorException;
     public abstract AbstractConfiguration nextConfiguration( TaskListener listener, AbstractConfiguration configuration, FilePath workspace ) throws ConfigurationRotatorException;
 
-    /**
-     * Determine if there's something new
-     * @param project
-     * @param launcher
-     * @param workspace
-     * @param listener
-     * @param reconfigure
-     * @return
-     * @throws IOException
-     * @throws InterruptedException
-     */
-	//public abstract PollingResult poll( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener, boolean reconfigure ) throws IOException, InterruptedException;
-    public PollingResult poll( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener, boolean reconfigure ) throws IOException, InterruptedException {
-        PrintStream out = listener.getLogger();
-        logger.fine( ConfigurationRotator.LOGGERNAME + "Polling started" );
+    public abstract Poller getPoller( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener, boolean reconfigure );
 
-        AbstractConfiguration configuration = null;
-        if( projectConfiguration == null ) {
-            if( reconfigure ) {
-                try {
-                    logger.fine( "Project was reconfigured" );
-                    configuration = getConfigurationFromTargets( getTargets(), workspace, listener );
-                } catch( ConfigurationRotatorException e ) {
-                    logger.log( Level.WARNING, "Unable to get configurations from targets: Exception message", e );
-                    throw new AbortException( ConfigurationRotator.LOGGERNAME + "Unable to get configurations from targets. " + e.getMessage() );
-                }
-            } else {
-                logger.fine( "Project has no configuration, using configuration from last result" );
-                ConfigurationRotatorBuildAction action = getLastResult( project, null );
-
-                if( action == null ) {
-                    logger.fine( "No last result, build now" );
-                    return PollingResult.BUILD_NOW;
-                }
-
-                configuration = action.getConfiguration();
-            }
-        } else {
-            logger.fine( "Project configuration found" );
-            configuration = this.projectConfiguration;
-        }
-
-        /* Only look ahead if the build was NOT reconfigured */
-        if( configuration != null && !reconfigure ) {
-            logger.fine( "Looking for changes" );
-            try {
-                AbstractConfiguration other;
-                other = nextConfiguration( listener, configuration, workspace );
-                if( other != null ) {
-                    logger.fine( "Found changes" );
-                    printConfiguration( out, other );
-                    return PollingResult.BUILD_NOW;
-                } else {
-                    logger.fine( "No changes!" );
-                    return PollingResult.NO_CHANGES;
-                }
-            } catch( ConfigurationRotatorException e ) {
-                logger.log( Level.WARNING, "Unable to poll", e );
-                throw new AbortException( ConfigurationRotator.LOGGERNAME + "Unable to poll: " + e.getMessage() );
-            } catch( Exception e ) {
-                logger.log( Level.WARNING, "Polling caught unhandled exception. Message was", e );
-                throw new AbortException( ConfigurationRotator.LOGGERNAME + "Polling caught unhandled exception! Message was: " + e.getMessage() );
-            }
-        } else {
-            logger.fine( "Starting first build" );
-            return PollingResult.BUILD_NOW;
-        }
-    }
-
-
-	//public abstract boolean perform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, boolean reconfigure ) throws IOException;
-
-    public abstract class Poller<C extends AbstractConfiguration> {
+    public abstract class Poller<C extends AbstractConfiguration, T extends AbstractTarget> {
         protected AbstractProject<?, ?> project;
         protected Launcher launcher;
         protected FilePath workspace;
@@ -122,6 +52,9 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
             this.reconfigure = reconfigure;
         }
 
+        public abstract C getConfigurationFromTargets( List<T> targets ) throws ConfigurationRotatorException;
+        public abstract List<T> getTargets() throws ConfigurationRotatorException;
+
         public PollingResult poll( C projectConfiguration ) throws AbortException {
             PrintStream out = listener.getLogger();
             logger.fine( ConfigurationRotator.LOGGERNAME + "Polling started" );
@@ -131,7 +64,7 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
                 if( reconfigure ) {
                     try {
                         logger.fine( "Project was reconfigured" );
-                        configuration = getConfigurationFromTargets( getTargets(), workspace, listener );
+                        configuration = getConfigurationFromTargets( getTargets() );
                     } catch( ConfigurationRotatorException e ) {
                         logger.log( Level.WARNING, "Unable to get configurations from targets: Exception message", e );
                         throw new AbortException( ConfigurationRotator.LOGGERNAME + "Unable to get configurations from targets. " + e.getMessage() );

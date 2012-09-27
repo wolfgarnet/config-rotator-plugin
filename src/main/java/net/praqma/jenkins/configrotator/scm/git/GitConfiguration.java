@@ -3,10 +3,7 @@ package net.praqma.jenkins.configrotator.scm.git;
 import hudson.FilePath;
 import hudson.model.AbstractBuild;
 import hudson.model.TaskListener;
-import net.praqma.jenkins.configrotator.AbstractConfiguration;
-import net.praqma.jenkins.configrotator.ConfigurationRotator;
-import net.praqma.jenkins.configrotator.ConfigurationRotatorBuildAction;
-import net.praqma.jenkins.configrotator.ConfigurationRotatorException;
+import net.praqma.jenkins.configrotator.*;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -19,18 +16,11 @@ public class GitConfiguration extends AbstractConfiguration<GitConfigurationComp
 
     private static Logger logger = Logger.getLogger( GitConfiguration.class.getName() );
 
-    @Override
-    public List<? extends Serializable> difference( AbstractConfiguration<GitConfigurationComponent> configuration ) throws ConfigurationRotatorException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+    private GitConfiguration() {}
 
-    public static GitConfiguration getConfigurationFromTargets( List<GitTarget> targets, FilePath workspace, TaskListener listener ) throws ConfigurationRotatorException {
-        logger.finest( "Getting configurations from targets: " + targets );
-        PrintStream out = listener.getLogger();
-
-        GitConfiguration config = new GitConfiguration();
-
-        for( GitTarget target : targets ) {
+    public GitConfiguration( List<GitTarget> targets, FilePath workspace, TaskListener listener ) throws ConfigurationRotatorException {
+        for( AbstractTarget t : targets ) {
+            GitTarget target = (GitTarget)t;
 
             logger.fine("Getting component for " + target);
             GitConfigurationComponent c = null;
@@ -42,14 +32,17 @@ public class GitConfiguration extends AbstractConfiguration<GitConfigurationComp
             }
 
             logger.fine("Adding " + c);
-            config.list.add( c );
+            list.add( c );
         }
-
-        return config;
     }
 
     @Override
-    protected Object clone() throws CloneNotSupportedException {
+    public List<? extends Serializable> difference( AbstractConfiguration<GitConfigurationComponent> configuration ) throws ConfigurationRotatorException {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public GitConfiguration clone() throws CloneNotSupportedException {
         GitConfiguration n = new GitConfiguration();
 
         for( GitConfigurationComponent gc : this.list ) {

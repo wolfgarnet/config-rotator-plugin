@@ -14,6 +14,7 @@ public abstract class AbstractConfiguration<T extends AbstractConfigurationCompo
 
     protected String description = null;
 
+
     public String getView( Class<?> clazz ) {
         return clazz.getName().replace( '.', '/' ).replace( '$', '/' ) + "/" + "cr.jelly";
     }

@@ -44,61 +44,25 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
         return "Git repository";
     }
 
+
     @Override
-    public PollingResult poll( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener, boolean reconfigure ) throws IOException, InterruptedException {
-        PrintStream out = listener.getLogger();
-        logger.fine( ConfigurationRotator.LOGGERNAME + "Polling started" );
+    public Poller getPoller( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener, boolean reconfigure ) {
+        return new GitPoller(project, launcher, workspace, listener, reconfigure);
+    }
 
-        GitConfiguration configuration = null;
-        if( projectConfiguration == null ) {
-            if( reconfigure ) {
-                try {
-                    logger.fine( "Project was reconfigured" );
-                    configuration = GitConfiguration.getConfigurationFromTargets( getTargets(), workspace, listener );
-                } catch( ConfigurationRotatorException e ) {
-                    logger.log( Level.WARNING, "Unable to get configurations from targets: Exception message", e );
-                    throw new AbortException( ConfigurationRotator.LOGGERNAME + "Unable to get configurations from targets. " + e.getMessage() );
-                }
-            } else {
-                logger.fine( "Project has no configuration, using configuration from last result" );
-                ConfigurationRotatorBuildAction action = getLastResult( project, Git.class );
-
-                if( action == null ) {
-                    logger.fine( "No last result, build now" );
-                    return PollingResult.BUILD_NOW;
-                }
-
-                configuration = action.getConfiguration();
-            }
-        } else {
-            logger.fine( "Project configuration found" );
-            configuration = this.projectConfiguration;
+    public class GitPoller extends Poller<GitConfiguration, GitTarget> {
+        public GitPoller( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener, boolean reconfigure ) {
+            super( project, launcher, workspace, listener, reconfigure );
         }
 
-        /* Only look ahead if the build was NOT reconfigured */
-        if( configuration != null && !reconfigure ) {
-            logger.fine( "Looking for changes" );
-            try {
-                GitConfiguration other;
-                other = (GitConfiguration) nextConfiguration( listener, configuration, workspace );
-                if( other != null ) {
-                    logger.fine( "Found changes" );
-                    printConfiguration( out, other );
-                    return PollingResult.BUILD_NOW;
-                } else {
-                    logger.fine( "No changes!" );
-                    return PollingResult.NO_CHANGES;
-                }
-            } catch( ConfigurationRotatorException e ) {
-                logger.log( Level.WARNING, "Unable to poll", e );
-                throw new AbortException( ConfigurationRotator.LOGGERNAME + "Unable to poll: " + e.getMessage() );
-            } catch( Exception e ) {
-                logger.log( Level.WARNING, "Polling caught unhandled exception. Message was", e );
-                throw new AbortException( ConfigurationRotator.LOGGERNAME + "Polling caught unhandled exception! Message was: " + e.getMessage() );
-            }
-        } else {
-            logger.fine( "Starting first build" );
-            return PollingResult.BUILD_NOW;
+        @Override
+        public GitConfiguration getConfigurationFromTargets( List<GitTarget> targets ) throws ConfigurationRotatorException {
+            return new GitConfiguration( targets, workspace, listener );
+        }
+
+        @Override
+        public List<GitTarget> getTargets() throws ConfigurationRotatorException {
+            return Git.this.getTargets();
         }
     }
 
@@ -115,7 +79,7 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
 
         @Override
         public GitConfiguration getInitialConfiguration() throws ConfigurationRotatorException {
-            return GitConfiguration.getConfigurationFromTargets( getTargets(), workspace, listener );
+            return new GitConfiguration( getTargets(), workspace, listener );
         }
 
         @Override
