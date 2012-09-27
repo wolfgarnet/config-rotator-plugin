@@ -1,7 +1,7 @@
 table.components {
     border-style: solid;
-    border-color: #132123;
-    background-color: #abcabc;
+    border-color: #632813;
+    background-color: #FF6633;
     border-spacing: 0;
     border-collapse: collapse;
     border-width: 1px;
@@ -10,20 +10,37 @@ table.components {
 
 thead.components {
     border-style: solid;
-    border-color: #456456;
-    background-color: #789789;
+    border-color: #632813;
+    background-color: #df5a2e;
 }
 
 th.components {
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
 td.components {
-    padding-left: 10px;
-    padding-right: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
 }
 
 .center {
   text-align: center;
+}
+
+A:link {
+    text-decoration: underline;
+    color: #000000;
+}
+A:visited {
+    text-decoration: underline;
+    color: #000000;
+}
+A:active {
+    text-decoration: underline;
+    color: #632813;
+}
+A:hover {
+    text-decoration: none;
+    color: #632813;
 }
