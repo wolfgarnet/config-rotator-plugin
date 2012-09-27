@@ -21,6 +21,7 @@ import org.kohsuke.stapler.StaplerRequest;
 import javax.servlet.ServletException;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +46,60 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
 
     @Override
     public PollingResult poll( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener, boolean reconfigure ) throws IOException, InterruptedException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        PrintStream out = listener.getLogger();
+        logger.fine( ConfigurationRotator.LOGGERNAME + "Polling started" );
+
+        GitConfiguration configuration = null;
+        if( projectConfiguration == null ) {
+            if( reconfigure ) {
+                try {
+                    logger.fine( "Project was reconfigured" );
+                    configuration = GitConfiguration.getConfigurationFromTargets( getTargets(), workspace, listener );
+                } catch( ConfigurationRotatorException e ) {
+                    logger.log( Level.WARNING, "Unable to get configurations from targets: Exception message", e );
+                    throw new AbortException( ConfigurationRotator.LOGGERNAME + "Unable to get configurations from targets. " + e.getMessage() );
+                }
+            } else {
+                logger.fine( "Project has no configuration, using configuration from last result" );
+                ConfigurationRotatorBuildAction action = getLastResult( project, Git.class );
+
+                if( action == null ) {
+                    logger.fine( "No last result, build now" );
+                    return PollingResult.BUILD_NOW;
+                }
+
+                configuration = action.getConfiguration();
+            }
+        } else {
+            logger.fine( "Project configuration found" );
+            configuration = this.projectConfiguration;
+        }
+
+        /* Only look ahead if the build was NOT reconfigured */
+        if( configuration != null && !reconfigure ) {
+            logger.fine( "Looking for changes" );
+            try {
+                GitConfiguration other;
+                other = (GitConfiguration) nextConfiguration( listener, configuration, workspace );
+                if( other != null ) {
+                    logger.fine( "Found changes" );
+                    printConfiguration( out, other );
+                    return PollingResult.BUILD_NOW;
+                } else {
+                    logger.fine( "No changes!" );
+                    return PollingResult.NO_CHANGES;
+                }
+            } catch( ConfigurationRotatorException e ) {
+                logger.log( Level.WARNING, "Unable to poll", e );
+                throw new AbortException( ConfigurationRotator.LOGGERNAME + "Unable to poll: " + e.getMessage() );
+            } catch( Exception e ) {
+                logger.log( Level.WARNING, "Polling caught unhandled exception. Message was", e );
+                throw new AbortException( ConfigurationRotator.LOGGERNAME + "Polling caught unhandled exception! Message was: " + e.getMessage() );
+            }
+        } else {
+            logger.fine( "Starting first build" );
+            return PollingResult.BUILD_NOW;
+        }
     }
 
     @Override
@@ -67,7 +121,7 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
         @Override
         public GitConfiguration getNextConfiguration( ConfigurationRotatorBuildAction action ) throws ConfigurationRotatorException {
             GitConfiguration oldconfiguration = action.getConfiguration();
-            return nextConfiguration(listener, oldconfiguration, workspace );
+            return (GitConfiguration) nextConfiguration(listener, oldconfiguration, workspace );
         }
 
         @Override
@@ -146,18 +200,14 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-
-    public GitConfiguration nextConfiguration( TaskListener listener, GitConfiguration configuration, FilePath workspace ) throws ConfigurationRotatorException {
+    @Override
+    public AbstractConfiguration nextConfiguration( TaskListener listener, AbstractConfiguration configuration, FilePath workspace ) throws ConfigurationRotatorException {
         logger.fine("Getting next Git configuration: " + configuration);
 
         RevCommit oldest = null;
         GitConfigurationComponent chosen = null;
-        GitConfiguration nconfig = null;
-        try {
-            nconfig = (GitConfiguration) configuration.clone();
-        } catch( CloneNotSupportedException e ) {
-            throw new ConfigurationRotatorException( e );
-        }
+        GitConfiguration nconfig = (GitConfiguration) configuration.clone();
+
 
         /* Find oldest commit, newer than current */
         for( GitConfigurationComponent config : nconfig.getList() ) {

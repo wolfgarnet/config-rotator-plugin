@@ -1,10 +1,11 @@
 package net.praqma.jenkins.configrotator.scm.git;
 
+import net.praqma.jenkins.configrotator.AbstractTarget;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.io.Serializable;
 
-public class GitTarget implements Serializable {
+public class GitTarget extends AbstractTarget implements Serializable {
 
     private String name;
 	private String repository;

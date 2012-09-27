@@ -179,6 +179,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
         projectConfiguration = inputconfiguration;
     }
 
+    @Override
     public void printConfiguration( PrintStream out, AbstractConfiguration cfg ) {
         out.println( ConfigurationRotator.LOGGERNAME + "The configuration is:" );
         logger.fine( ConfigurationRotator.LOGGERNAME + "The configuration is:" );
