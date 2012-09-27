@@ -35,8 +35,6 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
         this.projectConfiguration = configuration;
     }
 
-    //public abstract List<AbstractTarget> getTargets();
-    //public abstract <T extends AbstractConfiguration> T getConfigurationFromTargets( List<AbstractTarget> targets, FilePath workspace, TaskListener listener ) throws ConfigurationRotatorException;
     public abstract AbstractConfiguration nextConfiguration( TaskListener listener, AbstractConfiguration configuration, FilePath workspace ) throws ConfigurationRotatorException;
 
     public abstract Poller getPoller( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener, boolean reconfigure );
@@ -156,6 +154,7 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
         public abstract void print( C configuration );
 
         public void save( C configuration ) {
+            projectConfiguration = (AbstractConfiguration) configuration;
             final ConfigurationRotatorBuildAction action1 = new ConfigurationRotatorBuildAction( build, getSCMClass(), (AbstractConfiguration) configuration );
             build.addAction( action1 );
         }
@@ -203,11 +202,6 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
 		return Jenkins.getInstance().<AbstractConfigurationRotatorSCM, ConfigurationRotatorSCMDescriptor<AbstractConfigurationRotatorSCM>> getDescriptorList( AbstractConfigurationRotatorSCM.class );
 	}
 
-    /*
-    public static DescriptorExtensionList<AbstractConfigurationRotatorSCM<?>, ConfigurationRotatorSCMDescriptor<AbstractConfigurationRotatorSCM<?>>> all() {
-        Jenkins.getInstance().getDescriptorList( AbstractConfigurationRotatorSCM.class);
-    }
-    */
 
 	public static List<ConfigurationRotatorSCMDescriptor<?>> getDescriptors() {
 		List<ConfigurationRotatorSCMDescriptor<?>> list = new ArrayList<ConfigurationRotatorSCMDescriptor<?>>();

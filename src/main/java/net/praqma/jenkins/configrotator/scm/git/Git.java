@@ -21,7 +21,6 @@ import org.kohsuke.stapler.StaplerRequest;
 import javax.servlet.ServletException;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +32,6 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
     private static Logger logger = Logger.getLogger( Git.class.getName() );
 
     private List<GitTarget> targets = new ArrayList<GitTarget>();
-    //public GitConfiguration projectConfiguration;
 
     @DataBoundConstructor
     public Git() {
@@ -90,7 +88,6 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
 
         @Override
         public void checkConfiguration( GitConfiguration configuration ) {
-            projectConfiguration = configuration;
             /* TODO: implement */
         }
 
@@ -216,7 +213,6 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
         if( config.getList() != null && config.getList().size() > 0 ) {
             for( GitConfigurationComponent c : config.getList() ) {
                 if( c != null ) {
-                    //list.add( new ClearCaseUCMTarget( c.getBaseline().getNormalizedName() + ", " + c.getPlevel().toString() + ", " + c.isFixed() ) );
                     list.add( new GitTarget( c.getName(), c.getRepository(), c.getBranch(), c.getCommitId(), c.isFixed() ) );
                 } else {
                     /* A null!? The list is corrupted, return targets */

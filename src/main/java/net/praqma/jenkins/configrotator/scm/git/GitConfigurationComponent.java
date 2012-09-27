@@ -95,19 +95,6 @@ public class GitConfigurationComponent extends AbstractConfigurationComponent {
         StringBuilder builder = new StringBuilder();
 
         return getBasicHtml( builder, new Element( repository, isChangedLast() ), new Element( branch, isChangedLast() ), new Element( commitId, isChangedLast() ), new Element( fixed+"", isChangedLast() ) );
-        /*
-
-        builder.append( "<tr>" );
-        builder.append( "<td style=\"padding:5px 10px;\">" ).append( repository ).append( "</td>" );
-        builder.append( "<td style=\"padding:5px 10px;\">" ).append( branch ).append( "</td>" );
-        if( isChangedLast() ) {
-            builder.append( "<td style=\"font-weight:bold;color:#FF6633;padding:5px 10px;\">" ).append( commitId ).append( "</td>" );
-        } else {
-            builder.append( "<td style=\"padding:5px 10px;\">" ).append( commitId ).append( "</td>" );
-        }
-        builder.append( "<td style=\"padding:5px 10px;\">" ).append( fixed ).append( "</td>" ).append( "</tr>" );
-        return builder.toString();
-        */
     }
 
 }

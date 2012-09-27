@@ -30,8 +30,6 @@ public class ResolveNextCommit implements FilePath.FileCallable<RevCommit> {
 
         Logger logger = Logger.getLogger( ResolveNextCommit.class.getName() );
 
-        logger.fine("NAME IS " + name);
-
         File local = new File( workspace, name );
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
         logger.fine("Initializing repo");
@@ -59,7 +57,6 @@ public class ResolveNextCommit implements FilePath.FileCallable<RevCommit> {
         RevCommit next = null;
 
         for( RevCommit c : w ) {
-            logger.fine("COMMITITITIT: " + c);
             if( c != null && c.equals(commit) ) {
                 break;
             }
@@ -73,7 +70,7 @@ public class ResolveNextCommit implements FilePath.FileCallable<RevCommit> {
 
         w.dispose();
 
-        logger.fine( "Next is " + next );
+        logger.fine( "Next is " + next.getName() );
 
         return next;
     }

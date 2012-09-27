@@ -15,9 +15,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.praqma.html.Html;
-import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration;
-import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigurationComponent;
 import net.praqma.util.xml.feed.*;
 
 /**

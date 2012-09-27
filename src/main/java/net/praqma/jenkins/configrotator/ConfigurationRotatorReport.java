@@ -7,6 +7,7 @@ import javax.servlet.ServletException;
 
 import hudson.DescriptorExtensionList;
 import hudson.model.*;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMFeedAction;
 import net.praqma.jenkins.configrotator.scm.git.GitFeedAction;
 import net.praqma.util.xml.feed.AtomPublisher;
 import net.praqma.util.xml.feed.Feed;
@@ -22,11 +23,7 @@ import jenkins.model.Jenkins;
 
 @Extension
 public class ConfigurationRotatorReport extends Actionable implements UnprotectedRootAction {
-    
-    private static final String XML_EXTENSION = ".xml";
-    private static final int PORT = 8080;
-    private static final String DEFAULT_URL = "http://localhost:"+PORT;
-     
+
 	@Override
 	public String getIconFileName() {
 		return "/plugin/config-rotator/images/rotate.png";
@@ -53,9 +50,10 @@ public class ConfigurationRotatorReport extends Actionable implements Unprotecte
 
     @Override
     public synchronized List<Action> getActions() {
-        //return (List<Action>) Collections.singletonList( new GitFeedAction() );
+        /* TODO make this more generic */
         List<Action> actions = new ArrayList<Action>();
         actions.add( new GitFeedAction() );
+        actions.add( new ClearCaseUCMFeedAction() );
         return actions;
     }
 
@@ -82,7 +80,7 @@ public class ConfigurationRotatorReport extends Actionable implements Unprotecte
     }
 
     public static String FeedFrontpageUrl() {
-        String url = (Jenkins.getInstance() == null || Jenkins.getInstance().getRootUrl() == null) ? DEFAULT_URL : Jenkins.getInstance().getRootUrl();
+        String url = (Jenkins.getInstance() == null || Jenkins.getInstance().getRootUrl() == null) ? ConfigurationRotator.DEFAULT_URL : Jenkins.getInstance().getRootUrl();
         url+= "/"+ConfigurationRotator.URL_NAME+"/";
         return url;
     }
@@ -93,67 +91,9 @@ public class ConfigurationRotatorReport extends Actionable implements Unprotecte
      */
     
     public static String GenerateJobUrl(AbstractBuild<?,?> build) {
-        String url = (Jenkins.getInstance() == null || Jenkins.getInstance().getRootUrl() == null) ? DEFAULT_URL : Jenkins.getInstance().getRootUrl();
+        String url = (Jenkins.getInstance() == null || Jenkins.getInstance().getRootUrl() == null) ? ConfigurationRotator.DEFAULT_URL : Jenkins.getInstance().getRootUrl();
         String actionLink = url + "/" + build.getUrl();
         return actionLink;
     }
 
-    /**
-     * 
-     * @return a list of available feeds in link format. 
-     */
-    public ArrayList<String> listAvailableFeeds() {
-        ArrayList<String> list = new ArrayList<String>();
-        list.addAll(Arrays.asList(ConfigurationRotator.FEED_PATH.list()));
-        return list;
-    }
-
-
-	// yourhost/config-rotator/feed/
-	// eg. http://localhost:8080/config-rotator/feed/?component=hest2
-    // TODO: we should do some input parameter check and validation
-	public HttpResponse doFeed( @QueryParameter( required = true ) String component, @QueryParameter( required = true ) String pvob) throws ServletException, IOException {
-		final String mycomp = pvob+ConfigurationRotator.SEPARATOR+component+XML_EXTENSION;
-        final String fullComponentFeedPath = ConfigurationRotator.FEED_PATH+mycomp;
-		return new HttpResponse() {
-
-			@Override
-			public void generateResponse( StaplerRequest req, StaplerResponse rsp, Object node ) throws IOException, ServletException {
-				rsp.setStatus( StaplerResponse.SC_OK );
-                
-                rsp.setContentType("application/atom+xml");
-
-                FileInputStream fis = null;
-                InputStreamReader isr = null;
-                PrintWriter writer = null;
-                BufferedReader reader = null;
-				
-                //Open file to begin reading file. 
-                try {
-                    File feedFile = new File(fullComponentFeedPath);
-                    if(feedFile.exists()) {
-                        fis = new FileInputStream(new File(fullComponentFeedPath));
-                        isr = new InputStreamReader(fis);
-
-                        reader = new BufferedReader(isr);
-                        writer = rsp.getWriter();
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                            writer.write(line);
-                        }
-                    } else {
-                        writer.write("No such feed");
-                    }
-                    } catch (IOException ex) {
-                        throw ex;
-                    } finally {
-                        if(writer != null)
-                            writer.close();
-                        if(reader != null)
-                            reader.close();
-                    }
-				
-			}			
-		};
-	}
 }

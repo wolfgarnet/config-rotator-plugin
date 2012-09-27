@@ -3,7 +3,6 @@ package net.praqma.jenkins.configrotator;
 import hudson.model.Action;
 import net.praqma.util.xml.feed.AtomPublisher;
 import net.praqma.util.xml.feed.Feed;
-import net.praqma.util.xml.feed.FeedException;
 import org.apache.commons.io.FileUtils;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
@@ -31,12 +30,6 @@ public abstract class ConfigurationRotatorFeedAction implements Action {
     }
 
     public abstract String getComponentName();
-
-    /*
-    public ArrayList<File> getComponents() {
-        return getComponents( new String[]{} );
-    }
-    */
 
     public String getFeedUrl( String component ) {
         return ConfigurationRotator.FEED_URL + getComponentName() + "/feed?component=" + component;

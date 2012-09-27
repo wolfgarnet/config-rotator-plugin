@@ -1,6 +1,5 @@
 package net.praqma.jenkins.configrotator;
 
-
 import hudson.model.AbstractProject;
 import hudson.model.Actionable;
 import hudson.model.ProminentProjectAction;
@@ -34,19 +33,7 @@ public class ConfigurationRotatorProjectAction extends Actionable implements Pro
 	public String getSearchUrl() {
 		return getUrlName();
 	}
-	
-	/*
-	public void doReset( StaplerRequest req, StaplerResponse rsp ) throws IOException, ServletException {
-		SCM scm = project.getScm();
-		if( scm instanceof ConfigurationRotator ) {
-			((ConfigurationRotator)scm).setFresh( project, true );
-			rsp.forwardToPreviousPage( req );
-		} else {
-			rsp.sendError( StaplerResponse.SC_BAD_REQUEST, "Not Configuration Rotator job" );
-		}
-	}
-	*/
-    
+
     /**
      * New method extracts the latest builds.
      * @param number

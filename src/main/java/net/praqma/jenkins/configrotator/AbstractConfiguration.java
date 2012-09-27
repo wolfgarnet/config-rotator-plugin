@@ -4,7 +4,6 @@ import hudson.model.AbstractBuild;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 public abstract class AbstractConfiguration<T extends AbstractConfigurationComponent> implements Serializable {

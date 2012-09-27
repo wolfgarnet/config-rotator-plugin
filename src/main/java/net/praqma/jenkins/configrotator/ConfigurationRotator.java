@@ -63,8 +63,8 @@ public class ConfigurationRotator extends SCM {
     public static final File FEED_PATH = new File( Jenkins.getInstance().getRootDir(), FEED_DIR );
 
     /* Feed URL */
-    private static final int PORT = 8080;
-    private static final String DEFAULT_URL = "http://localhost:" + PORT;
+    public static final int PORT = 8080;
+    public static final String DEFAULT_URL = "http://localhost:" + PORT;
     public static final String FEED_URL = ( ( Jenkins.getInstance() == null || Jenkins.getInstance().getRootUrl() == null ) ? DEFAULT_URL : Jenkins.getInstance().getRootUrl() ) + "/" + URL_NAME + "/";
 
     /**

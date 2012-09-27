@@ -40,8 +40,6 @@ public class ResolveConfigurationComponent implements FilePath.FileCallable<GitC
         if( name == null || name.equals("") ) {
             name = repository.substring( repository.lastIndexOf( "/" ) );
 
-            logger.fine("NAME1: " + name);
-
             if( name.matches( ".*?\\.git$" ) ) {
                 name = name.substring( 0, name.length() - 4 );
             }
@@ -51,7 +49,7 @@ public class ResolveConfigurationComponent implements FilePath.FileCallable<GitC
             }
         }
 
-        logger.fine("NAME2: " + name);
+        logger.fine("Name: " + name);
 
         File local = new File( workspace, name);
 
@@ -70,16 +68,12 @@ public class ResolveConfigurationComponent implements FilePath.FileCallable<GitC
             repo.updateRef( branch );
             RevWalk w = new RevWalk( repo );
 
-            logger.fine( "REPO: " + repo );
-            logger.fine( "WALK: " + w );
-
             if( commitId == null ) {
                 commitId = "HEAD";
             }
 
             logger.fine("Getting commit \"" + commitId +"\"");
             ObjectId o = repo.resolve( commitId );
-            logger.fine("OBJECT IS " + o);
             RevCommit commit = w.parseCommit( o );
 
             return new GitConfigurationComponent( name, repository, branch, commit, fixed );
