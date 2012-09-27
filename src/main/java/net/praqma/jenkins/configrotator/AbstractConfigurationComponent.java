@@ -15,40 +15,39 @@ import java.util.List;
 
 /**
  * Abstract class defining one component of a configuration
- * 
- * @author wolfgang
  *
+ * @author wolfgang
  */
 public abstract class AbstractConfigurationComponent implements Serializable, Feedable {
-	protected boolean changedLast = false;
+    protected boolean changedLast = false;
     protected boolean fixed = false;
 
     public AbstractConfigurationComponent( boolean fixed ) {
         this.fixed = fixed;
     }
 
-	public boolean isChangedLast() {
-		return changedLast;
-	}
-	
-	public void setChangedLast( boolean b ) {
-		this.changedLast = b;
-	}
+    public boolean isChangedLast() {
+        return changedLast;
+    }
+
+    public void setChangedLast( boolean b ) {
+        this.changedLast = b;
+    }
 
     public boolean isFixed() {
         return fixed;
     }
 
     public abstract String getComponentName();
+
     public abstract String prettyPrint();
 
 
-
     /*
-     *
-     *   Feed specifics
-     *
-     */
+    *
+    *   Feed specifics
+    *
+    */
 
     public File getFeedFile( File path ) {
         return new File( path, ConfigurationRotatorReport.urlTtransform( getComponentName() ) + ".xml" );
@@ -100,7 +99,7 @@ public abstract class AbstractConfigurationComponent implements Serializable, Fe
         }
     }
 
-    protected String getBasicHtml( StringBuilder builder, Element ... elements ) {
+    protected String getBasicHtml( StringBuilder builder, Element... elements ) {
         builder.append( "<tr>" );
         for( Element e : elements ) {
             if( e.highlight ) {

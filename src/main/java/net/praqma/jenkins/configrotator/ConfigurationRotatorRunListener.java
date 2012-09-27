@@ -131,6 +131,8 @@ public class ConfigurationRotatorRunListener extends RunListener<Run> {
 
                         feed.addEntry( e );
 
+                        feed.updated = updated;
+
                         writeFeedToFile( feed, feedFile );
                     }
                 } catch( Exception fe ) {
