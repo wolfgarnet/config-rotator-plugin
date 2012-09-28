@@ -117,6 +117,7 @@ public class ConfigurationRotator extends SCM {
         PrintStream out = listener.getLogger();
 
         out.println( LOGGERNAME + "Version: " + Jenkins.getInstance().getPlugin( "config-rotator" ).getWrapper().getVersion() );
+        logger.fine( "Version: " + Jenkins.getInstance().getPlugin( "config-rotator" ).getWrapper().getVersion() );
 
         /*
            * Determine if the job was reconfigured
@@ -126,51 +127,35 @@ public class ConfigurationRotator extends SCM {
             logger.fine( "Was reconfigured: " + reconfigure );
         }
 
+        AbstractConfigurationRotatorSCM.Performer<AbstractConfiguration<?>> performer = acrs.getPerform( build, launcher, workspace, listener );
+        ConfigurationRotatorBuildAction lastAction = acrs.getLastResult( build.getProject(), performer.getSCMClass() );
+        AbstractConfiguration<?> configuration = null;
 
         boolean performResult = false;
         try {
-            AbstractConfigurationRotatorSCM.Performer<AbstractConfiguration<?>> p = acrs.getPerform( build, launcher, workspace, listener );
 
-            ConfigurationRotatorBuildAction action = acrs.getLastResult( build.getProject(), p.getSCMClass() );
 
-            AbstractConfiguration<?> configuration = null;
-            if( reconfigure || action == null ) {
+            if( reconfigure || lastAction == null ) {
                 out.println( LOGGERNAME + "Configuration from scratch" );
-                configuration = p.getInitialConfiguration();
+                configuration = performer.getInitialConfiguration();
             } else {
                 out.println( LOGGERNAME + "Getting next configuration" );
-                configuration = p.getNextConfiguration( action );
+                configuration = performer.getNextConfiguration( lastAction );
             }
 
             acrs.printConfiguration( out, configuration );
 
             if( configuration != null ) {
                 out.println( LOGGERNAME + "Checking configuration" );
-                p.checkConfiguration( configuration );
+                performer.checkConfiguration( configuration );
 
                 out.println( LOGGERNAME + "Creating workspace" );
-                p.createWorkspace( configuration );
+                performer.createWorkspace( configuration );
 
-                p.save( configuration );
+                performer.save( configuration );
 
                 performResult = true;
 
-                AbstractConfigurationRotatorSCM.ChangeLogWriter clw = acrs.getChangeLogWriter(file, listener, build );
-
-                List<ConfigRotatorChangeLogEntry> entries = null;
-                if( clw != null ) {
-                    if( clw.isFirstBuild() ) {
-                        entries = Collections.emptyList();
-                    } else {
-                        clw.getChangeLogEntries();
-                    }
-                } else {
-                    logger.info( "Change log writer not implemented" );
-                    out.println( LOGGERNAME + "Change log writer not implemented" );
-                    entries = Collections.emptyList();
-                }
-
-                clw.write( entries );
             }
         } catch( Exception e ) {
             logger.log( Level.SEVERE, "Unable to create configuration", e );
@@ -184,6 +169,30 @@ public class ConfigurationRotator extends SCM {
             // build result "grey" with an comment "nothing to do".
             throw new AbortException( "Nothing new" );
         } else {
+
+            /* Do the change log */
+            AbstractConfigurationRotatorSCM.ChangeLogWriter clw = acrs.getChangeLogWriter(file, listener, build );
+
+            try {
+                List<ConfigRotatorChangeLogEntry> entries = null;
+                if( clw != null ) {
+                    if( lastAction == null || reconfigure ) {
+                        entries = Collections.emptyList();
+                    } else {
+                        entries = clw.getChangeLogEntries( configuration );
+                    }
+                } else {
+                    logger.info( "Change log writer not implemented" );
+                    out.println( LOGGERNAME + "Change log writer not implemented" );
+                    entries = Collections.emptyList();
+                }
+
+                clw.write( entries );
+            } catch( Exception e ) {
+                /* The build must not be terminated because of the change log */
+                logger.log( Level.WARNING, "Change log not generated", e );
+                out.println( LOGGERNAME + "Change log not generated" );
+            }
 
             /*
                 * Config is not fresh anymore
@@ -229,6 +238,9 @@ public class ConfigurationRotator extends SCM {
             logger.fine( "A build already in queue - cancelling poll" );
             return PollingResult.NO_CHANGES;
         }
+
+        logger.fine( "Version: " + Jenkins.getInstance().getPlugin( "config-rotator" ).getWrapper().getVersion() );
+
         /*
            * Determine if the job was reconfigured
            */

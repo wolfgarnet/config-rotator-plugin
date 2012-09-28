@@ -15,6 +15,7 @@ import net.praqma.clearcase.ucm.entities.Activity;
 import net.praqma.clearcase.ucm.entities.Version;
 import net.praqma.clearcase.ucm.view.SnapshotView;
 import net.praqma.jenkins.configrotator.*;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorVersion;
 
 public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUCMConfigurationComponent> {
 
@@ -211,7 +212,7 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUC
                         ccac.setAuthor( a.getUser() );
                         ccac.setActivityName( a.getShortname() );
                         for( Version v : a.changeset.versions ) {
-                            ClearCaseVersion ccv = new ClearCaseVersion();
+                            ConfigRotatorVersion ccv = new ConfigRotatorVersion();
                             ccv.setFile( v.getSFile() );
                             ccv.setName( v.getVersion() );
                             ccv.setUser( v.blame() );

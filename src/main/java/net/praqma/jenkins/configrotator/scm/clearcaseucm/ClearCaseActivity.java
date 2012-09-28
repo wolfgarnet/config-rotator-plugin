@@ -4,6 +4,8 @@
  */
 package net.praqma.jenkins.configrotator.scm.clearcaseucm;
 
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorVersion;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -13,7 +15,7 @@ import java.util.ArrayList;
 public class ClearCaseActivity implements Serializable {
     private String activityName;
     private String author;
-    private ArrayList<ClearCaseVersion> versions = new ArrayList<ClearCaseVersion>();
+    private ArrayList<ConfigRotatorVersion> versions = new ArrayList<ConfigRotatorVersion>();
     
     public ClearCaseActivity() {
         
@@ -28,7 +30,7 @@ public class ClearCaseActivity implements Serializable {
         this.author = author;
     }
     
-    public void addVersion(ClearCaseVersion ccv) {
+    public void addVersion(ConfigRotatorVersion ccv) {
         versions.add(ccv);
     }
 
@@ -49,14 +51,14 @@ public class ClearCaseActivity implements Serializable {
     /**
      * @return the versions
      */
-    public ArrayList<ClearCaseVersion> getVersions() {
+    public ArrayList<ConfigRotatorVersion> getVersions() {
         return versions;
     }
 
     /**
      * @param versions the versions to set
      */
-    public void setVersions(ArrayList<ClearCaseVersion> versions) {
+    public void setVersions(ArrayList<ConfigRotatorVersion> versions) {
         this.versions = versions;
     }
 

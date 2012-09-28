@@ -15,8 +15,10 @@ import java.util.Collection;
 import java.util.logging.Level;
 import junit.framework.TestCase;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorBuildAction;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogSet;
-import net.praqma.jenkins.configrotator.scm.ConfigRotatorEntry;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorVersion;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.*;
 import net.praqma.util.debug.Logger;
 import net.praqma.util.debug.appenders.Appender;
@@ -72,8 +74,8 @@ public class ConfigRotatorChangeSetTest extends TestCase {
         ClearCaseActivity cca2 = new ClearCaseActivity("TestActivity");
         
         assertTrue(cca.equals(cca2));
-        cca.setVersions(new ArrayList<ClearCaseVersion>());
-        cca.addVersion(new ClearCaseVersion("Test","Test","Test"));
+        cca.setVersions(new ArrayList<ConfigRotatorVersion>());
+        cca.addVersion(new ConfigRotatorVersion("Test","Test","Test"));
         
         
         assertEquals(1, cca.getVersions().size());
@@ -107,28 +109,28 @@ public class ConfigRotatorChangeSetTest extends TestCase {
         
         
         
-        cca.setVersions(new ArrayList<ClearCaseVersion>());
-        cca.addVersion(new ClearCaseVersion("Test","Test","Test"));
+        cca.setVersions(new ArrayList<ConfigRotatorVersion>());
+        cca.addVersion(new ConfigRotatorVersion("Test","Test","Test"));
+
+
+
+        ConfigRotatorChangeLogEntry ccucroe = new ConfigRotatorChangeLogEntry();
         
-        
-        
-        ClearCaseUCMConfigRotatorEntry ccucroe = new ClearCaseUCMConfigRotatorEntry();
-        
-        assertNull(ccucroe.getActivityName());
+        assertNull(ccucroe.getCommitMessage());
       
         ccucroe.setVersions(cca.getVersions());
         assertEquals("ClearCase UCM ConfigRotator Change",ccucroe.getMsg());
         
         assertEquals(1, ccucroe.getAffectedPaths().size());
-        ccucroe.addVersion(new ClearCaseVersion("Test2", "Test2", "Test2"));
+        ccucroe.addVersion(new ConfigRotatorVersion("Test2", "Test2", "Test2"));
         assertEquals(2, ccucroe.getAffectedPaths().size());      
     }
     
     
     @Test
     public void testChangeLog() throws IOException, SAXException {
-        ClearCaseUCMConfigRotatorChangeLogParser parser = new ClearCaseUCMConfigRotatorChangeLogParser();
-        ClearCaseUCMConfigRotatorChangeLogParser spy = Mockito.spy(parser);
+        ConfigRotatorChangeLogParser parser = new ConfigRotatorChangeLogParser();
+        ConfigRotatorChangeLogParser spy = Mockito.spy(parser);
         
         //Load the provided changelog
         InputStream is = this.getClass().getResourceAsStream("changelog_1.xml");
@@ -148,18 +150,18 @@ public class ConfigRotatorChangeSetTest extends TestCase {
         fw.close();
         
         ChangeLogSet<? extends Entry> entry = parser.parse(build, f);
-        ConfigRotatorChangeLogSet<ConfigRotatorEntry> set = (ConfigRotatorChangeLogSet<ConfigRotatorEntry>)entry;
+        ConfigRotatorChangeLogSet<ConfigRotatorChangeLogEntry> set = (ConfigRotatorChangeLogSet<ConfigRotatorChangeLogEntry>)entry;
        
         System.out.println("PARENT: "+set.getEntries().get(0).getParent());
         assertEquals(set.getEntries().get(0).getParent(),null);
         
         //TODO: WHY ARE THESE NULL AFTERWARDS? Keeping test for later fix
-        ConfigRotatorEntry entri = set.getEntries().get(0);
+        ConfigRotatorChangeLogEntry entri = set.getEntries().get(0);
         //entri.setParent(set);
         //assertEquals(entri.getParent(),set);
        
         assertEquals(2, set.getEntries().size());
-        set.getEntries().add(new ClearCaseUCMConfigRotatorEntry());
+        set.getEntries().add(new ConfigRotatorChangeLogEntry());
         assertEquals(3, set.getEntries().size());
         
         entri.setAuthor("EntriAuthor");

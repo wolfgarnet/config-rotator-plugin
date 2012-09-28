@@ -197,7 +197,7 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
 
     public abstract ChangeLogWriter getChangeLogWriter( File changeLogFile, BuildListener listener, AbstractBuild<?, ?> build );
 
-    public abstract class ChangeLogWriter<C extends AbstractConfigurationComponent> {
+    public abstract class ChangeLogWriter<C extends AbstractConfigurationComponent, T extends AbstractConfiguration<C>> {
         protected File changeLogFile;
         protected BuildListener listener;
         protected AbstractBuild<?, ?> build;
@@ -208,6 +208,7 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
             this.build = build;
         }
 
+        /*
         public boolean isFirstBuild() {
             ConfigurationRotatorBuildAction crbac = getLastResult( build.getProject(), null );
             return crbac == null;
@@ -236,13 +237,35 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
             return null;
         }
 
-        protected abstract List<ConfigRotatorChangeLogEntry> getChangeLogEntries( C configurationComponent ) throws ConfigurationRotatorException;
-
         public List<ConfigRotatorChangeLogEntry> getChangeLogEntries() throws ConfigurationRotatorException {
             return getChangeLogEntries( getConfigurationComponent() );
         }
+        */
+
+        public C getComponent( T configuration ) throws ConfigurationRotatorException {
+            if( configuration != null ) {
+                for( C acc : configuration.getList() ) {
+                    if( acc.isChangedLast() ) {
+                        return acc;
+                    }
+                }
+            }
+
+            throw new ConfigurationRotatorException( "No such component, " + configuration );
+        }
+
+        protected abstract List<ConfigRotatorChangeLogEntry> getChangeLogEntries( C configurationComponent ) throws ConfigurationRotatorException;
+
+        public List<ConfigRotatorChangeLogEntry> getChangeLogEntries( T configuration ) throws ConfigurationRotatorException {
+            return getChangeLogEntries( getComponent( configuration ) );
+        }
+
+
+
 
         public void write( List<ConfigRotatorChangeLogEntry> entries ) {
+            logger.fine("WRITING: " + entries);
+
             PrintWriter writer = null;
             try {
                 writer = new PrintWriter( new FileWriter( changeLogFile ) );
@@ -250,9 +273,9 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
                 writer.println( "<changelog>" );
 
                 for( ConfigRotatorChangeLogEntry entry : entries ) {
-                    writer.println( "<activity>" );
+                    writer.println( "<commit>" );
                     writer.println( String.format( "<author>%s</author>", entry.getAuthor() ) );
-                    writer.println( String.format( "<activityName>%s</activityName>", entry.getCommitMessage() ) );
+                    writer.println( String.format( "<commitMessage>%s</commitMessage>", entry.getCommitMessage() ) );
                     writer.println( "<versions>" );
                     for( ConfigRotatorVersion v : entry.getVersions() ) {
                         writer.println( "<version>" );
@@ -262,7 +285,7 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
                         writer.println( "</version>" );
                     }
                     writer.println( "</versions>" );
-                    writer.print( "</activity>" );
+                    writer.print( "</commit>" );
                 }
 
                 writer.println( "</changelog>" );

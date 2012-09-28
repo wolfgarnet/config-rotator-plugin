@@ -50,7 +50,6 @@ public class ResolveNextCommit implements FilePath.FileCallable<RevCommit> {
         RevCommit commit = w.parseCommit( ostart );
 
         logger.fine( "Commit start: " + commitId );
-        logger.fine( "Commit head: " + commithead );
 
         w.markStart( commithead );
 
@@ -70,7 +69,7 @@ public class ResolveNextCommit implements FilePath.FileCallable<RevCommit> {
 
         w.dispose();
 
-        logger.fine( "Next is " + ( next == null ? "NA" : next.getName() ) );
+        logger.fine( "Next is " + ( next == null ? "N/A" : next.getName() ) );
 
         return next;
     }

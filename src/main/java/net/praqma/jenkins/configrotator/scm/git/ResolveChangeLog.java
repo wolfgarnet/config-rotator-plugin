@@ -44,16 +44,22 @@ public class ResolveChangeLog implements FilePath.FileCallable<ConfigRotatorChan
         RevCommit commit = w.parseCommit( o );
 
         RevCommit parent = w.parseCommit( commit.getParent( 0 ).getId() );
+
+        logger.fine("Diffing " + commit.getName() + " -> " + parent.getName() );
+
         DiffFormatter df = new DiffFormatter( DisabledOutputStream.INSTANCE );
         df.setRepository( repo );
         df.setDiffComparator( RawTextComparator.DEFAULT );
         df.setDetectRenames( true );
+        logger.fine("Differ: " + df);
         List<DiffEntry> diffs = df.scan( parent.getTree(), commit.getTree() );
         ConfigRotatorChangeLogEntry entry = new ConfigRotatorChangeLogEntry();
         for( DiffEntry diff : diffs ) {
+            logger.fine("DIFF: " + diff);
             entry.addVersion( new ConfigRotatorVersion( diff.getNewPath(), "BLA", commit.getAuthorIdent().getName() ) );
         }
 
+        logger.fine("ENTRY: " + entry);
 
         return entry;
     }

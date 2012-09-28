@@ -161,7 +161,7 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
         return new GitChangeLogWriter(changeLogFile, listener, build);
     }
 
-    public class GitChangeLogWriter extends ChangeLogWriter<GitConfigurationComponent> {
+    public class GitChangeLogWriter extends ChangeLogWriter<GitConfigurationComponent, GitConfiguration> {
 
         public GitChangeLogWriter( File changeLogFile, BuildListener listener, AbstractBuild<?, ?> build ) {
             super( changeLogFile, listener, build );
