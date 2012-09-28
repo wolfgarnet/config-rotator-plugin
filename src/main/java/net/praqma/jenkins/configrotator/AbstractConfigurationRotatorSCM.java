@@ -1,7 +1,6 @@
 package net.praqma.jenkins.configrotator;
 
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,11 +13,13 @@ import hudson.model.Describable;
 import hudson.model.TaskListener;
 import hudson.model.Descriptor;
 import hudson.scm.PollingResult;
-import java.io.File;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorVersion;
 
 public abstract class AbstractConfigurationRotatorSCM implements Describable<AbstractConfigurationRotatorSCM>, ExtensionPoint {
 	
@@ -83,8 +84,10 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
                     configuration = action.getConfiguration();
                 }
             } else {
-                logger.fine( "Project configuration found" );
+                logger.fine( "Using project configuration" );
                 configuration = (C) projectConfiguration;
+                //ConfigurationRotatorBuildAction action = getLastResult( project, null );
+                //configuration = action.getConfiguration();
             }
 
             /* Only look ahead if the build was NOT reconfigured */
@@ -167,15 +170,19 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
     public abstract ConfigRotatorChangeLogParser createChangeLogParser();
 
     public void printConfiguration( PrintStream out, AbstractConfiguration cfg ) {
-        out.println( ConfigurationRotator.LOGGERNAME + "The configuration is:" );
-        logger.fine( ConfigurationRotator.LOGGERNAME + "The configuration is:" );
-        AbstractConfiguration config = cfg;
-        for( Object c : config.getList() ) {
-            out.println( " * " + c );
-            logger.fine( " * " + c );
+        if( cfg != null ) {
+            out.println( ConfigurationRotator.LOGGERNAME + "The configuration is:" );
+            logger.fine( "The configuration is:" );
+            for( Object c : cfg.getList() ) {
+                out.println( " * " + c );
+                logger.fine( " * " + c );
+            }
+            out.println( "" );
+            logger.fine( "" );
+        } else {
+            out.println( ConfigurationRotator.LOGGERNAME + "The configuration is null" );
+            logger.fine( "The configuration is null" );
         }
-        out.println( "" );
-        logger.fine( "" );
     }
     
     /**
@@ -186,8 +193,86 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
      * @throws ConfigurationRotatorException
      * @throws InterruptedException 
      */
-    public abstract void writeChangeLog( File changeLogFile, BuildListener listener, AbstractBuild<?, ?> build ) throws IOException, ConfigurationRotatorException, InterruptedException;
-    
+    //public abstract void writeChangeLog( File changeLogFile, BuildListener listener, AbstractBuild<?, ?> build ) throws IOException, ConfigurationRotatorException, InterruptedException;
+
+    public abstract ChangeLogWriter getChangeLogWriter( File changeLogFile, BuildListener listener, AbstractBuild<?, ?> build );
+
+    public abstract class ChangeLogWriter<C extends AbstractConfigurationComponent> {
+        protected File changeLogFile;
+        protected BuildListener listener;
+        protected AbstractBuild<?, ?> build;
+
+        protected ChangeLogWriter( File changeLogFile, BuildListener listener, AbstractBuild<?, ?> build ) {
+            this.changeLogFile = changeLogFile;
+            this.listener = listener;
+            this.build = build;
+        }
+
+        public boolean isFirstBuild() {
+            ConfigurationRotatorBuildAction crbac = getLastResult( build.getProject(), null );
+            return crbac == null;
+        }
+
+        protected C getConfigurationComponent() {
+            List<C> currentComponentList = null;
+            ConfigurationRotatorBuildAction current = build.getAction( ConfigurationRotatorBuildAction.class );
+            logger.fine("Current action: " + current);
+            if( current != null ) {
+                currentComponentList = (List<C>)current.getConfiguration().getList();
+            }
+
+            logger.fine("Current components: " + currentComponentList);
+
+
+            if( currentComponentList != null ) {
+                for( AbstractConfigurationComponent acc : currentComponentList ) {
+                    if( acc.isChangedLast() ) {
+                        return (C)acc;
+                    }
+                }
+            }
+
+            logger.fine("Null, huh?");
+            return null;
+        }
+
+        protected abstract List<ConfigRotatorChangeLogEntry> getChangeLogEntries( C configurationComponent ) throws ConfigurationRotatorException;
+
+        public List<ConfigRotatorChangeLogEntry> getChangeLogEntries() throws ConfigurationRotatorException {
+            return getChangeLogEntries( getConfigurationComponent() );
+        }
+
+        public void write( List<ConfigRotatorChangeLogEntry> entries ) {
+            PrintWriter writer = null;
+            try {
+                writer = new PrintWriter( new FileWriter( changeLogFile ) );
+                writer.println( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" );
+                writer.println( "<changelog>" );
+
+                for( ConfigRotatorChangeLogEntry entry : entries ) {
+                    writer.println( "<activity>" );
+                    writer.println( String.format( "<author>%s</author>", entry.getAuthor() ) );
+                    writer.println( String.format( "<activityName>%s</activityName>", entry.getCommitMessage() ) );
+                    writer.println( "<versions>" );
+                    for( ConfigRotatorVersion v : entry.getVersions() ) {
+                        writer.println( "<version>" );
+                        writer.println( String.format( "<name>%s</name>", v.getName() ) );
+                        writer.println( String.format( "<file>%s</file>", v.getFile() ) );
+                        writer.println( String.format( "<user>%s</user>", v.getUser() ) );
+                        writer.println( "</version>" );
+                    }
+                    writer.println( "</versions>" );
+                    writer.print( "</activity>" );
+                }
+
+                writer.println( "</changelog>" );
+            } catch( IOException e ) {
+                listener.getLogger().println( "Unable to create change log!" + e );
+            } finally {
+                writer.close();
+            }
+        }
+    }
 		
 	@Override
 	public Descriptor<AbstractConfigurationRotatorSCM> getDescriptor() {

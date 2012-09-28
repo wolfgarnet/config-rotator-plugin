@@ -11,6 +11,7 @@ import hudson.model.TaskListener;
 import hudson.scm.PollingResult;
 import hudson.util.FormValidation;
 import net.praqma.jenkins.configrotator.*;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -19,10 +20,9 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
 import javax.servlet.ServletException;
-import java.io.File;
-import java.io.IOException;
-import java.io.Serializable;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -153,12 +153,31 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
 
     @Override
     public ConfigRotatorChangeLogParser createChangeLogParser() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return new ConfigRotatorChangeLogParser();
     }
 
     @Override
-    public void writeChangeLog( File changeLogFile, BuildListener listener, AbstractBuild<?, ?> build ) throws IOException, ConfigurationRotatorException, InterruptedException {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public ChangeLogWriter getChangeLogWriter( File changeLogFile, BuildListener listener, AbstractBuild<?, ?> build ) {
+        return new GitChangeLogWriter(changeLogFile, listener, build);
+    }
+
+    public class GitChangeLogWriter extends ChangeLogWriter<GitConfigurationComponent> {
+
+        public GitChangeLogWriter( File changeLogFile, BuildListener listener, AbstractBuild<?, ?> build ) {
+            super( changeLogFile, listener, build );
+        }
+
+        @Override
+        protected List<ConfigRotatorChangeLogEntry> getChangeLogEntries( GitConfigurationComponent configurationComponent ) throws ConfigurationRotatorException {
+            logger.fine( "Change log entry, " + configurationComponent );
+            try {
+                ConfigRotatorChangeLogEntry entry = build.getWorkspace().act( new ResolveChangeLog( configurationComponent.getName(), configurationComponent.getCommitId() ) );
+                logger.fine("ENTRY: " + entry);
+                return Collections.singletonList( entry );
+            } catch( Exception e ) {
+                throw new ConfigurationRotatorException( "Unable to resolve changelog " + configurationComponent.getCommitId(), e );
+            }
+        }
     }
 
     @Override
@@ -176,18 +195,20 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
                 try {
                     logger.fine("Config: " + config);
                     RevCommit commit = workspace.act( new ResolveNextCommit( config.getName(), config.getCommitId() ) );
-                    logger.fine( "Current commit: " + commit.getName() );
-                    logger.fine( "Current commit: " + commit.getCommitTime() );
-                    if( oldest != null ) {
-                        logger.fine( "Oldest  commit: " + oldest.getName() );
-                        logger.fine( "Oldest  commit: " + oldest.getCommitTime() );
-                    }
-                    if( oldest == null || commit.getCommitTime() < oldest.getCommitTime() ) {
-                        oldest = commit;
-                        chosen = config;
-                    }
+                    if( commit != null ) {
+                        logger.fine( "Current commit: " + commit.getName() );
+                        logger.fine( "Current commit: " + commit.getCommitTime() );
+                        if( oldest != null ) {
+                            logger.fine( "Oldest  commit: " + oldest.getName() );
+                            logger.fine( "Oldest  commit: " + oldest.getCommitTime() );
+                        }
+                        if( oldest == null || commit.getCommitTime() < oldest.getCommitTime() ) {
+                            oldest = commit;
+                            chosen = config;
+                        }
 
-                    config.setChangedLast( false );
+                        config.setChangedLast( false );
+                    }
 
                 } catch( Exception e ) {
                     logger.log( Level.FINE, "No commit found", e );
@@ -205,6 +226,7 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
             chosen.setChangedLast( true );
         } else {
             listener.getLogger().println( "No new commits" );
+            logger.fine( "No new commits" );
             return null;
         }
 

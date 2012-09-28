@@ -6,10 +6,6 @@ import hudson.scm.SCM;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import net.praqma.jenkins.configrotator.ConfigurationRotator.ResultType;
-import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogSet;
-import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCM;
-import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigRotatorChangeLogSet;
-import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 

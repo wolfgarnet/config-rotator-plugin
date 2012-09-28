@@ -3,10 +3,12 @@ package net.praqma.jenkins.configrotator;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
 import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -153,15 +155,25 @@ public class ConfigurationRotator extends SCM {
 
                 performResult = true;
 
-                try {
-                    acrs.writeChangeLog( file, listener, build );
-                } catch( ConfigurationRotatorException ex ) {
-                    out.println( "Checkout exception: " + ex );
+                AbstractConfigurationRotatorSCM.ChangeLogWriter clw = acrs.getChangeLogWriter(file, listener, build );
+
+                List<ConfigRotatorChangeLogEntry> entries = null;
+                if( clw != null ) {
+                    if( clw.isFirstBuild() ) {
+                        entries = Collections.emptyList();
+                    } else {
+                        clw.getChangeLogEntries();
+                    }
+                } else {
+                    logger.info( "Change log writer not implemented" );
+                    out.println( LOGGERNAME + "Change log writer not implemented" );
+                    entries = Collections.emptyList();
                 }
+
+                clw.write( entries );
             }
         } catch( Exception e ) {
             logger.log( Level.SEVERE, "Unable to create configuration", e );
-            logger.severe( e.getMessage() );
             throw new AbortException( e.getMessage() );
         }
 

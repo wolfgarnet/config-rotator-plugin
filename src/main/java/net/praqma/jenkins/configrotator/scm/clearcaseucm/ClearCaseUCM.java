@@ -60,7 +60,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 
     @Override
     public ConfigRotatorChangeLogParser createChangeLogParser() {
-        return new ClearCaseUCMConfigRotatorChangeLogParser();
+        return new ConfigRotatorChangeLogParser();
     }
 
     @Override
@@ -362,78 +362,16 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
         }
     }
 
+    /**
+     * TODO: Implement! Again!
+     * @param changeLogFile
+     * @param listener
+     * @param build
+     * @return
+     */
     @Override
-    public void writeChangeLog( File f, BuildListener listener, AbstractBuild<?, ?> build ) throws IOException, ConfigurationRotatorException, InterruptedException {
-        PrintWriter writer = null;
-        List<ClearCaseActivity> changes = new ArrayList<ClearCaseActivity>();
-        //First obtain last succesful result
-        ConfigurationRotatorBuildAction crbac = getLastResult( build.getProject(), this.getClass() );
-
-        //Special case: This is the first build
-        if( crbac == null ) {
-
-        } else {
-            List<ClearCaseUCMConfigurationComponent> currentComponentList = null;
-            ConfigurationRotatorBuildAction current = build.getAction( ConfigurationRotatorBuildAction.class );
-            if( current != null ) {
-                currentComponentList = ((ClearCaseUCMConfiguration)current.getConfiguration()).getList();
-            }
-
-            int compareIndex = -1;
-
-            if( currentComponentList != null ) {
-                for( AbstractConfigurationComponent acc : currentComponentList ) {
-                    if( acc.isChangedLast() ) {
-                        compareIndex = currentComponentList.indexOf( acc );
-                        break;
-                    }
-                }
-            }
-
-            //The compare is totally new. Else compare the previous component
-            if( compareIndex == -1 ) {
-
-            } else {
-                if( currentComponentList.get( compareIndex ) instanceof ClearCaseUCMConfigurationComponent ) {
-                    changes = build.getWorkspace().act( new ClearCaseGetBaseLineCompare( listener, (ClearCaseUCMConfiguration)current.getConfiguration(), (ClearCaseUCMConfiguration)crbac.getConfiguration() ) );
-                }
-            }
-        }
-
-        try {
-
-            writer = new PrintWriter( new FileWriter( f ) );
-
-
-            writer.println( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" );
-            writer.println( "<changelog>" );
-
-            for( ClearCaseActivity a : changes ) {
-                writer.println( "<activity>" );
-                writer.println( String.format( "<author>%s</author>", a.getAuthor() ) );
-                writer.println( String.format( "<activityName>%s</activityName>", a.getActivityName() ) );
-                writer.println( "<versions>" );
-                for( ClearCaseVersion v : a.getVersions() ) {
-                    writer.println( "<version>" );
-                    writer.println( String.format( "<name>%s</name>", v.getName() ) );
-                    writer.println( String.format( "<file>%s</file>", v.getFile() ) );
-                    writer.println( String.format( "<user>%s</user>", v.getUser() ) );
-                    writer.println( "</version>" );
-                }
-                writer.println( "</versions>" );
-                writer.print( "</activity>" );
-
-
-            }
-
-            writer.println( "</changelog>" );
-
-
-        } catch( IOException e ) {
-            listener.getLogger().println( "Unable to create change log!" + e );
-        } finally {
-            writer.close();
-        }
+    public ChangeLogWriter getChangeLogWriter( File changeLogFile, BuildListener listener, AbstractBuild<?, ?> build ) {
+        return null;
     }
 
     @Extension

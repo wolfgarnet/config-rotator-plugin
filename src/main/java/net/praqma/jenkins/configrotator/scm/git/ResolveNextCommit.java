@@ -70,7 +70,7 @@ public class ResolveNextCommit implements FilePath.FileCallable<RevCommit> {
 
         w.dispose();
 
-        logger.fine( "Next is " + next.getName() );
+        logger.fine( "Next is " + ( next == null ? "NA" : next.getName() ) );
 
         return next;
     }
