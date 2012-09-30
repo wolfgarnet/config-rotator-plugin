@@ -19,6 +19,7 @@ public class ResolveNextCommit implements FilePath.FileCallable<RevCommit> {
 
     private String commitId;
     private String name;
+    private String branch = "git";
 
     public ResolveNextCommit( String name, String commitId ) {
         this.commitId = commitId;
@@ -35,6 +36,9 @@ public class ResolveNextCommit implements FilePath.FileCallable<RevCommit> {
         logger.fine("Initializing repo");
         Repository repo = builder.setGitDir( new File( local, ".git" ) ).readEnvironment().findGitDir().build();
         org.eclipse.jgit.api.Git git = new org.eclipse.jgit.api.Git( repo );
+
+        logger.fine("Updating to " + branch);
+
         try {
             logger.fine("Pulling");
             git.pull().call();
