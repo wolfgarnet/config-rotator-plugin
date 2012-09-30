@@ -16,6 +16,8 @@ import org.eclipse.jgit.util.io.DisabledOutputStream;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -51,11 +53,10 @@ public class ResolveChangeLog implements FilePath.FileCallable<ConfigRotatorChan
         df.setRepository( repo );
         df.setDiffComparator( RawTextComparator.DEFAULT );
         df.setDetectRenames( true );
-        logger.fine("Differ: " + df);
+
         List<DiffEntry> diffs = df.scan( parent.getTree(), commit.getTree() );
-        ConfigRotatorChangeLogEntry entry = new ConfigRotatorChangeLogEntry();
+        ConfigRotatorChangeLogEntry entry = new ConfigRotatorChangeLogEntry( commit.getFullMessage(), commit.getAuthorIdent().getName(), new ArrayList<ConfigRotatorVersion>());
         for( DiffEntry diff : diffs ) {
-            logger.fine("DIFF: " + diff);
             entry.addVersion( new ConfigRotatorVersion( diff.getNewPath(), "BLA", commit.getAuthorIdent().getName() ) );
         }
 

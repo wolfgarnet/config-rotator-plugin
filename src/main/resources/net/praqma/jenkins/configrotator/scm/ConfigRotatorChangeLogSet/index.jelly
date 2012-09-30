@@ -1,21 +1,19 @@
 <j:jelly xmlns:j="jelly:core">
-  <h2>${%Config Rotations}</h2>
       <j:choose>
         <j:when test="${it.emptySet}">
             ${%No changes.}
         </j:when>
         <j:otherwise>
-        <ol>
             <j:forEach var="cs" items="${it.items}" varStatus="loop">
-                <li>
-                    <h3>Activity by <i>${cs.getAuthor()}</i><br />${cs.commitMessage}</h3>
-                    <h4>List of changed files</h4>
+                    <h3 style="font-style:italic;text-decoration:underline">${cs.commitMessage}"</h3>
+                    <h4>By ${cs.getAuthor()}</h4>
+
+                    <ol>
                     <j:forEach var="version" items="${cs.getAffectedPaths()}" varStatus="loop">
-                        ${version} 
+                        <li>${version}</li>
                     </j:forEach>
-                </li>
+                    </ol>
             </j:forEach>
-        </ol>
         </j:otherwise>
     </j:choose>  
 </j:jelly>

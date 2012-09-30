@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package net.praqma.jenkins.configrotator.scm;
 
 import hudson.model.User;
@@ -9,6 +5,7 @@ import hudson.scm.ChangeLogSet.Entry;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.logging.Logger;
 
 
 /**
@@ -16,9 +13,12 @@ import java.util.Collection;
  * @author Praqma
  */
 public class ConfigRotatorChangeLogEntry extends Entry {
+
+    private static Logger logger = Logger.getLogger( ConfigRotatorChangeLogEntry.class.getName() );
+
     protected ConfigRotatorChangeLogSet parent;
     private String commitMessage;
-    private String author;
+    private String user;
     private ArrayList<ConfigRotatorVersion> versions;
 
     /**
@@ -28,15 +28,15 @@ public class ConfigRotatorChangeLogEntry extends Entry {
         versions = new ArrayList<ConfigRotatorVersion>();
     }
 
-    public ConfigRotatorChangeLogEntry( String commitMessage, String author, ArrayList<ConfigRotatorVersion> versions ) {
+    public ConfigRotatorChangeLogEntry( String commitMessage, String user, ArrayList<ConfigRotatorVersion> versions ) {
         this.commitMessage = commitMessage;
-        this.author = author;
+        this.user = user;
         this.versions = versions;
     }
 
     @Override
     public String getMsg() {
-        return "Changes";
+        return commitMessage;
     }
 
     @Override
@@ -72,17 +72,22 @@ public class ConfigRotatorChangeLogEntry extends Entry {
     public void addVersion( ConfigRotatorVersion version ) {
         versions.add( version );
     }
+
+    public String getUser() {
+        return user;
+    }
     
     @Override
 	public User getAuthor() {
-		if( author == null ) {
+		if( user == null ) {
 			return User.getUnknown();
 		}
-		return User.get( author );
+        User u = User.get( user );
+		return u;
 	}
     
-    public void setAuthor(String author) {
-        this.author = author;
+    public void setUser(String user) {
+        this.user = user;
     }
      
     public <T extends ConfigRotatorChangeLogSet> void setParent(T t) {
@@ -91,5 +96,9 @@ public class ConfigRotatorChangeLogEntry extends Entry {
     
     public <T extends ConfigRotatorChangeLogSet>  T getParent(Class<T> type) {
         return (T)parent;
+    }
+
+    public String toString() {
+        return user + " - " + commitMessage;
     }
 }

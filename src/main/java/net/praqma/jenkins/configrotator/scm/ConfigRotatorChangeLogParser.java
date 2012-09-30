@@ -31,14 +31,14 @@ public class ConfigRotatorChangeLogParser extends ChangeLogParser {
         digester.push( changesetList );
         digester.addObjectCreate( "*/changelog/commit", ConfigRotatorChangeLogEntry.class );
         digester.addSetProperties( "*/changelog/commit" );
-        digester.addBeanPropertySetter( "*/changelog/commit/author" );
+        digester.addBeanPropertySetter( "*/changelog/commit/user" );
         digester.addBeanPropertySetter( "*/changelog/commit/commitMessage" );
-        digester.addObjectCreate( "*/changelog/commit/versions/", ConfigRotatorVersion.class );
+        digester.addObjectCreate( "*/changelog/commit/versions/version/", ConfigRotatorVersion.class );
         digester.addBeanPropertySetter( "*/changelog/commit/versions/version/name" );
         digester.addBeanPropertySetter( "*/changelog/commit/versions/version/user" );
         digester.addBeanPropertySetter( "*/changelog/commit/versions/version/file" );
 
-        digester.addSetNext( "*/changelog/commit/versions", "addVersion" );
+        digester.addSetNext( "*/changelog/commit/versions/version", "addVersion" );
         digester.addSetNext( "*/changelog/commit", "add" );
         try {
             logger.fine("FILE: " + changelogFile);

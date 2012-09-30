@@ -274,7 +274,7 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
 
                 for( ConfigRotatorChangeLogEntry entry : entries ) {
                     writer.println( "<commit>" );
-                    writer.println( String.format( "<author>%s</author>", entry.getAuthor() ) );
+                    writer.println( String.format( "<user>%s</user>", entry.getUser() ) );
                     writer.println( String.format( "<commitMessage>%s</commitMessage>", entry.getCommitMessage() ) );
                     writer.println( "<versions>" );
                     for( ConfigRotatorVersion v : entry.getVersions() ) {
