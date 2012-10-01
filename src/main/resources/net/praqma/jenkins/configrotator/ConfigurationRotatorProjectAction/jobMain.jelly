@@ -13,13 +13,15 @@
 				<td style="font-size:14px;text-align:left">
                    <j:choose>
                        <j:when test="${lastResult.isCompatible()}">
-                           
-                           <b>${lastResult.getConfiguration().getDescription( lastResult.getBuild() )}</b>
+
+                           <b>${%Changed component}:</b><br />
+                           <i>${lastResult.getConfiguration().getDescription( lastResult.getBuild() )}</i>
                            <br/>
                            <span style="font-size:12px;">${%The last configuration was compatible}</span>
                        </j:when>
                        <j:otherwise>
-                           <b>${lastResult.getConfiguration().getDescription( lastResult.getBuild() )}</b>
+                           <b>${%Changed component}:</b><br />
+                           <i>${lastResult.getConfiguration().getDescription( lastResult.getBuild() )}</i>
                            <br/>
                            <span style="font-size:12px;">${%The last configuration was not compatible}</span>
                        </j:otherwise>

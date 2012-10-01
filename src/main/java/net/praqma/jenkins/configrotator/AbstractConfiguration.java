@@ -66,7 +66,7 @@ public abstract class AbstractConfiguration<T extends AbstractConfigurationCompo
                 ConfigurationRotatorBuildAction previous = rotator.getAcrs().getPreviousResult( build, null );
 
                 //return String.format( "Commit changed:<br/>%s<br/>%s", previous.getConfigurationWithOutCast().getList().get( getChangedComponentIndex() ).prettyPrint(), getChangedComponent().prettyPrint() );
-                return String.format( "Component changed:<br/>%s<br/>%s", ((T)previous.getConfigurationWithOutCast().getList().get( getChangedComponentIndex() ) ).prettyPrint(), getChangedComponent().prettyPrint() );
+                return String.format( "%s<br/>%s", ((T)previous.getConfigurationWithOutCast().getList().get( getChangedComponentIndex() ) ).prettyPrint(), getChangedComponent().prettyPrint() );
             }
         }
 
