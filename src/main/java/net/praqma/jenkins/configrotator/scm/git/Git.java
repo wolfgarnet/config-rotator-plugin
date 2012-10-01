@@ -44,24 +44,8 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
 
 
     @Override
-    public Poller getPoller( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener, boolean reconfigure ) {
-        return new GitPoller(project, launcher, workspace, listener, reconfigure);
-    }
-
-    public class GitPoller extends Poller<GitConfiguration, GitTarget> {
-        public GitPoller( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener, boolean reconfigure ) {
-            super( project, launcher, workspace, listener, reconfigure );
-        }
-
-        @Override
-        public GitConfiguration getConfigurationFromTargets( List<GitTarget> targets ) throws ConfigurationRotatorException {
-            return new GitConfiguration( targets, workspace, listener );
-        }
-
-        @Override
-        public List<GitTarget> getTargets() throws ConfigurationRotatorException {
-            return Git.this.getTargets();
-        }
+    public Poller getPoller( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener ) {
+        return new Poller(project, launcher, workspace, listener );
     }
 
     @Override
@@ -217,8 +201,8 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
             }
         }
 
-        logger.fine( "chosen: " + chosen );
-        logger.fine( "oldest: " + oldest );
+        logger.fine( "Configuration component: " + chosen );
+        logger.fine( "Oldest valid commit: " + oldest );
         if( chosen != null && oldest != null ) {
             logger.fine( "There was a new commit: " + oldest );
             listener.getLogger().println( ConfigurationRotator.LOGGERNAME + "Next commit: " + chosen );

@@ -98,26 +98,10 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
     }
 
     @Override
-    public Poller getPoller( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener, boolean reconfigure ) {
-        return new UCMPoller(project, launcher, workspace, listener, reconfigure);
+    public Poller getPoller( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener ) {
+        return new Poller(project, launcher, workspace, listener );
     }
 
-    public class UCMPoller extends Poller<ClearCaseUCMConfiguration, ClearCaseUCMTarget> {
-
-        public UCMPoller( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener, boolean reconfigure ) {
-            super( project, launcher, workspace, listener, reconfigure );
-        }
-
-        @Override
-        public ClearCaseUCMConfiguration getConfigurationFromTargets( List<ClearCaseUCMTarget> targets ) throws ConfigurationRotatorException {
-            return ClearCaseUCMConfiguration.getConfigurationFromTargets( targets, workspace, listener );
-        }
-
-        @Override
-        public List<ClearCaseUCMTarget> getTargets() throws ConfigurationRotatorException {
-            return ClearCaseUCM.this.getTargets();
-        }
-    }
 
     @Override
     public Performer<ClearCaseUCMConfiguration> getPerform( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener ) throws IOException {

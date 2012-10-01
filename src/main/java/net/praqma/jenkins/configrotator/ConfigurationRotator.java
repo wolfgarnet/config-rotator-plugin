@@ -197,7 +197,7 @@ public class ConfigurationRotator extends SCM {
             build.getProject().save();
 
             /*
-                * If not aborted, add publisher
+               * If not aborted, add publisher
                 */
             boolean added = false;
             for( Publisher p : build.getParent().getPublishersList() ) {
@@ -244,9 +244,24 @@ public class ConfigurationRotator extends SCM {
             logger.fine( "Was reconfigured: " + reconfigure );
         }
 
-        AbstractConfigurationRotatorSCM.Poller poller = acrs.getPoller(project, launcher, workspace, listener, reconfigure );
+        AbstractConfigurationRotatorSCM.Poller poller = acrs.getPoller(project, launcher, workspace, listener );
 
-        return poller.poll();
+        ConfigurationRotatorBuildAction lastAction = acrs.getLastResult( project, null );
+
+        try {
+            if( reconfigure || lastAction == null ) {
+                logger.fine( "Reconfigured, build now!" );
+                out.println( LOGGERNAME + "Configuration from scratch, build now!" );
+                return PollingResult.BUILD_NOW;
+            } else {
+                logger.fine( "Do actual polling" );
+                out.println( LOGGERNAME + "Getting next configuration" );
+                return poller.poll( lastAction );
+            }
+        } catch( Exception e ) {
+            logger.log( Level.SEVERE, "Unable to poll", e );
+            throw new AbortException( e.getMessage() );
+        }
     }
 
     /**

@@ -38,61 +38,33 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
 
     public abstract AbstractConfiguration nextConfiguration( TaskListener listener, AbstractConfiguration configuration, FilePath workspace ) throws ConfigurationRotatorException;
 
-    public abstract Poller getPoller( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener, boolean reconfigure );
+    public abstract Poller getPoller( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener );
 
-    public abstract class Poller<C extends AbstractConfiguration, T extends AbstractTarget> {
+    /**
+     *
+     * @param <C>
+     */
+    public class Poller<C extends AbstractConfiguration> {
         protected AbstractProject<?, ?> project;
         protected Launcher launcher;
         protected FilePath workspace;
         protected TaskListener listener;
-        protected boolean reconfigure;
 
-        public Poller( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener, boolean reconfigure ) {
+        public Poller( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener ) {
             this.project = project;
             this.launcher = launcher;
             this.workspace = workspace;
             this.listener = listener;
-            this.reconfigure = reconfigure;
         }
 
-        public abstract C getConfigurationFromTargets( List<T> targets ) throws ConfigurationRotatorException;
-        public abstract List<T> getTargets() throws ConfigurationRotatorException;
-
-        public PollingResult poll() throws AbortException {
+        public PollingResult poll( ConfigurationRotatorBuildAction action ) throws AbortException {
             PrintStream out = listener.getLogger();
             logger.fine( ConfigurationRotator.LOGGERNAME + "Polling started" );
 
-            C configuration = null;
-            if( projectConfiguration == null ) {
-                if( reconfigure ) {
-                    try {
-                        logger.fine( "Project was reconfigured" );
-                        configuration = getConfigurationFromTargets( getTargets() );
-                    } catch( ConfigurationRotatorException e ) {
-                        logger.log( Level.WARNING, "Unable to get configurations from targets: Exception message", e );
-                        throw new AbortException( ConfigurationRotator.LOGGERNAME + "Unable to get configurations from targets. " + e.getMessage() );
-                    }
-                } else {
-                    logger.fine( "Project has no configuration, using configuration from last result" );
-                    ConfigurationRotatorBuildAction action = getLastResult( project, null );
+            C configuration = action.getConfiguration();
 
-                    if( action == null ) {
-                        logger.fine( "No last result, build now" );
-                        return PollingResult.BUILD_NOW;
-                    }
-
-                    configuration = action.getConfiguration();
-                }
-            } else {
-                logger.fine( "Using project configuration" );
-                configuration = (C) projectConfiguration;
-                //ConfigurationRotatorBuildAction action = getLastResult( project, null );
-                //configuration = action.getConfiguration();
-            }
-
-            /* Only look ahead if the build was NOT reconfigured */
-            if( configuration != null && !reconfigure ) {
-                logger.fine( "Looking for changes" );
+            if( configuration != null ) {
+                logger.fine( "Resolving next configuration based on " + configuration );
                 try {
                     AbstractConfiguration other;
                     other = nextConfiguration( listener, configuration, workspace );
@@ -112,7 +84,7 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
                     throw new AbortException( ConfigurationRotator.LOGGERNAME + "Polling caught unhandled exception! Message was: " + e.getMessage() );
                 }
             } else {
-                logger.fine( "Starting first build" );
+                logger.fine( "No previous configuration, starting first build" );
                 return PollingResult.BUILD_NOW;
             }
         }
@@ -321,7 +293,7 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
 	}
 	
 	public ConfigurationRotatorBuildAction getLastResult( AbstractProject<?, ?> project, Class<? extends AbstractConfigurationRotatorSCM> clazz ) {
-		logger.fine( "Getting last result: " + project );
+		logger.fine( "Getting last result for " + project + " for " + ( clazz == null ? "all" : clazz ) );
 		
 		for( AbstractBuild<?, ?> b = getLastBuildToBeConsidered( project ); b != null; b = b.getPreviousBuild() ) {
 			ConfigurationRotatorBuildAction r = b.getAction( ConfigurationRotatorBuildAction.class );
