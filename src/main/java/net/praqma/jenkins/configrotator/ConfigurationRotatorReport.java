@@ -58,8 +58,7 @@ public class ConfigurationRotatorReport extends Actionable implements Unprotecte
     }
 
     public String getUrl( ConfigurationRotatorSCMDescriptor<AbstractConfigurationRotatorSCM> scm ) {
-        return "/" + getUrlName() + "/" + scm.getFeedComponentName();
-        //return ConfigurationRotator.FEED_URL + scm.getFeedComponentName();
+        return Jenkins.getInstance().getRootUrl() + getUrlName() + "/" + scm.getFeedComponentName();
     }
 
 
@@ -81,20 +80,16 @@ public class ConfigurationRotatorReport extends Actionable implements Unprotecte
     }
 
     public static String FeedFrontpageUrl() {
-        String url = (Jenkins.getInstance() == null || Jenkins.getInstance().getRootUrl() == null) ? ConfigurationRotator.DEFAULT_URL : Jenkins.getInstance().getRootUrl();
-        url+= "/"+ConfigurationRotator.URL_NAME+"/";
-        return url;
+        return Jenkins.getInstance().getRootUrl() + ConfigurationRotator.URL_NAME + "/";
     }
 
     /**
      * Factory method to create the job url for our feed.
-     * 
+     *
      */
-    
+
     public static String GenerateJobUrl(AbstractBuild<?,?> build) {
-        String url = (Jenkins.getInstance() == null || Jenkins.getInstance().getRootUrl() == null) ? ConfigurationRotator.DEFAULT_URL : Jenkins.getInstance().getRootUrl();
-        String actionLink = url + "/" + build.getUrl();
-        return actionLink;
+        return Jenkins.getInstance().getRootUrl() + build.getUrl();
     }
 
 }

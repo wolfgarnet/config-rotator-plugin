@@ -377,6 +377,8 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
     }
 
     public String getFeedURL() {
-        return ConfigurationRotator.FEED_URL + "/" + getClass().getSimpleName() + "/";
+        return "/" + ConfigurationRotator.URL_NAME + "/" + getClass().getSimpleName();
+        //return ConfigurationRotator.FEED_URL + scm.getFeedComponentName();
+        //return ConfigurationRotator.FEED_URL + "/" + getClass().getSimpleName() + "/";
     }
 }
