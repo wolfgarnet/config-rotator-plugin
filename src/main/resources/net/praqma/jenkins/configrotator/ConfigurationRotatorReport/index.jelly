@@ -11,7 +11,7 @@
             <tbody>
                 <j:forEach var="scm" items="${it.getSCMs()}">
                     <tr>
-                        <td><a href="/${it.getUrl(scm)}">${scm.getDisplayName()}</a></td>
+                        <td><a href="${it.getUrl(scm)}">${scm.getDisplayName()}</a></td>
                     </tr>
                 </j:forEach>
             </tbody>

@@ -58,7 +58,8 @@ public class ConfigurationRotatorReport extends Actionable implements Unprotecte
     }
 
     public String getUrl( ConfigurationRotatorSCMDescriptor<AbstractConfigurationRotatorSCM> scm ) {
-        return ConfigurationRotator.URL_NAME + "/" + scm.getFeedComponentName();
+        return "/" + getUrlName() + "/" + scm.getFeedComponentName();
+        //return ConfigurationRotator.FEED_URL + scm.getFeedComponentName();
     }
 
 

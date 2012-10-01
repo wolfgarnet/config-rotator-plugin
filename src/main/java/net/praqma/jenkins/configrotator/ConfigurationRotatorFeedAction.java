@@ -32,7 +32,8 @@ public abstract class ConfigurationRotatorFeedAction implements Action {
     public abstract String getComponentName();
 
     public String getFeedUrl( String component ) {
-        return ConfigurationRotator.FEED_URL + getComponentName() + "/feed?component=" + component;
+        //return ConfigurationRotator.FEED_URL + getComponentName() + "/feed?component=" + component;
+        return "/" + ConfigurationRotator.URL_NAME + "/" + getComponentName() + "/feed?component=" + component;
     }
 
     public String getComponentName( String fileName ) {
