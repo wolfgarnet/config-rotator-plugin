@@ -1,6 +1,7 @@
 package net.praqma.jenkins.configrotator;
 
 import hudson.model.Action;
+import jenkins.model.Jenkins;
 import net.praqma.util.xml.feed.AtomPublisher;
 import net.praqma.util.xml.feed.Feed;
 import org.apache.commons.io.FileUtils;
@@ -33,7 +34,7 @@ public abstract class ConfigurationRotatorFeedAction implements Action {
 
     public String getFeedUrl( String component ) {
         //return ConfigurationRotator.FEED_URL + getComponentName() + "/feed?component=" + component;
-        return "/" + ConfigurationRotator.URL_NAME + "/" + getComponentName() + "/feed?component=" + component;
+        return Jenkins.getInstance().getRootUrl() + ConfigurationRotator.URL_NAME + "/" + getComponentName() + "/feed?component=" + component;
     }
 
     public String getComponentName( String fileName ) {

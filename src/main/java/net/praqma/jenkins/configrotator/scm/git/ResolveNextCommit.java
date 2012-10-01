@@ -68,6 +68,10 @@ public class ResolveNextCommit implements FilePath.FileCallable<RevCommit> {
                 break;
             }
 
+            if( c.getParentCount() > 1 ) {
+                continue;
+            }
+
             next = c;
         }
 

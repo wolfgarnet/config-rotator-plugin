@@ -69,12 +69,12 @@ public class ConfigurationRotatorReport extends Actionable implements Unprotecte
             return new Feed( name, feedId, feedUpdated );
         }
     }
-    
-    /**
-     * Factory to create url when subscribing to feeds
-     * 
-     */
 
+    /**
+     * Transform a URL to a safe String, where all the evil chars are removed
+     * @param url
+     * @return
+     */
     public static String urlTtransform( String url ) {
         return url.replaceAll( "[^a-zA-Z0-9]", "_" );
     }
