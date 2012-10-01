@@ -1,7 +1,9 @@
 package net.praqma.jenkins.configrotator.scm.git;
 
 import hudson.FilePath;
+import hudson.model.TaskListener;
 import hudson.remoting.VirtualChannel;
+import net.praqma.jenkins.configrotator.ConfigurationRotator;
 import org.eclipse.jgit.api.CreateBranchCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
@@ -27,19 +29,24 @@ public class ResolveConfigurationComponent implements FilePath.FileCallable<GitC
     private String commitId;
     private boolean fixed;
 
-    public ResolveConfigurationComponent( String name, String repository, String branch, String commitId, boolean fixed ) {
+    private TaskListener listener;
+
+    public ResolveConfigurationComponent( TaskListener listener, String name, String repository, String branch, String commitId, boolean fixed ) {
         this.name = name;
         this.repository = repository;
         this.branch = branch;
         this.commitId = commitId;
         this.fixed = fixed;
+
+        this.listener = listener;
     }
 
     @Override
     public GitConfigurationComponent invoke( File workspace, VirtualChannel channel ) throws IOException, InterruptedException {
         Logger logger = Logger.getLogger( ResolveConfigurationComponent.class.getName() );
 
-        if( name == null || name.equals("") ) {
+        /* fixing name */
+        if( name == null || name.equals( "" ) ) {
             name = repository.substring( repository.lastIndexOf( "/" ) );
 
             if( name.matches( ".*?\\.git$" ) ) {
@@ -51,27 +58,37 @@ public class ResolveConfigurationComponent implements FilePath.FileCallable<GitC
             }
         }
 
-        logger.fine("Name: " + name);
+        logger.fine( "Name: " + name );
 
-        File local = new File( workspace, name);
+        /* Fixing branch */
+        if( branch == null || branch.equals( "" ) ) {
+            branch = "master";
+        }
+
+        File local = new File( workspace, name );
 
         try {
-            logger.fine("Cloning repo from " + repository);
+            logger.fine( "Cloning repo from " + repository );
             try {
                 org.eclipse.jgit.api.Git.cloneRepository().setURI( repository ).setDirectory( local ).setCloneAllBranches( true ).call();
             } catch( JGitInternalException e ) {
-                logger.warning(e.getMessage());
+                logger.warning( e.getMessage() );
             }
 
             FileRepositoryBuilder builder = new FileRepositoryBuilder();
-            Repository repo = builder.setGitDir(new File( local, ".git" ) ).readEnvironment().findGitDir().build();
+            Repository repo = builder.setGitDir( new File( local, ".git" ) ).readEnvironment().findGitDir().build();
             org.eclipse.jgit.api.Git git = new org.eclipse.jgit.api.Git( repo );
 
-            logger.fine("Updating to " + branch);
-            git.branchCreate().setUpstreamMode( CreateBranchCommand.SetupUpstreamMode.SET_UPSTREAM).setName(branch).setStartPoint("origin/"+branch).call();
+            try {
+                logger.fine( "Updating to " + branch );
+                git.branchCreate().setUpstreamMode( CreateBranchCommand.SetupUpstreamMode.SET_UPSTREAM ).setName( branch ).setStartPoint( "origin/" + branch ).call();
+            } catch( Exception e ) {
+                logger.fine( e.getMessage() );
+                /* Keep on trucking! */
+            }
 
             try {
-                logger.fine("Pulling");
+                logger.fine( "Pulling" );
                 git.pull().call();
                 //git.fetch().setRefSpecs( new RefSpec( "refs/heads/*" ).setForceUpdate( true ) ).call();
             } catch( GitAPIException e ) {
@@ -81,17 +98,19 @@ public class ResolveConfigurationComponent implements FilePath.FileCallable<GitC
 
             //repo.updateRef( branch );
             git.checkout().setName( branch ).call();
-            logger.fine("BRANCH: " + repo.getBranch());
+            logger.fine( "BRANCH: " + repo.getBranch() );
             RevWalk w = new RevWalk( repo );
 
-            if( commitId == null ) {
+            if( commitId == null || commitId.matches( "^\\s*$" ) ) {
+                logger.fine( "Initial commit not defined, using HEAD" );
+                listener.getLogger().println( ConfigurationRotator.LOGGERNAME + "Initial commit not defined, using HEAD" );
                 commitId = "HEAD";
             }
 
-            logger.fine("Getting commit \"" + commitId +"\"");
+            logger.fine( "Getting commit \"" + commitId + "\"" );
             ObjectId o = repo.resolve( commitId );
             RevCommit commit = w.parseCommit( o );
-            logger.fine("RevCommit: " + commit);
+            logger.fine( "RevCommit: " + commit );
 
             return new GitConfigurationComponent( name, repository, branch, commit, fixed );
 

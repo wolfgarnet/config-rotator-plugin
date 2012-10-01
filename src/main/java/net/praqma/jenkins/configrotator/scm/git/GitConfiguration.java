@@ -25,7 +25,7 @@ public class GitConfiguration extends AbstractConfiguration<GitConfigurationComp
             logger.fine("Getting component for " + target);
             GitConfigurationComponent c = null;
             try {
-                c = workspace.act( new ResolveConfigurationComponent( target.getName(), target.getRepository(), target.getBranch(), target.getCommitId(), target.getFixed() ) );
+                c = workspace.act( new ResolveConfigurationComponent( listener, target.getName(), target.getRepository(), target.getBranch(), target.getCommitId(), target.getFixed() ) );
             } catch( Exception e ) {
                 logger.log( Level.WARNING, "Whoops", e );
                 throw new ConfigurationRotatorException( "Unable to get component for " + target, e );
