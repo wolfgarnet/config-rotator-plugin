@@ -1,7 +1,6 @@
 table.components {
     border-style: solid;
-    border-color: #632813;
-    background-color: #FF6633;
+    border-color: #000000;
     border-spacing: 0;
     border-collapse: collapse;
     border-width: 1px;
@@ -10,8 +9,8 @@ table.components {
 
 thead.components {
     border-style: solid;
-    border-color: #632813;
-    background-color: #df5a2e;
+    border-color: #000000;
+    background-color: #aaaaaa;
 }
 
 th.components {
@@ -22,6 +21,10 @@ th.components {
 td.components {
     padding-left: 20px;
     padding-right: 20px;
+}
+
+tr.components:hover {
+    background-color: #cbcbcb;
 }
 
 .center {

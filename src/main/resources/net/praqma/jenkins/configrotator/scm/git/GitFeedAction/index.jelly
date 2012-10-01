@@ -16,7 +16,7 @@
                 <tbody>
                     <j:forEach var="component" items="${it.getComponents()}">
                         <j:set var="title" value="${it.getFeedTitle(component)}" />
-                        <tr>
+                        <tr class="components">
                             <td class="components">${title}</td>
                             <td class="components"><a href="${it.getFeedUrl(it.getComponentName(component.getName()))}">Feed link</a></td>
                         </tr>
