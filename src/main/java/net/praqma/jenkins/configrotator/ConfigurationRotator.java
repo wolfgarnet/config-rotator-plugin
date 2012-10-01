@@ -167,7 +167,7 @@ public class ConfigurationRotator extends SCM {
             // We fail build if there is now new baseline.
             // An alternative would be to do like the CCUCM plugin and make the
             // build result "grey" with an comment "nothing to do".
-            throw new AbortException( "Nothing new" );
+            throw new AbortException( "Nothing new to rotate" );
         } else {
 
             /* Do the change log */

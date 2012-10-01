@@ -225,7 +225,7 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
             chosen.setCommitId( oldest.getName() );
             chosen.setChangedLast( true );
         } else {
-            listener.getLogger().println( "No new commits" );
+            listener.getLogger().println( ConfigurationRotator.LOGGERNAME + "No new commits" );
             logger.fine( "No new commits" );
             return null;
         }
