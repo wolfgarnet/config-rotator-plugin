@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.praqma.jenkins.configrotator.unit;
+package net.praqma.jenkins.configrotator.scm.clearcase.unit;
 
 import hudson.FilePath;
 import hudson.Launcher;

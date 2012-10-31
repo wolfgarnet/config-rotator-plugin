@@ -1,4 +1,4 @@
-package net.praqma.jenkins.configrotator.unit;
+package net.praqma.jenkins.configrotator.scm.clearcase.unit;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

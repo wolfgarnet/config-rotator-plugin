@@ -1,4 +1,4 @@
-package net.praqma.jenkins.configrotator.integration;
+package net.praqma.jenkins.configrotator.scm.clearcase;
 
 import hudson.AbortException;
 import hudson.Launcher;

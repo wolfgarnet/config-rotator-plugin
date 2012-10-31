@@ -242,7 +242,6 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
         } else {
             return targets;
         }
-
     }
 
 

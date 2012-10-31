@@ -141,6 +141,8 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
     
     public abstract ConfigRotatorChangeLogParser createChangeLogParser();
 
+    public abstract <TT extends AbstractTarget> List<TT> getTargets();
+
     public void printConfiguration( PrintStream out, AbstractConfiguration cfg ) {
         if( cfg != null ) {
             out.println( ConfigurationRotator.LOGGERNAME + "The configuration is:" );

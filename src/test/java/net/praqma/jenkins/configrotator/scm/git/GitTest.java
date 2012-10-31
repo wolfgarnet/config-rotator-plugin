@@ -1,4 +1,4 @@
-package net.praqma.jenkins.configrotator.git;
+package net.praqma.jenkins.configrotator.scm.git;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;

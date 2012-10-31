@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.praqma.jenkins.configrotator.integration;
+package net.praqma.jenkins.configrotator.scm.clearcase;
 
 import junit.framework.TestCase;
 import net.praqma.clearcase.ucm.entities.Project;
