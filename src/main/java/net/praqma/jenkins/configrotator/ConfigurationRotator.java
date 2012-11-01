@@ -76,6 +76,7 @@ public class ConfigurationRotator extends SCM {
         this.justConfigured = true;
     }
 
+    @Deprecated
     public ConfigurationRotator( AbstractConfigurationRotatorSCM acrs, boolean debug ) {
         this.acrs = acrs;
         this.justConfigured = true;
@@ -141,7 +142,7 @@ public class ConfigurationRotator extends SCM {
             acrs.printConfiguration( out, configuration );
 
             if( configuration != null ) {
-                out.println( LOGGERNAME + "Checking configuration" );
+                out.println( LOGGERNAME + "Checking configuration(" + configuration.getClass() + ") " + configuration );
                 performer.checkConfiguration( configuration );
 
                 out.println( LOGGERNAME + "Creating workspace" );
@@ -154,6 +155,7 @@ public class ConfigurationRotator extends SCM {
             }
         } catch( Exception e ) {
             logger.log( Level.SEVERE, "Unable to create configuration", e );
+            e.printStackTrace( out );
             throw new AbortException( e.getMessage() );
         }
 

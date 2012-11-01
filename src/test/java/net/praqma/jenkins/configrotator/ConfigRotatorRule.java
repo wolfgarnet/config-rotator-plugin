@@ -28,24 +28,32 @@ public class ConfigRotatorRule extends JenkinsRule {
 	}
 
     private FreeStyleProject project;
-    ClearCaseUCM ccucm;
+    private ConfigurationRotator cr;
+    private ClearCaseUCM ccucm;
 
-    @Deprecated
     public ConfigRotatorRule() {
 
     }
 
-    public ConfigRotatorRule( String title, PVob pvob ) {
-        System.out.println( pvob );
+    public ConfigRotatorRule initialize( String title, PVob pvob ) {
+        System.out.println( "PVOB: " + pvob );
+        System.out.println( "Title: " + title );
+        System.out.println( "Jenkins: " + jenkins );
         try {
             project = createFreeStyleProject( title );
+            System.out.println( "Project: " + project );
+
             ccucm = new ClearCaseUCM( pvob.toString() );
+            System.out.println( "CCUCM: " + ccucm );
 
             ccucm.targets = new LinkedList<ClearCaseUCMTarget>();
 
-            ConfigurationRotator cr = new ConfigurationRotator( ccucm );
+            cr = new ConfigurationRotator( ccucm );
             project.setScm( cr );
+
+            return this;
         } catch( Exception e ) {
+            e.printStackTrace();
             throw new IllegalStateException( e );
         }
     }
@@ -76,6 +84,14 @@ public class ConfigRotatorRule extends JenkinsRule {
         }
 
         return project.scheduleBuild2( 0 ).get();
+    }
+
+    public ConfigRotatorRule reconfigure() {
+        cr.reconfigure = true;
+        ccucm.setConfiguration( null );
+        this.ccucm.targets = new LinkedList<ClearCaseUCMTarget>();
+
+        return this;
     }
 
     public void printLog( AbstractBuild<?, ?> b, PrintStream out ) throws IOException {

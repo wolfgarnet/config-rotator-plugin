@@ -5,6 +5,7 @@ import hudson.model.Result;
 import hudson.scm.SCM;
 
 import java.io.PrintStream;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.*;
@@ -30,7 +31,7 @@ public class SystemValidator<T extends AbstractTarget> {
     private boolean checkWasReconfigured = false;
 
     /**/
-    private List<AbstractTarget> targets;
+    private List<AbstractTarget> targets = new LinkedList<AbstractTarget>();
     private boolean checkTargets = false;
 
     public SystemValidator( AbstractBuild<?, ?> build ) {
@@ -55,24 +56,24 @@ public class SystemValidator<T extends AbstractTarget> {
 
         if( this.checkExpectedResult ) {
             out.println( "[Validating expected result] must be " + this.expectedResult );
-            assertThat( build.getResult(), is( this.expectedResult) );
+            assertThat( "Validating expected result", build.getResult(), is( this.expectedResult ) );
         }
 
         if( this.checkExpectedResult ) {
             out.println( "[Validating compatability] must be " + ( this.compatible ? "compatible" : "incompatible" ) );
-            assertThat( action.isCompatible(), is( this.compatible ) );
+            assertThat( "Validating compatability", action.isCompatible(), is( this.compatible ) );
         }
 
         if( this.checkWasReconfigured ) {
             out.println( "[Validating reconfigured] must be " + this.wasReconfigured );
-            assertThat( cr.getAcrs().wasReconfigured( build.getProject() ), is( this.wasReconfigured) );
+            assertThat( "Validating reconfiguration", cr.getAcrs().wasReconfigured( build.getProject() ), is( this.wasReconfigured) );
         }
 
         if( this.checkTargets ) {
             out.println( "[Validating targets] must be " + this.targets );
             for( int i = 0 ; i < this.targets.size() ; i++ ) {
                 out.println( " * " + cr.getAcrs().getTargets().get( i ) + " == " + is( this.targets.get( i ) ) );
-                assertThat( cr.getAcrs().getTargets().get( i ), is( this.targets.get( i ) ) );
+                assertThat( "Validating target", cr.getAcrs().getTargets().get( i ), is( this.targets.get( i ) ) );
             }
         }
 

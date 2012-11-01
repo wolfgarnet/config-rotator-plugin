@@ -127,7 +127,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 
         @Override
         public void checkConfiguration( ClearCaseUCMConfiguration configuration ) throws ConfigurationRotatorException {
-               simpleCheckOfConfiguration( projectConfiguration );
+               simpleCheckOfConfiguration( configuration );
 
         }
 
@@ -136,8 +136,8 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
             try {
                 out.println( ConfigurationRotator.LOGGERNAME + "Creating view" );
                 logger.fine( "Creating view" );
-                SnapshotView view = createView( listener, build, (ClearCaseUCMConfiguration) projectConfiguration, workspace, pvob );
-                ((ClearCaseUCMConfiguration)projectConfiguration).setView( view );
+                SnapshotView view = createView( listener, build, configuration, workspace, pvob );
+                configuration.setView( view );
             } catch( Exception e ) {
                 out.println( ConfigurationRotator.LOGGERNAME + "Unable to create view" );
                 logger.fine( ConfigurationRotator.LOGGERNAME + "Unable to create view, message is: "
@@ -202,6 +202,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
      * @throws AbortException
      */
     public void simpleCheckOfConfiguration( AbstractConfiguration cfg ) throws ConfigurationRotatorException {
+        logger.finer( "Checking configuration " + cfg );
         if( cfg instanceof ClearCaseUCMConfiguration ) {
             ClearCaseUCMConfiguration config = (ClearCaseUCMConfiguration) cfg;
             Set<Component> ccucmcfgset = new HashSet<Component>();
@@ -225,7 +226,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
                 }
             }
         } else {
-            throw new ConfigurationRotatorException( ConfigurationRotator.LOGGERNAME + "simpleCheckOfconfiguration was not passed an instance of a ClearCaseUCMConfiguration" );
+            throw new ConfigurationRotatorException( "simpleCheckOfconfiguration failed " + cfg );
         }
     }
 
@@ -283,15 +284,17 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
     public SnapshotView createView( TaskListener listener, AbstractBuild<?, ?> build, ClearCaseUCMConfiguration configuration, FilePath workspace, PVob pvob ) throws IOException, InterruptedException {
         Project project = null;
 
-        logger.fine( ConfigurationRotator.LOGGERNAME + "Getting project" );
+        logger.fine( "Getting project" );
         project = workspace.act( new DetermineProject( Arrays.asList( new String[]{ "jenkins", "Jenkins", "hudson", "Hudson" } ), pvob ) );
 
-        logger.fine( ConfigurationRotator.LOGGERNAME + "Project is " + project );
+        logger.fine( "Project is " + project );
 
         /* Create baselines list */
         List<Baseline> selectedBaselines = new ArrayList<Baseline>();
-        logger.fine( ConfigurationRotator.LOGGERNAME + "Selected baselines:" );
+        logger.fine( "Selected baselines:" );
+        listener.getLogger().println( "Configratioanmwd: " + configuration );
         for( ClearCaseUCMConfigurationComponent config : configuration.getList() ) {
+            listener.getLogger().println( "Component: " + config );
             logger.fine( ConfigurationRotator.LOGGERNAME + config.getBaseline().getNormalizedName() );
             selectedBaselines.add( config.getBaseline() );
         }
