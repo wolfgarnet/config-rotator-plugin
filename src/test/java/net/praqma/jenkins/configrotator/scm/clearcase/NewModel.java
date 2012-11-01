@@ -6,6 +6,7 @@ import net.praqma.clearcase.test.junit.ClearCaseRule;
 import net.praqma.jenkins.configrotator.ConfigRotatorRule;
 import net.praqma.jenkins.configrotator.SystemValidator;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMTarget;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -14,11 +15,11 @@ import java.util.concurrent.ExecutionException;
 
 public class NewModel {
 
-    @Rule
-    private ClearCaseRule ccenv =  new ClearCaseRule( "cr1" );
+    @ClassRule
+    public static ClearCaseRule ccenv =  new ClearCaseRule( "cr1" );
 
     @Rule
-    private ConfigRotatorRule crrule = new ConfigRotatorRule( "cr-test", ccenv.getPVob() ).
+    public ConfigRotatorRule crrule = new ConfigRotatorRule( "cr-test", ccenv.getPVob() ).
             addTarget( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
             addTarget( new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, false" ) );
 

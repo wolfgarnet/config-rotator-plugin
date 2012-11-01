@@ -36,6 +36,7 @@ public class ConfigRotatorRule extends JenkinsRule {
     }
 
     public ConfigRotatorRule( String title, PVob pvob ) {
+        System.out.println( pvob );
         try {
             project = createFreeStyleProject( title );
             ccucm = new ClearCaseUCM( pvob.toString() );
