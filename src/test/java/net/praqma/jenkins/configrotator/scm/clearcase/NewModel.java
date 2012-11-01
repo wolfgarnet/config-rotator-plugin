@@ -2,6 +2,7 @@ package net.praqma.jenkins.configrotator.scm.clearcase;
 
 import hudson.model.AbstractBuild;
 import hudson.model.Result;
+import net.praqma.clearcase.test.annotations.ClearCaseUniqueVobName;
 import net.praqma.clearcase.test.junit.ClearCaseRule;
 import net.praqma.jenkins.configrotator.ConfigRotatorRule;
 import net.praqma.jenkins.configrotator.SystemValidator;
@@ -24,6 +25,7 @@ public class NewModel {
             addTarget( new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, false" ) );
 
     @Test
+    @ClearCaseUniqueVobName( name = "config-testv2" )
     public void test1() throws IOException, ExecutionException, InterruptedException {
         AbstractBuild<?, ?> build = crrule.build( false );
 
