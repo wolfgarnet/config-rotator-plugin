@@ -9,7 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 public class SystemValidator<T extends AbstractTarget> {
 
@@ -29,6 +29,10 @@ public class SystemValidator<T extends AbstractTarget> {
     /**/
     private boolean wasReconfigured;
     private boolean checkWasReconfigured = false;
+
+    /**/
+    private boolean actionIsValid;
+    private boolean checkActionIsValid = false;
 
     /**/
     private List<AbstractTarget> targets = new LinkedList<AbstractTarget>();
@@ -59,7 +63,7 @@ public class SystemValidator<T extends AbstractTarget> {
             assertThat( "Validating expected result", build.getResult(), is( this.expectedResult ) );
         }
 
-        if( this.checkExpectedResult ) {
+        if( this.checkCompatible ) {
             out.println( "[Validating compatability] must be " + ( this.compatible ? "compatible" : "incompatible" ) );
             assertThat( "Validating compatability", action.isCompatible(), is( this.compatible ) );
         }
@@ -77,31 +81,47 @@ public class SystemValidator<T extends AbstractTarget> {
             }
         }
 
+        if( this.checkActionIsValid ) {
+            out.println( "[Validating action] must be " + ( this.actionIsValid ? "valid" : "invalid" ) );
+            if( this.actionIsValid ) {
+                assertNotNull( "Action was not valid", action );
+            } else {
+                assertNull( "Action was not null", action );
+            }
+        }
+
         out.println( "Successfully validated system" );
     }
 
-    public SystemValidator setExpectedResult( Result expectedResult ) {
+    public SystemValidator checkExpectedResult( Result expectedResult ) {
         this.expectedResult = expectedResult;
         this.checkExpectedResult = true;
 
         return this;
     }
 
-    public SystemValidator setCompatability( boolean compatible ) {
+    public SystemValidator checkCompatability( boolean compatible ) {
         this.compatible = compatible;
         this.checkCompatible = true;
 
         return this;
     }
 
-    public SystemValidator setWasReconfigured( boolean wasReconfigured ) {
+    public SystemValidator checkWasReconfigured( boolean wasReconfigured ) {
         this.wasReconfigured = wasReconfigured;
         this.checkWasReconfigured = true;
 
         return this;
     }
 
-    public SystemValidator setTargets( T ... targets ) {
+    public SystemValidator checkAction( boolean valid ) {
+        this.checkActionIsValid = true;
+        this.actionIsValid = valid;
+
+        return this;
+    }
+
+    public SystemValidator checkTargets( T... targets ) {
         for( T t : targets ) {
             this.targets.add( t );
         }

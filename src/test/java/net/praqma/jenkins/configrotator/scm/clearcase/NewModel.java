@@ -42,9 +42,9 @@ public class NewModel {
         crrule.printLog( build, System.out );
 
         SystemValidator<ClearCaseUCMTarget> val = new SystemValidator<ClearCaseUCMTarget>( build );
-        val.setExpectedResult( Result.SUCCESS ).
-                setCompatability( true ).
-                setTargets( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, false" ), new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
+        val.checkExpectedResult( Result.SUCCESS ).
+                checkCompatability( true ).
+                checkTargets( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, false" ), new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
                 validate();
     }
 
@@ -61,14 +61,14 @@ public class NewModel {
 
         /* Verify first build */
         SystemValidator<ClearCaseUCMTarget> val = new SystemValidator<ClearCaseUCMTarget>( build1 );
-        val.setExpectedResult( Result.SUCCESS ).setCompatability( true ).setWasReconfigured( false ).validate();
+        val.checkExpectedResult( Result.SUCCESS ).checkCompatability( true ).checkWasReconfigured( false ).validate();
 
         crrule.reconfigure().
                 addTarget( new ClearCaseUCMTarget( "model-3@" + ccenv.getPVob() + ", INITIAL, false" ) ).
                 addTarget( new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, false" ) );
 
         SystemValidator<ClearCaseUCMTarget> reval = new SystemValidator<ClearCaseUCMTarget>( build1 );
-        reval.setWasReconfigured( true ).validate();
+        reval.checkWasReconfigured( true ).validate();
 
         /* Do the second build */
         AbstractBuild<?, ?> build2 = crrule.build( false );
@@ -76,10 +76,28 @@ public class NewModel {
 
         /* Verify first build */
         SystemValidator<ClearCaseUCMTarget> val2 = new SystemValidator<ClearCaseUCMTarget>( build2 );
-        val2.setExpectedResult( Result.SUCCESS ).
-                setCompatability( true ).
-                setWasReconfigured( false ).
-                setTargets( new ClearCaseUCMTarget( "model-3@" + ccenv.getPVob() + ", INITIAL, false" ), new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
+        val2.checkExpectedResult( Result.SUCCESS ).
+                checkCompatability( true ).
+                checkWasReconfigured( false ).
+                checkTargets( new ClearCaseUCMTarget( "model-3@" + ccenv.getPVob() + ", INITIAL, false" ), new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
+                validate();
+    }
+
+
+    @Test
+    @ClearCaseUniqueVobName( name = "wrongtargets-config-testv2" )
+    public void wrongTargets() throws IOException, ExecutionException, InterruptedException {
+
+        crrule.initialize( "cr-test", ccenv.getPVob() ).
+                addTarget( new ClearCaseUCMTarget( "model-wrong@" + ccenv.getPVob() + ", INITIAL, false" ) ).
+                addTarget( new ClearCaseUCMTarget( "client-wrong@" + ccenv.getPVob() + ", INITIAL, false" ) );
+
+        AbstractBuild<?, ?> build = crrule.build( false );
+        crrule.printLog( build, System.out );
+
+        SystemValidator<ClearCaseUCMTarget> val = new SystemValidator<ClearCaseUCMTarget>( build );
+        val.checkExpectedResult( Result.FAILURE ).
+                checkAction( false ).
                 validate();
     }
 }
