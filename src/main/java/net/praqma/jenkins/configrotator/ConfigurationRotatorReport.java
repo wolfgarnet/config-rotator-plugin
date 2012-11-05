@@ -18,11 +18,14 @@ import hudson.Extension;
 
 import java.io.*;
 import java.util.*;
+import java.util.logging.Logger;
 
 import jenkins.model.Jenkins;
 
 @Extension
 public class ConfigurationRotatorReport extends Actionable implements UnprotectedRootAction {
+
+    private static Logger logger = Logger.getLogger( ConfigurationRotatorReport.class.getName() );
 
 	@Override
 	public String getIconFileName() {
@@ -58,7 +61,7 @@ public class ConfigurationRotatorReport extends Actionable implements Unprotecte
     }
 
     public String getUrl( ConfigurationRotatorSCMDescriptor<AbstractConfigurationRotatorSCM> scm ) {
-        return Jenkins.getInstance().getRootUrl() + getUrlName() + "/" + scm.getFeedComponentName();
+        return getRootUrl() + getUrlName() + "/" + scm.getFeedComponentName();
     }
 
 
@@ -80,7 +83,7 @@ public class ConfigurationRotatorReport extends Actionable implements Unprotecte
     }
 
     public static String FeedFrontpageUrl() {
-        return Jenkins.getInstance().getRootUrl() + ConfigurationRotator.URL_NAME + "/";
+        return getRootUrl() + ConfigurationRotator.URL_NAME + "/";
     }
 
     /**
@@ -89,7 +92,15 @@ public class ConfigurationRotatorReport extends Actionable implements Unprotecte
      */
 
     public static String GenerateJobUrl(AbstractBuild<?,?> build) {
-        return Jenkins.getInstance().getRootUrl() + build.getUrl();
+        return getRootUrl() + build.getUrl();
+    }
+
+    public static String getRootUrl() {
+        if( Jenkins.getInstance() == null || Jenkins.getInstance().getRootUrl() == null ) {
+            return "http://localhost:8080/";
+        } else {
+            return Jenkins.getInstance().getRootUrl();
+        }
     }
 
 }
