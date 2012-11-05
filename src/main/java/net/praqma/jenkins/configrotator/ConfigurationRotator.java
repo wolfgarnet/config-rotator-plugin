@@ -27,6 +27,8 @@ import hudson.scm.SCM;
 import hudson.tasks.Publisher;
 import jenkins.model.Jenkins;
 
+import static java.lang.System.*;
+
 public class ConfigurationRotator extends SCM {
 
     private AbstractConfigurationRotatorSCM acrs;
@@ -59,10 +61,20 @@ public class ConfigurationRotator extends SCM {
     public static final String LOGGERNAME = "[" + NAME + "] ";
     public boolean justConfigured = false;
 
-    public static final String SEPARATOR = System.getProperty( "file.separator" );
+    public static final String SEPARATOR = getProperty( "file.separator" );
     public static final String FEED_DIR = "config-rotator-feeds" + SEPARATOR;
 
-    public static final File FEED_PATH = new File( Jenkins.getInstance().getRootDir(), FEED_DIR );
+    public static File FEED_PATH;
+    public static String VERSION = "Unresolved";
+
+    static {
+        if( Jenkins.getInstance() != null ) {
+            FEED_PATH = new File( Jenkins.getInstance().getRootDir(), FEED_DIR );
+            VERSION = Jenkins.getInstance().getPlugin( "config-rotator" ).getWrapper().getVersion();
+        } else {
+
+        }
+    }
 
     /**
      * Determines whether a new configuration has been entered. If true, the
@@ -112,8 +124,8 @@ public class ConfigurationRotator extends SCM {
     public boolean checkout( AbstractBuild<?, ?> build, Launcher launcher, FilePath workspace, BuildListener listener, File file ) throws IOException, InterruptedException {
         PrintStream out = listener.getLogger();
 
-        out.println( LOGGERNAME + "Version: " + Jenkins.getInstance().getPlugin( "config-rotator" ).getWrapper().getVersion() );
-        logger.fine( "Version: " + Jenkins.getInstance().getPlugin( "config-rotator" ).getWrapper().getVersion() );
+        out.println( LOGGERNAME + "Version: " + VERSION );
+        logger.fine( "Version: " + VERSION );
 
         /*
            * Determine if the job was reconfigured
@@ -129,7 +141,6 @@ public class ConfigurationRotator extends SCM {
 
         boolean performResult = false;
         try {
-
 
             if( reconfigure || lastAction == null ) {
                 out.println( LOGGERNAME + "Configuration from scratch" );
@@ -178,13 +189,13 @@ public class ConfigurationRotator extends SCM {
                     } else {
                         entries = clw.getChangeLogEntries( configuration );
                     }
+                    clw.write( entries );
                 } else {
                     logger.info( "Change log writer not implemented" );
                     out.println( LOGGERNAME + "Change log writer not implemented" );
                     entries = Collections.emptyList();
                 }
 
-                clw.write( entries );
             } catch( Exception e ) {
                 /* The build must not be terminated because of the change log */
                 logger.log( Level.WARNING, "Change log not generated", e );
@@ -201,18 +212,22 @@ public class ConfigurationRotator extends SCM {
             /*
                * If not aborted, add publisher
                 */
-            boolean added = false;
-            for( Publisher p : build.getParent().getPublishersList() ) {
-                if( p instanceof ConfigurationRotatorPublisher ) {
-                    added = true;
-                    break;
-                }
-            }
-            if( !added ) {
-                build.getProject().getPublishersList().add( new ConfigurationRotatorPublisher() );
-            }
+            addPublisher( build );
 
             return true;
+        }
+    }
+
+    public void addPublisher( AbstractBuild<?, ?> build ) throws IOException {
+        boolean added = false;
+        for( Publisher p : build.getParent().getPublishersList() ) {
+            if( p instanceof ConfigurationRotatorPublisher ) {
+                added = true;
+                break;
+            }
+        }
+        if( !added ) {
+            build.getProject().getPublishersList().add( new ConfigurationRotatorPublisher() );
         }
     }
 
@@ -291,7 +306,7 @@ public class ConfigurationRotator extends SCM {
 
         @Override
         public SCM newInstance( StaplerRequest req, JSONObject formData ) throws FormException {
-            System.out.println( "FORM: " + formData.toString( 2 ) );
+            out.println( "FORM: " + formData.toString( 2 ) );
             ConfigurationRotator r = (ConfigurationRotator) super.newInstance( req, formData );
             ConfigurationRotatorSCMDescriptor<AbstractConfigurationRotatorSCM> d = (ConfigurationRotatorSCMDescriptor<AbstractConfigurationRotatorSCM>) r.getAcrs().getDescriptor();
             r.acrs = d.newInstance( req, formData, r.acrs );
