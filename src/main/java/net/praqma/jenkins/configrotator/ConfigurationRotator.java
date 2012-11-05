@@ -207,12 +207,12 @@ public class ConfigurationRotator extends SCM {
                 */
             reconfigure = false;
             justConfigured = false;
-            build.getProject().save();
 
             /*
                * If not aborted, add publisher
                 */
             addPublisher( build );
+            build.getProject().save();
 
             return true;
         }
