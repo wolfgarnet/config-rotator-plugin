@@ -4,16 +4,14 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>1.483</version>
+        <version>1.484</version>
     </parent>
 
     <groupId>net.praqma</groupId>
     <artifactId>config-rotator</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.2.0-SNAPSHOT</version>
     <name>Config Rotator Plugin</name>
-    <description>Automatic try-out of possible configurations.
-        Monitors the SCM for newer versions of components and tests if compliant. Only available using ClearCaseUCM as
-        SCM
+    <description>Automatic rotations of possible configurations. Monitors the SCM for newer versions of components and tests if compliant. Available for ClearCaseUCM and Git.
     </description>
     <packaging>hpi</packaging>
     <url>https://wiki.jenkins-ci.org/display/JENKINS/config+rotator+plugin</url>
@@ -144,11 +142,9 @@
                         <version>2.11</version>
                         <configuration>
                             <includes>
-                                <include>net/praqma/jenkins/configrotator/unit/*.java</include>
+                                <!-- This is just for the model -->
+                                <include>net/praqma/jenkins/configrotator/ConfigurationRotatorTest.java</include>
                             </includes>
-                            <excludes>
-                                <exclude>net/praqma/jenkins/configrotator/integration/*.java</exclude>
-                            </excludes>
                         </configuration>
                     </plugin>
 
@@ -194,7 +190,7 @@
 
         <!-- ClearCase integration tests -->
         <profile>
-            <id>ccint</id>
+            <id>ccint-old</id>
             <build>
                 <plugins>
                     <plugin>
@@ -212,7 +208,7 @@
         </profile>
 
         <profile>
-            <id>ccint2</id>
+            <id>ccint</id>
             <build>
                 <plugins>
                     <plugin>
