@@ -2,22 +2,29 @@ package net.praqma.jenkins.configrotator.scm.clearcaseucm;
 
 import hudson.model.AbstractBuild;
 import net.praqma.clearcase.exceptions.ClearCaseException;
+import net.praqma.clearcase.ucm.entities.Activity;
 import net.praqma.clearcase.ucm.entities.Baseline;
 import net.praqma.clearcase.ucm.entities.Project;
 import net.praqma.clearcase.ucm.entities.Project.PromotionLevel;
+import net.praqma.clearcase.ucm.entities.Version;
 import net.praqma.html.Html;
-import net.praqma.jenkins.configrotator.AbstractConfiguration;
-import net.praqma.jenkins.configrotator.AbstractConfigurationComponent;
-import net.praqma.jenkins.configrotator.ConfigurationRotatorBuildAction;
-import net.praqma.jenkins.configrotator.ConfigurationRotatorReport;
+import net.praqma.jenkins.configrotator.*;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorVersion;
 import net.praqma.util.xml.feed.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ClearCaseUCMConfigurationComponent extends AbstractConfigurationComponent {
+
+    private static Logger logger = Logger.getLogger( ClearCaseUCMConfigurationComponent.class.getName() );
 
     private Baseline baseline;
     private PromotionLevel plevel;

@@ -152,7 +152,7 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
         }
 
         @Override
-        protected List<ConfigRotatorChangeLogEntry> getChangeLogEntries( GitConfigurationComponent configurationComponent ) throws ConfigurationRotatorException {
+        protected List<ConfigRotatorChangeLogEntry> getChangeLogEntries( GitConfiguration configuration, GitConfigurationComponent configurationComponent ) throws ConfigurationRotatorException {
             logger.fine( "Change log entry, " + configurationComponent );
             try {
                 ConfigRotatorChangeLogEntry entry = build.getWorkspace().act( new ResolveChangeLog( configurationComponent.getName(), configurationComponent.getCommitId() ) );

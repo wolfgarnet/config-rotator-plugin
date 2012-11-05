@@ -3,6 +3,7 @@ package net.praqma.jenkins.configrotator.scm;
 import hudson.model.User;
 import hudson.scm.ChangeLogSet.Entry;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.logging.Logger;
@@ -12,7 +13,7 @@ import java.util.logging.Logger;
  *
  * @author Praqma
  */
-public class ConfigRotatorChangeLogEntry extends Entry {
+public class ConfigRotatorChangeLogEntry extends Entry implements Serializable {
 
     private static Logger logger = Logger.getLogger( ConfigRotatorChangeLogEntry.class.getName() );
 

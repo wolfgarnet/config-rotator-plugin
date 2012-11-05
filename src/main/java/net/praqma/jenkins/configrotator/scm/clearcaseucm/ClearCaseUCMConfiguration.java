@@ -8,16 +8,22 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.praqma.clearcase.exceptions.*;
 import net.praqma.clearcase.ucm.entities.Activity;
 import net.praqma.clearcase.ucm.entities.Version;
 import net.praqma.clearcase.ucm.view.SnapshotView;
 import net.praqma.jenkins.configrotator.*;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorVersion;
 
 public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUCMConfigurationComponent> {
+
+    private static Logger logger = Logger.getLogger( ClearCaseUCMConfiguration.class.getName() );
 
     private SnapshotView view;
 
@@ -191,52 +197,27 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUC
 
     /**
      * Returns a list of files affected by the recent change.
-     *
-     * @param configuration
-     * @return
-     * @throws ConfigurationRotatorException
      */
-
     @Override
-    public List<ClearCaseActivity> difference( AbstractConfiguration<ClearCaseUCMConfigurationComponent> configuration ) throws ConfigurationRotatorException {
-        List<ClearCaseActivity> changes = new ArrayList<ClearCaseActivity>();
+    public List<ConfigRotatorChangeLogEntry> difference( ClearCaseUCMConfigurationComponent component, ClearCaseUCMConfigurationComponent other ) throws ConfigurationRotatorException {
+        List<ConfigRotatorChangeLogEntry> entries = new LinkedList<ConfigRotatorChangeLogEntry>();
+
         List<ClearCaseUCMConfigurationComponent> components = getList();
         //Find changed component
-        for( ClearCaseUCMConfigurationComponent comp : components ) {
-            if( comp.isChangedLast() ) {
-                try {
-                    int index = components.indexOf( comp );
-                    List<Activity> activities = Version.getBaselineDiff( configuration.getList().get( index ).getBaseline(), comp.getBaseline(), true, new File( getView().getPath() ) );
-                    for( Activity a : activities ) {
-                        ClearCaseActivity ccac = new ClearCaseActivity();
-                        ccac.setAuthor( a.getUser() );
-                        ccac.setActivityName( a.getShortname() );
-                        for( Version v : a.changeset.versions ) {
-                            ConfigRotatorVersion ccv = new ConfigRotatorVersion();
-                            ccv.setFile( v.getSFile() );
-                            ccv.setName( v.getVersion() );
-                            ccv.setUser( v.blame() );
-                            ccac.addVersion( ccv );
-                        }
-                        changes.add( ccac );
-                    }
-                } catch( UnableToCreateEntityException ex ) {
-                    throw new ConfigurationRotatorException( "UnableToCreateEntityException.", ex );
-                } catch( UnableToGetEntityException ex ) {
-                    throw new ConfigurationRotatorException( "UnableToGetEntityException.", ex );
-                } catch( NullPointerException nex ) {
-                    throw new ConfigurationRotatorException( "Null pointer found.", nex );
-                } catch( CleartoolException ex ) {
-                    throw new ConfigurationRotatorException( "Cleartool error:", ex );
-                } catch( UnableToLoadEntityException ex ) {
-                    throw new ConfigurationRotatorException( "Cleartool error: unable to load entity", ex );
-                } catch( UCMEntityNotFoundException ex ) {
-                    throw new ConfigurationRotatorException( "Entity not found error:", ex );
-                } catch( UnableToInitializeEntityException ex ) {
-                    throw new ConfigurationRotatorException( "Unable to initalize entity error:", ex );
+
+        List<Activity> activities = null;
+        try {
+            activities = Version.getBaselineDiff( component.getBaseline(), ( other != null ? other.getBaseline() : null ), false, new File( getView().getPath() ) );
+
+            for( Activity a : activities ) {
+                ConfigRotatorChangeLogEntry entry = new ConfigRotatorChangeLogEntry( a.getHeadline(), a.getUser(), new ArrayList<ConfigRotatorVersion>() );
+                for( Version v : a.changeset.versions ) {
+                    entry.addVersion( new ConfigRotatorVersion( v.getSFile(), v.getVersion(), v.blame() ) );
                 }
             }
+        } catch( ClearCaseException e ) {
+            logger.log( Level.WARNING, "Unable to generate change log entries", e );
         }
-        return changes;
+        return entries;
     }
 }

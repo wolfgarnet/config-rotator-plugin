@@ -22,6 +22,7 @@ import net.praqma.clearcase.ucm.entities.Baseline;
 import net.praqma.clearcase.ucm.entities.Project;
 import net.praqma.clearcase.ucm.view.SnapshotView;
 import net.praqma.jenkins.configrotator.*;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
 import net.praqma.jenkins.utils.remoting.DetermineProject;
 import net.praqma.jenkins.utils.remoting.GetBaselines;
@@ -358,7 +359,24 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
      */
     @Override
     public ChangeLogWriter getChangeLogWriter( File changeLogFile, BuildListener listener, AbstractBuild<?, ?> build ) {
-        return null;
+        return new UCMChangeLogWriter( changeLogFile, listener, build );
+    }
+
+    public class UCMChangeLogWriter extends ChangeLogWriter<ClearCaseUCMConfigurationComponent, ClearCaseUCMConfiguration> {
+
+        public UCMChangeLogWriter( File changeLogFile, BuildListener listener, AbstractBuild<?, ?> build ) {
+            super( changeLogFile, listener, build );
+        }
+
+        @Override
+        protected List<ConfigRotatorChangeLogEntry> getChangeLogEntries( ClearCaseUCMConfiguration configuration, ClearCaseUCMConfigurationComponent Component ) throws ConfigurationRotatorException {
+            logger.fine( "Change log entry, " + Component );
+            try {
+                return build.getWorkspace().act(new ClearCaseGetBaseLineCompare(listener, configuration, Component ) );
+            } catch( Exception e ) {
+                throw new ConfigurationRotatorException( e );
+            }
+        }
     }
 
     @Extension

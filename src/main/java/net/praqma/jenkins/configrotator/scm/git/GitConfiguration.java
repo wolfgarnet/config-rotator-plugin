@@ -1,13 +1,10 @@
 package net.praqma.jenkins.configrotator.scm.git;
 
 import hudson.FilePath;
-import hudson.model.AbstractBuild;
 import hudson.model.TaskListener;
 import net.praqma.jenkins.configrotator.*;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
 
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,7 +34,7 @@ public class GitConfiguration extends AbstractConfiguration<GitConfigurationComp
     }
 
     @Override
-    public List<? extends Serializable> difference( AbstractConfiguration<GitConfigurationComponent> configuration ) throws ConfigurationRotatorException {
+    public List<ConfigRotatorChangeLogEntry> difference( GitConfigurationComponent component, GitConfigurationComponent other ) throws ConfigurationRotatorException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 

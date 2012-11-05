@@ -1,15 +1,12 @@
 package net.praqma.jenkins.configrotator.scm.fake;
 
-import com.google.common.collect.Lists;
 import net.praqma.jenkins.configrotator.AbstractConfiguration;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorException;
-
-import java.io.Serializable;
-import java.util.List;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
 
 public class FakeConfiguration extends AbstractConfiguration<FakeConfigurationComponent> {
     @Override
-    public List<? extends Serializable> difference( AbstractConfiguration<FakeConfigurationComponent> configuration ) throws ConfigurationRotatorException {
+    public ConfigRotatorChangeLogEntry difference( AbstractConfiguration<FakeConfigurationComponent> configuration ) throws ConfigurationRotatorException {
         return null;
     }
 

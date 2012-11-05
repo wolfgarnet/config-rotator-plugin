@@ -182,40 +182,6 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
             this.build = build;
         }
 
-        /*
-        public boolean isFirstBuild() {
-            ConfigurationRotatorBuildAction crbac = getLastResult( build.getProject(), null );
-            return crbac == null;
-        }
-
-        protected C getConfigurationComponent() {
-            List<C> currentComponentList = null;
-            ConfigurationRotatorBuildAction current = build.getAction( ConfigurationRotatorBuildAction.class );
-            logger.fine("Current action: " + current);
-            if( current != null ) {
-                currentComponentList = (List<C>)current.getConfiguration().getList();
-            }
-
-            logger.fine("Current components: " + currentComponentList);
-
-
-            if( currentComponentList != null ) {
-                for( AbstractConfigurationComponent acc : currentComponentList ) {
-                    if( acc.isChangedLast() ) {
-                        return (C)acc;
-                    }
-                }
-            }
-
-            logger.fine("Null, huh?");
-            return null;
-        }
-
-        public List<ConfigRotatorChangeLogEntry> getChangeLogEntries() throws ConfigurationRotatorException {
-            return getChangeLogEntries( getConfigurationComponent() );
-        }
-        */
-
         public C getComponent( T configuration ) throws ConfigurationRotatorException {
             if( configuration != null ) {
                 for( C acc : configuration.getList() ) {
@@ -228,10 +194,10 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
             throw new ConfigurationRotatorException( "No such component, " + configuration );
         }
 
-        protected abstract List<ConfigRotatorChangeLogEntry> getChangeLogEntries( C configurationComponent ) throws ConfigurationRotatorException;
+        protected abstract List<ConfigRotatorChangeLogEntry> getChangeLogEntries( T configuration, C configurationComponent ) throws ConfigurationRotatorException;
 
         public List<ConfigRotatorChangeLogEntry> getChangeLogEntries( T configuration ) throws ConfigurationRotatorException {
-            return getChangeLogEntries( getComponent( configuration ) );
+            return getChangeLogEntries( configuration, getComponent( configuration ) );
         }
 
 

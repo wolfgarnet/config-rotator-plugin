@@ -11,32 +11,36 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import net.praqma.jenkins.configrotator.ConfigurationRotatorException;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
 
 /**
  *
  * @author Praqma
  */
-public class ClearCaseGetBaseLineCompare implements FilePath.FileCallable<List<ClearCaseActivity>> {
-    private ClearCaseUCMConfiguration current;
-    private ClearCaseUCMConfiguration compareto;
+public class ClearCaseGetBaseLineCompare implements FilePath.FileCallable<List<ConfigRotatorChangeLogEntry>> {
+    private ClearCaseUCMConfigurationComponent component;
+    private ClearCaseUCMConfiguration configuration;
     private BuildListener listener;
 
-    public ClearCaseGetBaseLineCompare(BuildListener listener, ClearCaseUCMConfiguration current, ClearCaseUCMConfiguration compareto) {
-        this.current = current;
-        this.compareto = compareto;
+    public ClearCaseGetBaseLineCompare(BuildListener listener, ClearCaseUCMConfiguration configuration, ClearCaseUCMConfigurationComponent component) {
+        this.configuration = configuration;
+        this.component = component;
         this.listener = listener;
     }
 
     @Override
-    public List<ClearCaseActivity> invoke(File f, VirtualChannel channel) throws IOException, InterruptedException {
-        List<ClearCaseActivity> changes = new ArrayList<ClearCaseActivity>();
+    public List<ConfigRotatorChangeLogEntry> invoke(File f, VirtualChannel channel) throws IOException, InterruptedException {
+        Logger logger = Logger.getLogger( ClearCaseGetBaseLineCompare.class.getName() );
         try {
-            changes = current.difference(compareto);          
+            return configuration.difference( component, null );
         } catch (ConfigurationRotatorException ex) {
-            listener.getLogger().println("Caught exception executeing remote ClearCaseBaseLineCompare: "+ex);
+            logger.log( Level.WARNING, "Unable to get differences for " + component, ex );
+            throw new IOException( "Unable to get differences for " + component, ex );
         }
-        return changes;
     }
 
 }

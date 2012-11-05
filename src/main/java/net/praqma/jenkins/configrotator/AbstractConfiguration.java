@@ -1,13 +1,14 @@
 package net.praqma.jenkins.configrotator;
 
 import hudson.model.AbstractBuild;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractConfiguration<T extends AbstractConfigurationComponent> implements Serializable {
-    public abstract List<? extends Serializable> difference( AbstractConfiguration<T> configuration ) throws ConfigurationRotatorException;
+    public abstract List<ConfigRotatorChangeLogEntry> difference( T component, T other ) throws ConfigurationRotatorException;
 
     protected List<T> list = new ArrayList<T>();
 
