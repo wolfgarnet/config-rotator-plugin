@@ -2,6 +2,8 @@ package net.praqma.jenkins.configrotator;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.logging.Logger;
 
 import net.praqma.jenkins.configrotator.ConfigurationRotator.ResultType;
@@ -72,8 +74,8 @@ public class ConfigurationRotatorPublisher extends Notifier {
 	}
 
 	@Override
-	public Action getProjectAction( AbstractProject<?, ?> project ) {
-		return new ConfigurationRotatorProjectAction( project );
+	public Collection<Action> getProjectActions( AbstractProject<?, ?> project ) {
+        return Collections.singleton( (Action)new ConfigurationRotatorProjectAction( project ) );
 	}
 
 	@Extension

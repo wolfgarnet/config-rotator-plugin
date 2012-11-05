@@ -11,15 +11,12 @@ import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.logging.Level;
+
 import junit.framework.TestCase;
-import net.praqma.jenkins.configrotator.ConfigurationRotatorBuildAction;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogSet;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorVersion;
-import net.praqma.jenkins.configrotator.scm.clearcaseucm.*;
 import net.praqma.util.debug.Logger;
 import net.praqma.util.debug.appenders.Appender;
 import net.praqma.util.debug.appenders.ConsoleAppender;
@@ -66,67 +63,6 @@ public class ConfigRotatorChangeSetTest extends TestCase {
         //Mockito.when( build.getAction(ConfigurationRotatorBuildAction.class)).thenReturn( new ConfigurationRotatorBuildAction(build, null, conf) );
 	}
 
-    @Test
-    public void testDAOChangeLogItems() {
-        ClearCaseActivity cca = new ClearCaseActivity();
-        cca.setActivityName("TestActivity");
-                
-        ClearCaseActivity cca2 = new ClearCaseActivity("TestActivity");
-        
-        assertTrue(cca.equals(cca2));
-        cca.setVersions(new ArrayList<ConfigRotatorVersion>());
-        cca.addVersion(new ConfigRotatorVersion("Test","Test","Test"));
-        
-        
-        assertEquals(1, cca.getVersions().size());
-        
-        assertEquals("Test", cca.getVersions().get(0).getFile());
-        assertEquals("Test", cca.getVersions().get(0).getName());
-        assertEquals("Test", cca.getVersions().get(0).getUser());
-        
-        ClearCaseActivity ccaTwo = new ClearCaseActivity("Test", "TestAuthorRemodify");
-        ccaTwo.setAuthor("TestAuthor");
-        assertTrue(ccaTwo.getAuthor().equals("TestAuthor"));
-        
-        assertFalse(ccaTwo.equals("FalseString"));
-        
-        
-    }
-    
-    @Test
-    public void testConfigRotatorEntry() {
-        ClearCaseActivity cca = new ClearCaseActivity();
-        cca.setActivityName("TestActivity");
-                
-        ClearCaseActivity cca2 = new ClearCaseActivity("TestActivity");
-        assertEquals(cca2.getActivityName(),"TestActivity");
-        
-        cca2.setAuthor("TestAuthor");
-        assertEquals(cca2.getAuthor(), "TestAuthor");
-        
-        ClearCaseActivity cca3 = new ClearCaseActivity("TestActivity");
-        assertTrue(cca2.equals(cca3));
-        
-        
-        
-        cca.setVersions(new ArrayList<ConfigRotatorVersion>());
-        cca.addVersion(new ConfigRotatorVersion("Test","Test","Test"));
-
-
-
-        ConfigRotatorChangeLogEntry ccucroe = new ConfigRotatorChangeLogEntry();
-        
-        assertNull(ccucroe.getCommitMessage());
-      
-        ccucroe.setVersions(cca.getVersions());
-        assertEquals("ClearCase UCM ConfigRotator Change",ccucroe.getMsg());
-        
-        assertEquals(1, ccucroe.getAffectedPaths().size());
-        ccucroe.addVersion(new ConfigRotatorVersion("Test2", "Test2", "Test2"));
-        assertEquals(2, ccucroe.getAffectedPaths().size());      
-    }
-    
-    
     @Test
     public void testChangeLog() throws IOException, SAXException {
         ConfigRotatorChangeLogParser parser = new ConfigRotatorChangeLogParser();

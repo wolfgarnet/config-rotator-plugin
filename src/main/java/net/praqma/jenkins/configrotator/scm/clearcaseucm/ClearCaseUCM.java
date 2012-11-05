@@ -350,13 +350,6 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
         }
     }
 
-    /**
-     * TODO: Implement! Again!
-     * @param changeLogFile
-     * @param listener
-     * @param build
-     * @return
-     */
     @Override
     public ChangeLogWriter getChangeLogWriter( File changeLogFile, BuildListener listener, AbstractBuild<?, ?> build ) {
         return new UCMChangeLogWriter( changeLogFile, listener, build );

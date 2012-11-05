@@ -4,13 +4,19 @@ import hudson.model.AbstractProject;
 import hudson.model.Actionable;
 import hudson.model.ProminentProjectAction;
 import hudson.scm.SCM;
+import jenkins.model.Jenkins;
+
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
-public class ConfigurationRotatorProjectAction extends Actionable implements ProminentProjectAction {
+public class ConfigurationRotatorProjectAction implements ProminentProjectAction {
 
-	AbstractProject<?, ?> project;
+    private static Logger logger = Logger.getLogger( ConfigurationRotatorProjectAction.class.getName() );
+
+	private final AbstractProject<?, ?> project;
 	
 	public ConfigurationRotatorProjectAction( AbstractProject<?, ?> project ) {
+        logger.fine( "Creating a project action for " + project );
 		this.project = project;
 	}
 	
@@ -27,11 +33,6 @@ public class ConfigurationRotatorProjectAction extends Actionable implements Pro
 	@Override
 	public String getUrlName() {
 		return "config-rotator";
-	}
-
-	@Override
-	public String getSearchUrl() {
-		return getUrlName();
 	}
 
     /**

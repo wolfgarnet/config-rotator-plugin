@@ -804,7 +804,7 @@ public class ConfigTest {
         ConfigurationRotatorProjectAction crpa = new ConfigurationRotatorProjectAction(project);
         assertEquals("Config Rotator", crpa.getDisplayName());
         assertEquals("/plugin/config-rotator/images/rotate.png", crpa.getIconFileName());
-        assertEquals("config-rotator", crpa.getSearchUrl());
+        //assertEquals("config-rotator", crpa.getSearchUrl());
         assertEquals("config-rotator", crpa.getUrlName());
         
         

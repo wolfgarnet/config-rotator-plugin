@@ -7,15 +7,13 @@ package net.praqma.jenkins.configrotator.scm.clearcase.unit;
 import hudson.model.BuildListener;
 import hudson.remoting.VirtualChannel;
 import java.io.IOException;
-import java.util.ArrayList;
+
 import junit.framework.TestCase;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorException;
-import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseActivity;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseGetBaseLineCompare;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 
 /**
