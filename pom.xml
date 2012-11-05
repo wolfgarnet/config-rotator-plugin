@@ -287,13 +287,13 @@
         <dependency>
             <groupId>net.praqma</groupId>
             <artifactId>cool</artifactId>
-            <version>0.6.5</version>
+            <version>0.6.6-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>net.praqma</groupId>
             <artifactId>cool</artifactId>
-            <version>0.6.5</version>
+            <version>0.6.6-SNAPSHOT</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>

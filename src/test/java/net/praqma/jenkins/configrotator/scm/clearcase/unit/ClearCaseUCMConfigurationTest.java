@@ -123,11 +123,11 @@ public class ClearCaseUCMConfigurationTest extends TestCase {
         
         boolean caught = false;
         try {
-            Assert.assertEquals(0, configuration.difference(configuration2).size());
+            Assert.assertEquals(0, configuration.difference(configuration2.getList().get( 0 ), null).size());
             
             configuration.getList().get(0).setChangedLast(true);
             
-            configuration.difference(configuration2);
+            configuration.difference(configuration2.getList().get( 0 ), null);
             
         } catch (ConfigurationRotatorException ex) {
             caught = true;

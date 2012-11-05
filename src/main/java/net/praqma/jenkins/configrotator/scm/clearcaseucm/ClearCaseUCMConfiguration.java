@@ -203,17 +203,17 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUC
         List<ConfigRotatorChangeLogEntry> entries = new LinkedList<ConfigRotatorChangeLogEntry>();
 
         List<ClearCaseUCMConfigurationComponent> components = getList();
-        //Find changed component
 
-        List<Activity> activities = null;
         try {
-            activities = Version.getBaselineDiff( component.getBaseline(), ( other != null ? other.getBaseline() : null ), false, new File( getView().getPath() ) );
+            List<Activity> activities = Version.getBaselineDiff( component.getBaseline(), ( other != null ? other.getBaseline() : null ), false, new File( getView().getPath() ) );
 
             for( Activity a : activities ) {
                 ConfigRotatorChangeLogEntry entry = new ConfigRotatorChangeLogEntry( a.getHeadline(), a.getUser(), new ArrayList<ConfigRotatorVersion>() );
                 for( Version v : a.changeset.versions ) {
                     entry.addVersion( new ConfigRotatorVersion( v.getSFile(), v.getVersion(), v.blame() ) );
                 }
+
+                entries.add( entry );
             }
         } catch( ClearCaseException e ) {
             logger.log( Level.WARNING, "Unable to generate change log entries", e );

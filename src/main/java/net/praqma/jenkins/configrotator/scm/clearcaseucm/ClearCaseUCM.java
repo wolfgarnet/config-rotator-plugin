@@ -372,7 +372,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
         protected List<ConfigRotatorChangeLogEntry> getChangeLogEntries( ClearCaseUCMConfiguration configuration, ClearCaseUCMConfigurationComponent Component ) throws ConfigurationRotatorException {
             logger.fine( "Change log entry, " + Component );
             try {
-                return build.getWorkspace().act(new ClearCaseGetBaseLineCompare(listener, configuration, Component ) );
+                return build.getWorkspace().act( new ClearCaseGetBaseLineCompare(listener, configuration, Component ) );
             } catch( Exception e ) {
                 throw new ConfigurationRotatorException( e );
             }

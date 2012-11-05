@@ -88,7 +88,7 @@ public class ClearCaseUCMConfigurationComponent extends AbstractConfigurationCom
 
     @Override
     public String getComponentName() {
-        return baseline.getNormalizedName();
+        return baseline.getComponent().getNormalizedName();
     }
 
     @Override
