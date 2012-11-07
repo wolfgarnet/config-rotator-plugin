@@ -180,8 +180,6 @@
                                 <goals>
                                     <goal>cobertura</goal>
                                 </goals>
-                                <inherited>false</inherited>
-                                <configuration></configuration>
                             </execution>
                         </executions>
                     </plugin>
@@ -271,13 +269,13 @@
         <dependency>
             <groupId>net.praqma</groupId>
             <artifactId>praqmajutils</artifactId>
-            <version>0.1.26-SNAPSHOT</version>
+            <version>0.1.26</version>
         </dependency>
 
         <dependency>
             <groupId>net.praqma</groupId>
             <artifactId>praqmajutils</artifactId>
-            <version>0.1.26-SNAPSHOT</version>
+            <version>0.1.26</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
