@@ -11,7 +11,8 @@ import java.util.ArrayList;
  * @author Praqma
  */
 public class ClearCaseActivity implements Serializable {
-    private String activityName;
+    private String activityName; 
+    private String activityHeadline = "None";
     private String author;
     private ArrayList<ClearCaseVersion> versions = new ArrayList<ClearCaseVersion>();
     
@@ -26,6 +27,12 @@ public class ClearCaseActivity implements Serializable {
     public ClearCaseActivity(String activityName, String author) {
         this.activityName = activityName;
         this.author = author;
+    }
+    
+    public ClearCaseActivity(String activityName, String author, String activityHeadline) {
+        this.activityName = activityName;
+        this.author = author;
+        this.activityHeadline = activityHeadline;
     }
     
     public void addVersion(ClearCaseVersion ccv) {
@@ -81,5 +88,19 @@ public class ClearCaseActivity implements Serializable {
      */
     public void setAuthor(String author) {
         this.author = author;
+    }
+
+    /**
+     * @return the activityHeadline
+     */
+    public String getActivityHeadline() {
+        return activityHeadline;
+    }
+
+    /**
+     * @param activityHeadline the activityHeadline to set
+     */
+    public void setActivityHeadline(String activityHeadline) {
+        this.activityHeadline = activityHeadline;
     }
 }

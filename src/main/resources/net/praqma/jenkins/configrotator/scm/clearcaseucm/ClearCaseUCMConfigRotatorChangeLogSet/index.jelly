@@ -5,17 +5,43 @@
             ${%No changes.}
         </j:when>
         <j:otherwise>
-        <ol>
             <j:forEach var="cs" items="${it.items}" varStatus="loop">
+                <!--
                 <li>
-                    <h3>Activity - <i>${cs.activityName}</i> by <i>${cs.getAuthor()}</i></h3>
+                    <h3>Activity: <i>${cs.activityHeadline}</i> by <i>${cs.getAuthor()}</i></h3>
                     <h4>List of changed files</h4>
-                    <j:forEach var="version" items="${cs.getAffectedPaths()}" varStatus="loop">
+                    <j:forEach var="version" items="${cs.versions}" varStatus="loop">
                         ${version} 
                     </j:forEach>
                 </li>
+                -->
+                <table style="border-style:none;border-width:0px">
+                    <tr class="pane">
+                        <td>
+                            <b>Activity: ${cs.msg} "${cs.activityHeadline}" by ${cs.getAuthor()}</b>
+                            <br/>
+                            <table style="border-style:solid;border-width:1px;border-color:black;border-collapse:collapse">
+                                <thead>                        
+                                    <tr>
+                                        <th style="border-style:solid;border-width:1px;border-color:black">File</th>
+                                        <th style="border-style:solid;border-width:1px;border-color:black">Version</th>
+                                        <th style="border-style:solid;border-width:1px;border-color:black">User</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <j:forEach var="version" items="${cs.versions}" varStatus="loop">
+                                        <tr>
+                                            <td style="border-style:solid;border-width:1px;border-color:black;">${version.file}</td>
+                                            <td style="border-style:solid;border-width:1px;border-color:black;">${version.name}</td>
+                                            <td style="border-style:solid;border-width:1px;border-color:black;">${version.user}</td>
+                                        </tr>
+                                    </j:forEach>
+                                </tbody>
+                            </table> 
+                        </td>
+                    </tr>
+                </table>
             </j:forEach>
-        </ol>
         </j:otherwise>
     </j:choose>  
 </j:jelly>

@@ -221,20 +221,24 @@ public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUC
                     for(Activity a : activities) {
                         ClearCaseActivity ccac = new ClearCaseActivity();
                         ccac.setAuthor(a.getUser());
+                        ccac.setActivityHeadline(a.getHeadline());
                         ccac.setActivityName(a.getShortname());
                         for(Version v: a.changeset.versions) {
                             ClearCaseVersion ccv = new ClearCaseVersion();
-                            ccv.setFile(v.getSFile());
+                            ccv.setFile(v.getSFile()); 
                             ccv.setName(v.getVersion());
-                            ccv.setUser(v.blame());
+                            ccv.setUser(v.getUser()); //from v.getBlame();
+                            ccv.setFullyQualifiedVersionName(v.getFullyQualifiedName());
                             ccac.addVersion(ccv);
                         }
                         changes.add(ccac);
                     }
+                    /*
                 } catch (UnableToCreateEntityException ex) {
                     throw new ConfigurationRotatorException("UnableToCreateEntityException.", ex);
                 } catch (UnableToGetEntityException ex) {
                     throw new ConfigurationRotatorException("UnableToGetEntityException.", ex);
+                    */
                 } catch (NullPointerException nex) {
                     throw new ConfigurationRotatorException("Null pointer found.", nex);
                 } catch (CleartoolException ex) {

@@ -512,14 +512,16 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
             
             for(ClearCaseActivity a : changes) {
                 writer.println("<activity>");
-                writer.println(String.format("<author>%s</author>", a.getAuthor()));
+                writer.println(String.format("<user>%s</user>", a.getAuthor()));
                 writer.println(String.format("<activityName>%s</activityName>", a.getActivityName()));
+                writer.println(String.format("<activityHeadline>%s</activityHeadline>", a.getActivityHeadline()));
                 writer.println("<versions>");
                 for(ClearCaseVersion v : a.getVersions()) {
                     writer.println("<version>");
                     writer.println(String.format("<name>%s</name>", v.getName()));
                     writer.println(String.format("<file>%s</file>", v.getFile()));
                     writer.println(String.format("<user>%s</user>", v.getUser()));
+                    writer.println(String.format("<fullyQualifiedVersionName>%s</fullyQualifiedVersionName>", v.getFullyQualifiedVersionName()));
                     writer.println("</version>");
                 }
                 writer.println("</versions>");

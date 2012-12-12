@@ -162,7 +162,7 @@ public class ConfigRotatorChangeSetTest extends TestCase {
         set.getEntries().add(new ClearCaseUCMConfigRotatorEntry());
         assertEquals(3, set.getEntries().size());
         
-        entri.setAuthor("EntriAuthor");
+        entri.setUser("EntriAuthor");
        
         assertTrue(f.delete());
         assertFalse(entry.isEmptySet());   

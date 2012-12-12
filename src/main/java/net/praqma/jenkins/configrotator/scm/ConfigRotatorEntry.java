@@ -14,18 +14,18 @@ import hudson.scm.ChangeLogSet.Entry;
  */
 public abstract class ConfigRotatorEntry extends Entry {
     protected ConfigRotatorChangeLogSet parent;
-    protected String author;
+    protected String user;
     
     @Override
 	public User getAuthor() {
-		if( author == null ) {
+		if( user == null ) {
 			return User.getUnknown();
 		}
-		return User.get( author );
+		return User.get( user );
 	}
     
-    public void setAuthor(String author) {
-        this.author = author;
+    public void setUser(String user) {
+        this.user = user;
     }
      
     public <T extends ConfigRotatorChangeLogSet> void setParent(T t) {

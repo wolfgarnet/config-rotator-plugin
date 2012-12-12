@@ -229,9 +229,9 @@
     </developers>
 
     <scm>
-        <connection>scm:git:http://github.com/Praqma/config-rotator-plugin</connection>
-        <developerConnection>scm:git:ssh://git@github.com/Praqma/config-rotator-plugin.git</developerConnection>
-        <url>https://github.com/Praqma/config-rotator-plugin</url>
+        <connection>scm:git:http://github.com/jenkinsci/config-rotator-plugin</connection>
+        <developerConnection>scm:git:ssh://git@github.com/jenkinsci/config-rotator-plugin.git</developerConnection>
+        <url>https://github.com/jenkinsci/config-rotator-plugin</url>
     </scm>
 
     <dependencies>
@@ -244,13 +244,13 @@
         <dependency>
             <groupId>net.praqma</groupId>
             <artifactId>cool</artifactId>
-            <version>0.5.0</version>
+            <version>0.6.7</version>
         </dependency>
 
         <dependency>
             <groupId>net.praqma</groupId>
             <artifactId>cool</artifactId>
-            <version>0.5.0</version>
+            <version>0.6.7</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>

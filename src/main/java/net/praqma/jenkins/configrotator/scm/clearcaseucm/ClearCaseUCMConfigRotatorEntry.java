@@ -4,7 +4,6 @@
  */
 package net.praqma.jenkins.configrotator.scm.clearcaseucm;
 
-import hudson.model.User;
 import java.util.ArrayList;
 import java.util.Collection;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorEntry;
@@ -15,8 +14,8 @@ import net.praqma.jenkins.configrotator.scm.ConfigRotatorEntry;
  */
 public class ClearCaseUCMConfigRotatorEntry extends ConfigRotatorEntry {
     
-    private String activityName;
-    private String author;
+    private String activityName;  
+    private String activityHeadline;
     private ArrayList<ClearCaseVersion> versions;
 
     /**
@@ -28,7 +27,7 @@ public class ClearCaseUCMConfigRotatorEntry extends ConfigRotatorEntry {
     
     @Override
     public String getMsg() {
-        return "ClearCase UCM ConfigRotator Change";
+        return activityName;
     }
 
     @Override
@@ -71,17 +70,17 @@ public class ClearCaseUCMConfigRotatorEntry extends ConfigRotatorEntry {
     public void addVersion(ClearCaseVersion version) {
         versions.add(version);
     }
-    
-    @Override
-	public User getAuthor() {
-		if( author == null ) {
-			return User.getUnknown();
-		}
-		return User.get( author );
-	}
-    
-    @Override
-    public void setAuthor(String author) {
-        this.author = author;
+    /**
+     * @return the activityHeadline
+     */
+    public String getActivityHeadline() {
+        return activityHeadline;
+    }
+
+    /**
+     * @param activityHeadline the activityHeadline to set
+     */
+    public void setActivityHeadline(String activityHeadline) {
+        this.activityHeadline = activityHeadline;
     }
 }
