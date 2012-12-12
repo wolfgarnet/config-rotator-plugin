@@ -6,15 +6,6 @@
         </j:when>
         <j:otherwise>
             <j:forEach var="cs" items="${it.items}" varStatus="loop">
-                <!--
-                <li>
-                    <h3>Activity: <i>${cs.activityHeadline}</i> by <i>${cs.getAuthor()}</i></h3>
-                    <h4>List of changed files</h4>
-                    <j:forEach var="version" items="${cs.versions}" varStatus="loop">
-                        ${version} 
-                    </j:forEach>
-                </li>
-                -->
                 <table style="border-style:none;border-width:0px">
                     <tr class="pane">
                         <td>

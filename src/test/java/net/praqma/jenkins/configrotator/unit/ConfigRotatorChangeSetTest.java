@@ -117,7 +117,7 @@ public class ConfigRotatorChangeSetTest extends TestCase {
         assertNull(ccucroe.getActivityName());
       
         ccucroe.setVersions(cca.getVersions());
-        assertEquals("ClearCase UCM ConfigRotator Change",ccucroe.getMsg());
+        assertEquals(ccucroe.getActivityName(), ccucroe.getMsg());
         
         assertEquals(1, ccucroe.getAffectedPaths().size());
         ccucroe.addVersion(new ClearCaseVersion("Test2", "Test2", "Test2"));
