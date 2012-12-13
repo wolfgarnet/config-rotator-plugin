@@ -9,7 +9,7 @@
 
     <groupId>net.praqma</groupId>
     <artifactId>config-rotator</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.2</version>
     <name>Config Rotator Plugin</name>
     <description>Automatic try-out of possible configurations. 
     Monitors the SCM for newer versions of components and tests if compliant. Only available using ClearCaseUCM as SCM</description>
