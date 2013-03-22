@@ -50,7 +50,6 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
      * 
      * Parse config
      * Each line represents a {@link Component}, {@link Stream}, {@link Baseline} and a {@Plevel plevel}
-     * @param config
      */
     @DataBoundConstructor
     public ClearCaseUCM( String pvobName ) {
@@ -230,7 +229,6 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
      * exists. The checks is done only with regards to configuration rotation, eg.
      * not using the same component twice.
      * 1) is a Clear Case UCM component used more than once in the configuration?
-     * @param out is the console log
      * @param cfg config rotator configuration
      * @throws AbortException 
      */

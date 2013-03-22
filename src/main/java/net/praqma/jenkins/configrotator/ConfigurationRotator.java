@@ -142,7 +142,7 @@ public class ConfigurationRotator extends SCM {
 		}
         
 
-
+        ensurePublisher( build );
 		boolean performResult = false;
 		try {
 			performResult = acrs.perform( build, launcher, workspace, listener, reconfigure );
@@ -171,23 +171,17 @@ public class ConfigurationRotator extends SCM {
 			justConfigured = false;
 			build.getProject().save();
 
-			/*
-			 * If not aborted, add publisher
-			 */
-			boolean added = false;
-			for( Publisher p : build.getParent().getPublishersList() ) {
-				if( p instanceof ConfigurationRotatorPublisher ) {
-					added = true;
-					break;
-				}
-			}
-			if( !added ) {
-				build.getProject().getPublishersList().add( new ConfigurationRotatorPublisher() );
-			}
-
 			return true;
 		}
 	}
+
+    public void ensurePublisher( AbstractBuild build ) throws IOException {
+        Describable describable = build.getProject().getPublishersList().get( ConfigurationRotatorPublisher.class );
+        if( describable == null ) {
+            logger.info( "Adding publisher to project" );
+            build.getProject().getPublishersList().add( new ConfigurationRotatorPublisher() );
+        }
+    }
 
 	public void setConfigurationByAction( AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action ) throws IOException {
 		acrs.setConfigurationByAction( project, action );

@@ -57,7 +57,8 @@ public class ConfigurationRotatorPublisher extends Notifier {
 				return AbstractPostConfigurationRotator.doit( build.getWorkspace(), listener, action );
 
 			} else {
-				out.println( ConfigurationRotator.LOGGERNAME + "Action was null, unable to set compatability of configuration" );
+				out.println( ConfigurationRotator.LOGGERNAME + "Action was null, unable to set compatibility of configuration" );
+                hadNothingToDo( build );
 			}
 		} else {
 			out.println( ConfigurationRotator.LOGGERNAME + "SCM not part of ConfigRotator" );
@@ -65,6 +66,17 @@ public class ConfigurationRotatorPublisher extends Notifier {
 
 		return true;
 	}
+
+    public void hadNothingToDo( AbstractBuild build ) throws IOException {
+        String d = build.getDescription();
+        if( d != null ) {
+            build.setDescription( ( d.length() > 0 ? d + "<br/>" : "" ) + "Nothing to do" );
+        } else {
+            build.setDescription( "Nothing to do" );
+        }
+
+        build.setResult( Result.NOT_BUILT );
+    }
 
 	@Override
 	public boolean needsToRunAfterFinalized() {
