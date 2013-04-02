@@ -1,4 +1,4 @@
-package net.praqma.jenkins.configrotator.functional.scm.git;
+package net.praqma.jenkins.configrotator.scm.git;
 
 import hudson.AbortException;
 import hudson.Extension;
@@ -10,8 +10,8 @@ import hudson.model.BuildListener;
 import hudson.model.TaskListener;
 import hudson.util.FormValidation;
 import net.praqma.jenkins.configrotator.*;
-import net.praqma.jenkins.configrotator.functional.scm.ConfigRotatorChangeLogEntry;
-import net.praqma.jenkins.configrotator.functional.scm.ConfigRotatorChangeLogParser;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.eclipse.jgit.revwalk.RevCommit;

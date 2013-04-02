@@ -1,5 +1,4 @@
-package net.praqma.jenkins.configrotator.functional.scm;
-
+package net.praqma.jenkins.configrotator.scm;
 
 import java.io.Serializable;
 

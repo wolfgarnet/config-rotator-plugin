@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<changelog>
+    
+    <commit>
+        <user>TestAuthor</user>
+        <commitMessage>TestActivityName</commitMessage>
+        <versions>
+            <version>
+                <name>name</name>
+                <user>user</user>
+                <file>sfile</file>
+            </version>
+        </versions>
+    </commit>
+    
+    <commit>
+        <user>TestAuthorz</user>
+        <commitMessage>TestActivityName2</commitMessage>
+        <versions>
+            <version>
+                <name>namz</name>
+                <user>userz</user>
+                <file>sfilez</file>
+            </version>
+        </versions>    
+    </commit>
+    
+</changelog>

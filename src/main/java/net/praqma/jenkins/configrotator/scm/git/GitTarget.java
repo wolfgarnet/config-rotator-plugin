@@ -1,4 +1,4 @@
-package net.praqma.jenkins.configrotator.functional.scm.git;
+package net.praqma.jenkins.configrotator.scm.git;
 
 import net.praqma.jenkins.configrotator.AbstractTarget;
 import org.kohsuke.stapler.DataBoundConstructor;

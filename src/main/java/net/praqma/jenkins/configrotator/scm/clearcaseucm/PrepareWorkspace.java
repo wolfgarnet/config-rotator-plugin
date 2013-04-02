@@ -1,4 +1,4 @@
-package net.praqma.jenkins.configrotator.functional.scm.clearcaseucm;
+package net.praqma.jenkins.configrotator.scm.clearcaseucm;
 
 import hudson.FilePath.FileCallable;
 import hudson.model.TaskListener;

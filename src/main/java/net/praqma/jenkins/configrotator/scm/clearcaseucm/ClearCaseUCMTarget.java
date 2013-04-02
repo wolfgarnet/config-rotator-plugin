@@ -1,4 +1,4 @@
-package net.praqma.jenkins.configrotator.functional.scm.clearcaseucm;
+package net.praqma.jenkins.configrotator.scm.clearcaseucm;
 
 import net.praqma.clearcase.ucm.entities.Project;
 import net.praqma.jenkins.configrotator.AbstractTarget;

@@ -5,4 +5,6 @@ target/
 build/
 work/
 *.log
+*.iml
+.idea/
 jenkins-cli.jar

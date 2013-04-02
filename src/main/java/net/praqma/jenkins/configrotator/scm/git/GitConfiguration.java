@@ -1,9 +1,9 @@
-package net.praqma.jenkins.configrotator.functional.scm.git;
+package net.praqma.jenkins.configrotator.scm.git;
 
 import hudson.FilePath;
 import hudson.model.TaskListener;
 import net.praqma.jenkins.configrotator.*;
-import net.praqma.jenkins.configrotator.functional.scm.ConfigRotatorChangeLogEntry;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
 
 import java.util.List;
 import java.util.logging.Level;

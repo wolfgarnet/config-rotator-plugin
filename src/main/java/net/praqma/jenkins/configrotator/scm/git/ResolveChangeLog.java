@@ -1,9 +1,9 @@
-package net.praqma.jenkins.configrotator.functional.scm.git;
+package net.praqma.jenkins.configrotator.scm.git;
 
 import hudson.FilePath;
 import hudson.remoting.VirtualChannel;
-import net.praqma.jenkins.configrotator.functional.scm.ConfigRotatorChangeLogEntry;
-import net.praqma.jenkins.configrotator.functional.scm.ConfigRotatorVersion;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorVersion;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.RawTextComparator;

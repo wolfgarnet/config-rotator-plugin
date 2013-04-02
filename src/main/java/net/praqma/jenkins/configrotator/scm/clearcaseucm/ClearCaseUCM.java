@@ -1,4 +1,4 @@
-package net.praqma.jenkins.configrotator.functional.scm.clearcaseucm;
+package net.praqma.jenkins.configrotator.scm.clearcaseucm;
 
 import hudson.AbortException;
 import hudson.Extension;
@@ -22,8 +22,8 @@ import net.praqma.clearcase.ucm.entities.Baseline;
 import net.praqma.clearcase.ucm.entities.Project;
 import net.praqma.clearcase.ucm.view.SnapshotView;
 import net.praqma.jenkins.configrotator.*;
-import net.praqma.jenkins.configrotator.functional.scm.ConfigRotatorChangeLogEntry;
-import net.praqma.jenkins.configrotator.functional.scm.ConfigRotatorChangeLogParser;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
 import net.praqma.jenkins.utils.remoting.DetermineProject;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;

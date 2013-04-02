@@ -1,4 +1,4 @@
-package net.praqma.jenkins.configrotator.functional.scm.clearcaseucm;
+package net.praqma.jenkins.configrotator.scm.clearcaseucm;
 
 import hudson.FilePath;
 import hudson.model.AbstractBuild;
@@ -18,8 +18,8 @@ import net.praqma.clearcase.ucm.entities.Activity;
 import net.praqma.clearcase.ucm.entities.Version;
 import net.praqma.clearcase.ucm.view.SnapshotView;
 import net.praqma.jenkins.configrotator.*;
-import net.praqma.jenkins.configrotator.functional.scm.ConfigRotatorChangeLogEntry;
-import net.praqma.jenkins.configrotator.functional.scm.ConfigRotatorVersion;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorVersion;
 
 public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUCMConfigurationComponent> {
 

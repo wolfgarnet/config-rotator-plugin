@@ -1,4 +1,4 @@
-package net.praqma.jenkins.configrotator.functional.scm;
+package net.praqma.jenkins.configrotator.scm;
 
 import hudson.model.User;
 import hudson.scm.ChangeLogSet.Entry;
