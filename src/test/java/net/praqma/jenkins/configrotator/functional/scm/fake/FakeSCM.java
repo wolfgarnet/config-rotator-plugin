@@ -7,7 +7,7 @@ import hudson.model.AbstractProject;
 import hudson.model.BuildListener;
 import hudson.model.TaskListener;
 import net.praqma.jenkins.configrotator.*;
-import net.praqma.jenkins.configrotator.functional.scm.ConfigRotatorChangeLogParser;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
 
 import java.io.File;
 import java.io.IOException;

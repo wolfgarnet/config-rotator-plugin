@@ -13,8 +13,8 @@ import hudson.model.FreeStyleProject;
 
 import hudson.tasks.Builder;
 import net.praqma.clearcase.PVob;
-import net.praqma.jenkins.configrotator.functional.scm.clearcaseucm.ClearCaseUCM;
-import net.praqma.jenkins.configrotator.functional.scm.clearcaseucm.ClearCaseUCMTarget;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCM;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMTarget;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestBuilder;
 

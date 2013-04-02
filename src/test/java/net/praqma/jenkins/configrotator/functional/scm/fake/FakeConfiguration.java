@@ -2,7 +2,7 @@ package net.praqma.jenkins.configrotator.functional.scm.fake;
 
 import net.praqma.jenkins.configrotator.AbstractConfiguration;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorException;
-import net.praqma.jenkins.configrotator.functional.scm.ConfigRotatorChangeLogEntry;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
 
 import java.util.List;
 

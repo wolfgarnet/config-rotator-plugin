@@ -6,8 +6,8 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorException;
-import net.praqma.jenkins.configrotator.functional.scm.clearcaseucm.ClearCaseGetBaseLineCompare;
-import net.praqma.jenkins.configrotator.functional.scm.clearcaseucm.ClearCaseUCMConfiguration;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseGetBaseLineCompare;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 import org.powermock.api.mockito.PowerMockito;

@@ -12,6 +12,9 @@ import java.util.List;
 import net.praqma.clearcase.exceptions.CleartoolException;
 import net.praqma.clearcase.test.annotations.ClearCaseUniqueVobName;
 import net.praqma.clearcase.test.junit.ClearCaseRule;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCM;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMTarget;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -21,9 +24,6 @@ import net.praqma.jenkins.configrotator.ConfigurationRotator;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorBuildAction;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorProjectAction;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorReport;
-import net.praqma.jenkins.configrotator.functional.scm.clearcaseucm.ClearCaseUCM;
-import net.praqma.jenkins.configrotator.functional.scm.clearcaseucm.ClearCaseUCMConfiguration;
-import net.praqma.jenkins.configrotator.functional.scm.clearcaseucm.ClearCaseUCMTarget;
 
 import org.jvnet.hudson.test.TestBuilder;
 

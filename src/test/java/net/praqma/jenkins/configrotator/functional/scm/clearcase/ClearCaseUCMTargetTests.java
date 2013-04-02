@@ -6,7 +6,7 @@ package net.praqma.jenkins.configrotator.functional.scm.clearcase;
 
 import junit.framework.TestCase;
 import net.praqma.clearcase.ucm.entities.Project;
-import net.praqma.jenkins.configrotator.functional.scm.clearcaseucm.ClearCaseUCMTarget;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMTarget;
 import org.junit.Test;
 
 /**

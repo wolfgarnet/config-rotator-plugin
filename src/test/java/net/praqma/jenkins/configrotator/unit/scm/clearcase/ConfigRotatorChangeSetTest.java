@@ -8,9 +8,9 @@ import hudson.scm.ChangeLogSet.Entry;
 import java.io.*;
 
 import junit.framework.TestCase;
-import net.praqma.jenkins.configrotator.functional.scm.ConfigRotatorChangeLogEntry;
-import net.praqma.jenkins.configrotator.functional.scm.ConfigRotatorChangeLogParser;
-import net.praqma.jenkins.configrotator.functional.scm.ConfigRotatorChangeLogSet;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogSet;
 import net.praqma.util.debug.Logger;
 import net.praqma.util.debug.appenders.Appender;
 import net.praqma.util.debug.appenders.ConsoleAppender;
@@ -84,7 +84,7 @@ public class ConfigRotatorChangeSetTest extends TestCase {
        
         System.out.println("PARENT: "+set);
         System.out.println("PARENT: "+set.getEntries());
-        System.out.println("PARENT: "+set.getEntries().get(0));
+        System.out.println("PARENT: "+set.getEntries().get( 0 ));
         System.out.println("PARENT: "+set.getEntries().get(0).getParent());
         assertEquals(set.getEntries().get(0).getParent(),null);
         

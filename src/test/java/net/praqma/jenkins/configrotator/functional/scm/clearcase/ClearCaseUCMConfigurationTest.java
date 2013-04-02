@@ -13,10 +13,10 @@ import net.praqma.clearcase.exceptions.UnableToInitializeEntityException;
 import net.praqma.clearcase.ucm.entities.Baseline;
 import net.praqma.clearcase.ucm.entities.Project;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorException;
-import net.praqma.jenkins.configrotator.functional.scm.clearcaseucm.ClearCaseUCM;
-import net.praqma.jenkins.configrotator.functional.scm.clearcaseucm.ClearCaseUCMConfiguration;
-import net.praqma.jenkins.configrotator.functional.scm.clearcaseucm.ClearCaseUCMConfigurationComponent;
-import net.praqma.jenkins.configrotator.functional.scm.clearcaseucm.ClearCaseUCMTarget;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCM;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfigurationComponent;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMTarget;
 import net.praqma.util.debug.Logger;
 import net.praqma.util.debug.appenders.Appender;
 import net.praqma.util.debug.appenders.ConsoleAppender;
@@ -77,9 +77,9 @@ public class ClearCaseUCMConfigurationTest extends TestCase {
         comps.add(comp);
         comps.add(comp2);
 
-        net.praqma.jenkins.configrotator.functional.scm.clearcaseucm.ClearCaseUCMConfiguration ccc = new net.praqma.jenkins.configrotator.functional.scm.clearcaseucm.ClearCaseUCMConfiguration( comps );
+        net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration ccc = new net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration( comps );
                
-        net.praqma.jenkins.configrotator.functional.scm.clearcaseucm.ClearCaseUCMConfiguration cccSpy = Mockito.spy(ccc);
+        net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMConfiguration cccSpy = Mockito.spy(ccc);
         
         Mockito.doReturn(comps).when(cccSpy).getList();
         

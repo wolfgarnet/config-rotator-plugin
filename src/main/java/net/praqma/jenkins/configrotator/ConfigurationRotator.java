@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.praqma.jenkins.configrotator.functional.scm.ConfigRotatorChangeLogEntry;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
 import net.sf.json.JSONObject;
 
 import org.kohsuke.stapler.DataBoundConstructor;
