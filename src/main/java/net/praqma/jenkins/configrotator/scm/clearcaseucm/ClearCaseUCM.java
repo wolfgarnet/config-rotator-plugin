@@ -248,7 +248,8 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
                 logger.fine( ConfigurationRotator.LOGGERNAME + "Wasn't fixed: " + config.getBaseline().getNormalizedName() );
 
                 try {
-                    current = workspace.act( new GetBaselines( listener, config.getBaseline().getComponent(), config.getBaseline().getStream(), config.getPlevel(), 1, config.getBaseline() ) ).get( 0 ); //.get(0) newest baseline, they are sorted!
+                    //current = workspace.act( new GetBaselines( listener, config.getBaseline().getComponent(), config.getBaseline().getStream(), config.getPlevel(), 1, config.getBaseline() ) ).get( 0 ); //.get(0) newest baseline, they are sorted!
+                    current = workspace.act( new NextBaseline( config.getBaseline().getStream(), config.getBaseline().getComponent(), config.getPlevel(), config.getBaseline() ) );
                     if( oldest == null || current.getDate().before( oldest.getDate() ) ) {
                         logger.fine( ConfigurationRotator.LOGGERNAME + "Was older: " + current );
                         oldest = current;

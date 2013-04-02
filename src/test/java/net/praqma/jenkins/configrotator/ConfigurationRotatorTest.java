@@ -64,7 +64,7 @@ public class ConfigurationRotatorTest {
         List<Publisher> t = new ArrayList<Publisher>();
         Mockito.doReturn( new DescribableList<Publisher,Descriptor<Publisher>>( null, t ) ).when( project ).getPublishersList();
         spy = Mockito.spy( cr );
-        Mockito.doNothing().when( spy ).addPublisher( build );
+        Mockito.doNothing().when( spy ).ensurePublisher( build );
     }
 
     @Test

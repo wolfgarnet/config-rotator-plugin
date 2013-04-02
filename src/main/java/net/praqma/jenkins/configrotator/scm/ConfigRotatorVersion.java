@@ -1,7 +1,9 @@
 package net.praqma.jenkins.configrotator.scm;
 
 
-public class ConfigRotatorVersion {
+import java.io.Serializable;
+
+public class ConfigRotatorVersion implements Serializable {
     private String file;
     private String name;
     private String user;

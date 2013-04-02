@@ -32,9 +32,8 @@ import static java.lang.System.*;
 public class ConfigurationRotator extends SCM {
 
     private AbstractConfigurationRotatorSCM acrs;
-    // public to be able to print the name in debug everywhere
-    public static Logger logger = Logger.getLogger( ConfigurationRotator.class.getName() );
-    private boolean printDebug = false;
+
+    private static Logger logger = Logger.getLogger( ConfigurationRotator.class.getName() );
 
     public enum ResultType {
 
@@ -88,12 +87,6 @@ public class ConfigurationRotator extends SCM {
         this.justConfigured = true;
     }
 
-    @Deprecated
-    public ConfigurationRotator( AbstractConfigurationRotatorSCM acrs, boolean debug ) {
-        this.acrs = acrs;
-        this.justConfigured = true;
-    }
-
     public AbstractConfigurationRotatorSCM getAcrs() {
         return acrs;
     }
@@ -104,10 +97,6 @@ public class ConfigurationRotator extends SCM {
 
     public void setReconfigure( boolean reconfigure ) {
         this.reconfigure = reconfigure;
-    }
-
-    public boolean doPrintDebug() {
-        return printDebug;
     }
 
     @Override
@@ -138,6 +127,9 @@ public class ConfigurationRotator extends SCM {
         AbstractConfigurationRotatorSCM.Performer<AbstractConfiguration<?>> performer = acrs.getPerform( build, launcher, workspace, listener );
         ConfigurationRotatorBuildAction lastAction = acrs.getLastResult( build.getProject(), performer.getSCMClass() );
         AbstractConfiguration<?> configuration = null;
+
+        /* Regarding JENKINS-14746 */
+        ensurePublisher( build );
 
         boolean performResult = false;
         try {
@@ -208,25 +200,16 @@ public class ConfigurationRotator extends SCM {
             reconfigure = false;
             justConfigured = false;
 
-            /*
-               * If not aborted, add publisher
-                */
-            addPublisher( build );
             build.getProject().save();
 
             return true;
         }
     }
 
-    public void addPublisher( AbstractBuild<?, ?> build ) throws IOException {
-        boolean added = false;
-        for( Publisher p : build.getParent().getPublishersList() ) {
-            if( p instanceof ConfigurationRotatorPublisher ) {
-                added = true;
-                break;
-            }
-        }
-        if( !added ) {
+    public void ensurePublisher( AbstractBuild build ) throws IOException {
+        Describable describable = build.getProject().getPublishersList().get( ConfigurationRotatorPublisher.class );
+        if( describable == null ) {
+            logger.info( "Adding publisher to project" );
             build.getProject().getPublishersList().add( new ConfigurationRotatorPublisher() );
         }
     }

@@ -1,20 +1,17 @@
 package net.praqma.jenkins.configrotator.scm.clearcase;
 
-import hudson.AbortException;
 import hudson.Launcher;
 import hudson.model.*;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+
+
 import net.praqma.clearcase.exceptions.CleartoolException;
 import net.praqma.clearcase.test.annotations.ClearCaseUniqueVobName;
 import net.praqma.clearcase.test.junit.ClearCaseRule;
-
-
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -69,7 +66,7 @@ public class ConfigTest {
         ccucm.targets = targets;
         // create config-rotator, and set it as SCM
         System.out.println(debugLine + "Creating configurationRotator.");
-        ConfigurationRotator cr = new ConfigurationRotator(ccucm, true);
+        ConfigurationRotator cr = new ConfigurationRotator( ccucm );
 
         /*
          * *** now getting and testing a lot of stuff
@@ -139,7 +136,7 @@ public class ConfigTest {
         ccucm.targets = targets;
         // create config-rotator, and set it as SCM
         System.out.println(debugLine + "Create configurationRotator.");
-        ConfigurationRotator cr = new ConfigurationRotator(ccucm, true);
+        ConfigurationRotator cr = new ConfigurationRotator( ccucm );
         System.out.println(debugLine + "cr.supportsPolling: " + cr.supportsPolling());
         System.out.println(debugLine + "cr.justConfigured: " + cr.justConfigured);
         assertTrue(cr.justConfigured);
@@ -285,7 +282,7 @@ public class ConfigTest {
         ccucm.targets = targets;
         // create config-rotator, and set it as SCM
         System.out.println(debugLine + "Creating configurationRotator.");
-        ConfigurationRotator cr = new ConfigurationRotator(ccucm, true);
+        ConfigurationRotator cr = new ConfigurationRotator( ccucm );
         System.out.println(debugLine + "Set ConfigurationRotator as SCM");
         project.setScm(cr);
 
@@ -389,7 +386,7 @@ public class ConfigTest {
         ccucm.targets = targets;
         // create config-rotator, and set it as SCM
         System.out.println(debugLine + "Creating configurationRotator.");
-        ConfigurationRotator cr = new ConfigurationRotator(ccucm, true);
+        ConfigurationRotator cr = new ConfigurationRotator( ccucm );
         System.out.println(debugLine + "Set ConfigurationRotator as SCM");
         project.setScm(cr);
 
@@ -538,7 +535,7 @@ public class ConfigTest {
         ccucm.targets = targets;
         // create config-rotator, and set it as SCM
         System.out.println(debugLine + "Create configurationRotator.");
-        ConfigurationRotator cr = new ConfigurationRotator(ccucm, true);
+        ConfigurationRotator cr = new ConfigurationRotator( ccucm );
         System.out.println(debugLine + "cr.supportsPolling: " + cr.supportsPolling());
         System.out.println(debugLine + "Set ConfigurationRotator as SCM");
         project.setScm(cr);
@@ -665,7 +662,7 @@ public class ConfigTest {
 
         // create config-rotator, and set it as SCM
         System.out.println(debugLine + "Create configurationRotator.");
-        ConfigurationRotator cr = new ConfigurationRotator(ccucm, true);
+        ConfigurationRotator cr = new ConfigurationRotator( ccucm );
         System.out.println(debugLine + "cr.supportsPolling: " + cr.supportsPolling());
         System.out.println(debugLine + "Set ConfigurationRotator as SCM");
         project.setScm(cr);
@@ -747,7 +744,7 @@ public class ConfigTest {
         ccucm.targets = targets;
         // create config-rotator, and set it as SCM
         System.out.println(debugLine + "Create configurationRotator.");
-        ConfigurationRotator cr = new ConfigurationRotator(ccucm, true);
+        ConfigurationRotator cr = new ConfigurationRotator( ccucm );
         System.out.println(debugLine + "cr.supportsPolling: " + cr.supportsPolling());
         System.out.println(debugLine + "Set ConfigurationRotator as SCM");
         project.setScm(cr);
@@ -852,7 +849,7 @@ public class ConfigTest {
         ccucm.targets = targets;
         // create config-rotator, and set it as SCM
         System.out.println(debugLine + "Create configurationRotator.");
-        ConfigurationRotator cr = new ConfigurationRotator(ccucm, true);
+        ConfigurationRotator cr = new ConfigurationRotator( ccucm );
         System.out.println(debugLine + "cr.supportsPolling: " + cr.supportsPolling());
         System.out.println(debugLine + "Set ConfigurationRotator as SCM");
         project.setScm(cr);
@@ -949,7 +946,7 @@ public class ConfigTest {
         ccucm.targets = targets;
         // create config-rotator, and set it as SCM
         System.out.println(debugLine + "Create configurationRotator.");
-        ConfigurationRotator cr = new ConfigurationRotator(ccucm, true);
+        ConfigurationRotator cr = new ConfigurationRotator( ccucm );
         System.out.println(debugLine + "cr.supportsPolling: " + cr.supportsPolling());
         System.out.println(debugLine + "Set ConfigurationRotator as SCM");
         project.setScm(cr);
@@ -1114,7 +1111,7 @@ public class ConfigTest {
         ccucm.targets = targets;
         // create config-rotator, and set it as SCM
         System.out.println(debugLine + "Create configurationRotator.");
-        ConfigurationRotator cr = new ConfigurationRotator(ccucm, true);
+        ConfigurationRotator cr = new ConfigurationRotator( ccucm );
         System.out.println(debugLine + "cr.supportsPolling: " + cr.supportsPolling());
         System.out.println(debugLine + "Set ConfigurationRotator as SCM");
         project.setScm(cr);
