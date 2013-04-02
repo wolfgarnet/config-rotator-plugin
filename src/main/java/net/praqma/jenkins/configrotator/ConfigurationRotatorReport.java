@@ -1,18 +1,14 @@
 package net.praqma.jenkins.configrotator;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-
-import javax.servlet.ServletException;
 
 import hudson.DescriptorExtensionList;
 import hudson.model.*;
-import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMFeedAction;
-import net.praqma.jenkins.configrotator.scm.git.GitFeedAction;
+import net.praqma.jenkins.configrotator.functional.scm.clearcaseucm.ClearCaseUCMFeedAction;
+import net.praqma.jenkins.configrotator.functional.scm.git.GitFeedAction;
 import net.praqma.util.xml.feed.AtomPublisher;
 import net.praqma.util.xml.feed.Feed;
 import net.praqma.util.xml.feed.FeedException;
-import org.kohsuke.stapler.*;
 
 import hudson.Extension;
 

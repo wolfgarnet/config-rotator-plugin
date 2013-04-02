@@ -17,9 +17,9 @@ import hudson.scm.PollingResult;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
-import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
-import net.praqma.jenkins.configrotator.scm.ConfigRotatorVersion;
+import net.praqma.jenkins.configrotator.functional.scm.ConfigRotatorChangeLogEntry;
+import net.praqma.jenkins.configrotator.functional.scm.ConfigRotatorChangeLogParser;
+import net.praqma.jenkins.configrotator.functional.scm.ConfigRotatorVersion;
 
 public abstract class AbstractConfigurationRotatorSCM implements Describable<AbstractConfigurationRotatorSCM>, ExtensionPoint {
 	

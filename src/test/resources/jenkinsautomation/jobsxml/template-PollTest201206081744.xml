@@ -5,7 +5,7 @@
   <keepDependencies>false</keepDependencies>
   <properties/>
   <scm class="net.praqma.jenkins.configrotator.ConfigurationRotator">
-    <acrs class="net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCM">
+    <acrs class="net.praqma.jenkins.configrotator.functional.scm.clearcaseucm.ClearCaseUCM">
       <targets>
         <net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMTarget>
           <component>model-1@\PollTest201206081744_PVOB, INITIAL, false</component>

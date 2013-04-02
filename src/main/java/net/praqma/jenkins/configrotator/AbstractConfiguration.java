@@ -1,7 +1,7 @@
 package net.praqma.jenkins.configrotator;
 
 import hudson.model.AbstractBuild;
-import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
+import net.praqma.jenkins.configrotator.functional.scm.ConfigRotatorChangeLogEntry;
 
 import java.io.Serializable;
 import java.util.ArrayList;
