@@ -6,7 +6,7 @@ import hudson.Launcher;
 import hudson.model.*;
 import hudson.tasks.Publisher;
 import hudson.util.DescribableList;
-import net.praqma.jenkins.configrotator.functional.scm.fake.FakeSCM;
+import net.praqma.jenkins.configrotator.fake.FakeSCM;
 import net.praqma.util.test.junit.LoggingRule;
 import org.junit.Before;
 import org.junit.ClassRule;

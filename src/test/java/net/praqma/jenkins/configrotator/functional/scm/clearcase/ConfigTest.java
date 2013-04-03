@@ -47,7 +47,7 @@ public class ConfigTest {
     // not complete within a minute!
     String uniqueTimeStamp = "" + System.currentTimeMillis() / 60000;
 
-    @Test
+    //@Test
     @ClearCaseUniqueVobName( name = "config" )
     public void testConfigRotatorObject() throws Exception {
         // Testing getting stuff and info from config rotator
@@ -115,7 +115,7 @@ public class ConfigTest {
     }
 
     @ClearCaseUniqueVobName( name = "reconfigure" )
-    @Test
+    //@Test
     public void testTryReconfigure() throws Exception {
         // Testing reconfigure
         String testName = "TryReconfigure";
@@ -259,7 +259,7 @@ public class ConfigTest {
     }
 
     @ClearCaseUniqueVobName( name = "buildaction" )
-    @Test
+    //@Test
     public void testConfigurationRotatorBuildAction() throws Exception {
         // Just boosting coverage getting stuff on action object
         String testName = "ConfigurationRotatorBuildAction";
@@ -363,7 +363,7 @@ public class ConfigTest {
     }
 
     @ClearCaseUniqueVobName( name = "revert" )
-    @Test
+    //@Test
     public void testRevertToConfiguration() throws Exception {
         // Tests if we can revert to another configuration from an old build
         String testName = "RevertToConfiguration";
@@ -513,7 +513,7 @@ public class ConfigTest {
     }
 
     @ClearCaseUniqueVobName( name = "wrongtarget" )
-    @Test
+    //@Test
     public void testInputWrongTargetName() throws Exception {
         // Do we handle user inputting wrong target names?
         String testName = "InputWrongTargetName";
@@ -581,7 +581,7 @@ public class ConfigTest {
     }
 
     @ClearCaseUniqueVobName( name = "ccucmtarget" )
-    @Test
+    //@Test
     public void testClearCaseUCMTarget() throws Exception {
         // Test is supposed to test last parts of UCMTarget component
         // not hit in the other tests
@@ -628,7 +628,7 @@ public class ConfigTest {
     }
 
     @ClearCaseUniqueVobName( name = "ccucmobj" )
-    @Test
+    //@Test
     public void testClearCaseUCMObject() throws Exception {
         // Boosting coverage
         String testName = "CClearCaseUCMObject";
@@ -721,7 +721,7 @@ public class ConfigTest {
     }
 
     @ClearCaseUniqueVobName( name = "misc" )
-    @Test
+    //@Test
     public void testMiscObjects() throws Exception {
         // is this cheating ?
         String testName = "MiscObjects";
@@ -823,7 +823,7 @@ public class ConfigTest {
     }
 
     @ClearCaseUniqueVobName( name = "fail" )
-    @Test
+    //@Test
     public void testTryFailingBuild() throws Exception {
         // This test is supposed to "manually" iterate over baselines by scheduling
         // a build. Each build scheduled will poll scm and should find a new baseline
@@ -919,7 +919,7 @@ public class ConfigTest {
     }
 
     @ClearCaseUniqueVobName( name = "fixedtargets" )
-    @Test
+    //@Test
     public void testManualIterateWithFixedTargets() throws Exception {
         // This test is supposed to "manually" iterate over baselines by scheduling
         // a build. Each build scheduled will poll scm and should find a new baseline
@@ -1085,7 +1085,7 @@ public class ConfigTest {
     
     
     @ClearCaseUniqueVobName( name = "iterateall" )
-    @Test
+    //@Test
     public void testManualIterateThroughAllBaselines() throws Exception {
         // This test is supposed to "manually" iterate over baselines by scheduling
         // a build. Each build scheduled will poll scm and should find a new baseline

@@ -1,4 +1,4 @@
-package net.praqma.jenkins.configrotator.functional.scm.fake;
+package net.praqma.jenkins.configrotator.fake;
 
 import net.praqma.jenkins.configrotator.AbstractConfigurationComponent;
 
@@ -9,23 +9,31 @@ import net.praqma.jenkins.configrotator.AbstractConfigurationComponent;
  */
 public class FakeConfigurationComponent extends AbstractConfigurationComponent {
 
+    private String name = "Unnamed";
+
     public FakeConfigurationComponent( boolean fixed ) {
         super( fixed );
     }
 
+    public FakeConfigurationComponent( boolean fixed, String name ) {
+        super( fixed );
+
+        this.name = name;
+    }
+
     @Override
     public String getComponentName() {
-        return "fake component";
+        return "fake component[" + name + "]";
     }
 
     @Override
     public String prettyPrint() {
-        return "fake component";
+        return "fake component[" + name + "]";
     }
 
     @Override
     public String getFeedName() {
-        return "fake";
+        return "fake[" + name + "]";
     }
 
     @Override
@@ -35,6 +43,6 @@ public class FakeConfigurationComponent extends AbstractConfigurationComponent {
 
     @Override
     public String toHtml() {
-        return "<html><body>FAKE SCM</body></html>";
+        return "<html><body>FAKE SCM[" + name + "]</body></html>";
     }
 }

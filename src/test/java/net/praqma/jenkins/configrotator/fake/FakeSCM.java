@@ -1,4 +1,4 @@
-package net.praqma.jenkins.configrotator.functional.scm.fake;
+package net.praqma.jenkins.configrotator.fake;
 
 import hudson.FilePath;
 import hudson.Launcher;
@@ -17,6 +17,10 @@ public class FakeSCM extends AbstractConfigurationRotatorSCM {
     @Override
     public String getName() {
         return "fakeSCM";
+    }
+
+    @Override
+    public <TT extends AbstractTarget> void setTargets( List<TT> targets ) {
     }
 
     @Override
@@ -116,7 +120,7 @@ public class FakeSCM extends AbstractConfigurationRotatorSCM {
 
     @Override
     public boolean wasReconfigured( AbstractProject<?, ?> project ) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return project.getLastBuild().getNumber() == 1;
     }
 
     @Override

@@ -44,6 +44,10 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 
     private PVob pvob;
 
+    public ClearCaseUCM( PVob pvob ) {
+        this.pvob = pvob;
+    }
+
     @DataBoundConstructor
     public ClearCaseUCM( String pvobName ) {
         pvob = new PVob( pvobName );
@@ -305,6 +309,18 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 
         return workspace.act( new PrepareWorkspace( project, selectedBaselines, viewtag, listener ) );
 
+    }
+
+    /*
+    @Override
+    public void setTargets( List<AbstractTarget> targets ) {
+        this.targets = (List<ClearCaseUCMTarget>) targets;
+    }
+    */
+
+    @Override
+    public <TT extends AbstractTarget> void setTargets( List<TT> targets ) {
+        this.targets = (List<ClearCaseUCMTarget>) targets;
     }
 
     /**

@@ -36,6 +36,10 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
         this.projectConfiguration = configuration;
     }
 
+    public AbstractConfiguration getConfiguration() {
+        return projectConfiguration;
+    }
+
     public abstract AbstractConfiguration nextConfiguration( TaskListener listener, AbstractConfiguration configuration, FilePath workspace ) throws ConfigurationRotatorException;
 
     public abstract Poller getPoller( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener );
@@ -141,6 +145,7 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
     
     public abstract ConfigRotatorChangeLogParser createChangeLogParser();
 
+    public abstract <TT extends AbstractTarget> void setTargets( List<TT> targets );
     public abstract <TT extends AbstractTarget> List<TT> getTargets();
 
     public void printConfiguration( PrintStream out, AbstractConfiguration cfg ) {

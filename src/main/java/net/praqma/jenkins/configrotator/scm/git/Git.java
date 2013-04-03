@@ -12,6 +12,7 @@ import hudson.util.FormValidation;
 import net.praqma.jenkins.configrotator.*;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMTarget;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -233,6 +234,18 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
         } else {
             return targets;
         }
+    }
+
+    /*
+    @Override
+    public void setTargets( List<AbstractTarget> targets ) {
+        this.targets = (List<GitTarget>) targets;
+    }
+    */
+
+    @Override
+    public <TT extends AbstractTarget> void setTargets( List<TT> targets ) {
+        this.targets = (List<GitTarget>) targets;
     }
 
     public List<GitTarget> getTargets() {

@@ -4,8 +4,8 @@ import hudson.model.AbstractBuild;
 import hudson.model.Result;
 import net.praqma.clearcase.test.annotations.ClearCaseUniqueVobName;
 import net.praqma.clearcase.test.junit.ClearCaseRule;
-import net.praqma.jenkins.configrotator.ConfigRotatorRule;
-import net.praqma.jenkins.configrotator.SystemValidator;
+import net.praqma.jenkins.configrotator.*;
+import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCM;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMTarget;
 import net.praqma.util.test.junit.LoggingRule;
 import org.junit.ClassRule;
@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 
+import static org.junit.Assert.assertNotNull;
+
 public class NewModel {
 
     public static ClearCaseRule ccenv =  new ClearCaseRule( "cr1" );
@@ -28,42 +30,43 @@ public class NewModel {
     public static TestRule chain = RuleChain.outerRule( lrule ).around( ccenv );
 
     @Rule
-    public ConfigRotatorRule crrule = new ConfigRotatorRule();
+    public ConfigRotatorRule2 crrule = new ConfigRotatorRule2();
 
     @Test
-    @ClearCaseUniqueVobName( name = "config-testv2" )
+    @ClearCaseUniqueVobName( name = "configure-v2" )
     public void test1() throws IOException, ExecutionException, InterruptedException {
 
-        crrule.initialize( "cr-test", ccenv.getPVob() ).
-                addTarget( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
+        ProjectBuilder builder = new ProjectBuilder( new ClearCaseUCM( ccenv.getPVob() ) ).setName( "project01" );
+        ConfigRotatorProject project = builder.getProject();
+        project.addTarget( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
                 addTarget( new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, false" ) );
 
-        AbstractBuild<?, ?> build = crrule.build( false );
-        crrule.printLog( build, System.out );
+        AbstractBuild<?, ?> build = crrule.buildProject( project.getJenkinsProject(), false, null );
 
         SystemValidator<ClearCaseUCMTarget> val = new SystemValidator<ClearCaseUCMTarget>( build );
         val.checkExpectedResult( Result.SUCCESS ).
+                checkAction( true ).
                 checkCompatability( true ).
                 checkTargets( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, false" ), new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
                 validate();
     }
 
     @Test
-    @ClearCaseUniqueVobName( name = "reconfig-testv2" )
+    @ClearCaseUniqueVobName( name = "reconfigure-v2" )
     public void reconfigure() throws IOException, ExecutionException, InterruptedException {
-        crrule.initialize( "cr-test", ccenv.getPVob() ).
-                addTarget( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
+        ProjectBuilder builder = new ProjectBuilder( new ClearCaseUCM( ccenv.getPVob() ) ).setName( "project02" );
+        ConfigRotatorProject project = builder.getProject();
+
+        project.addTarget( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
                 addTarget( new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, false" ) );
 
-        /* Do the first build */
-        AbstractBuild<?, ?> build1 = crrule.build( false );
-        crrule.printLog( build1, System.out );
+        AbstractBuild<?, ?> build1 = crrule.buildProject( project.getJenkinsProject(), false, null );
 
         /* Verify first build */
         SystemValidator<ClearCaseUCMTarget> val = new SystemValidator<ClearCaseUCMTarget>( build1 );
         val.checkExpectedResult( Result.SUCCESS ).checkCompatability( true ).checkWasReconfigured( false ).validate();
 
-        crrule.reconfigure().
+        project.reconfigure().
                 addTarget( new ClearCaseUCMTarget( "model-3@" + ccenv.getPVob() + ", INITIAL, false" ) ).
                 addTarget( new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, false" ) );
 
@@ -71,10 +74,9 @@ public class NewModel {
         reval.checkWasReconfigured( true ).validate();
 
         /* Do the second build */
-        AbstractBuild<?, ?> build2 = crrule.build( false );
-        crrule.printLog( build2, System.out );
+        AbstractBuild<?, ?> build2 = crrule.buildProject( project.getJenkinsProject(), false, null );
 
-        /* Verify first build */
+        /* Verify second build */
         SystemValidator<ClearCaseUCMTarget> val2 = new SystemValidator<ClearCaseUCMTarget>( build2 );
         val2.checkExpectedResult( Result.SUCCESS ).
                 checkCompatability( true ).
@@ -85,19 +87,56 @@ public class NewModel {
 
 
     @Test
-    @ClearCaseUniqueVobName( name = "wrongtargets-config-testv2" )
+    @ClearCaseUniqueVobName( name = "wrong-targets-configure-v2" )
     public void wrongTargets() throws IOException, ExecutionException, InterruptedException {
 
-        crrule.initialize( "cr-test", ccenv.getPVob() ).
-                addTarget( new ClearCaseUCMTarget( "model-wrong@" + ccenv.getPVob() + ", INITIAL, false" ) ).
+        ProjectBuilder builder = new ProjectBuilder( new ClearCaseUCM( ccenv.getPVob() ) ).setName( "project02" );
+        ConfigRotatorProject project = builder.getProject();
+
+        project.addTarget( new ClearCaseUCMTarget( "model-wrong@" + ccenv.getPVob() + ", INITIAL, false" ) ).
                 addTarget( new ClearCaseUCMTarget( "client-wrong@" + ccenv.getPVob() + ", INITIAL, false" ) );
 
-        AbstractBuild<?, ?> build = crrule.build( false );
-        crrule.printLog( build, System.out );
+        AbstractBuild<?, ?> build = crrule.buildProject( project.getJenkinsProject(), false, null );
 
         SystemValidator<ClearCaseUCMTarget> val = new SystemValidator<ClearCaseUCMTarget>( build );
         val.checkExpectedResult( Result.FAILURE ).
                 checkAction( false ).
+                validate();
+    }
+
+
+    @Test
+    @ClearCaseUniqueVobName( name = "revert-configuration-v2" )
+    public void revert() throws IOException, ExecutionException, InterruptedException {
+        ProjectBuilder builder = new ProjectBuilder( new ClearCaseUCM( ccenv.getPVob() ) ).setName( "project02" );
+        ConfigRotatorProject project = builder.getProject();
+
+        project.addTarget( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
+                addTarget( new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, false" ) );
+
+        AbstractBuild<?, ?> build1 = crrule.buildProject( project.getJenkinsProject(), false, null );
+
+        /* Verify first build */
+        SystemValidator<ClearCaseUCMTarget> val = new SystemValidator<ClearCaseUCMTarget>( build1 );
+        val.checkExpectedResult( Result.SUCCESS ).checkCompatability( true ).checkWasReconfigured( false ).validate();
+
+        /* Do the second build */
+        AbstractBuild<?, ?> build2 = crrule.buildProject( project.getJenkinsProject(), false, null );
+
+        /* Revert to first configuration */
+        ConfigurationRotatorBuildAction action = build1.getAction( ConfigurationRotatorBuildAction.class );
+        assertNotNull( action );
+        project.getConfigurationRotator().setConfigurationByAction( project.getJenkinsProject(), action );
+
+        /* Do the third build */
+        AbstractBuild<?, ?> build3 = crrule.buildProject( project.getJenkinsProject(), false, null );
+
+        /* Verify third build */
+        SystemValidator<ClearCaseUCMTarget> val2 = new SystemValidator<ClearCaseUCMTarget>( build3 );
+        val2.checkExpectedResult( Result.SUCCESS ).
+                checkCompatability( true ).
+                checkWasReconfigured( true ).
+                checkTargets( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, false" ), new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
                 validate();
     }
 }

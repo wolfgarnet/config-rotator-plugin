@@ -1,4 +1,4 @@
-package net.praqma.jenkins.configrotator.functional.scm.fake;
+package net.praqma.jenkins.configrotator.fake;
 
 import net.praqma.jenkins.configrotator.AbstractConfiguration;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorException;
