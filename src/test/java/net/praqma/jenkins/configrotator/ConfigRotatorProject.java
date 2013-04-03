@@ -46,6 +46,7 @@ public class ConfigRotatorProject {
 
         crSCM.setConfiguration( null );
         crSCM.setTargets( targets );
+        getConfigurationRotator().reconfigure = true;
 
         return this;
     }
