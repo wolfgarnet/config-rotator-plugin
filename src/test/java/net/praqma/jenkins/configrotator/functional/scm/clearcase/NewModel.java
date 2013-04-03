@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
@@ -24,13 +25,13 @@ public class NewModel {
 
     public static ClearCaseRule ccenv =  new ClearCaseRule( "cr1" );
 
-    public static LoggingRule lrule = new LoggingRule( Level.ALL, "net.praqma" );
+    public static LoggingRule lrule = new LoggingRule( "net.praqma" );
 
     @ClassRule
     public static TestRule chain = RuleChain.outerRule( lrule ).around( ccenv );
 
-    @Rule
-    public ConfigRotatorRule2 crrule = new ConfigRotatorRule2();
+    @ClassRule
+    public static ConfigRotatorRule2 crrule = new ConfigRotatorRule2();
 
     @Test
     @ClearCaseUniqueVobName( name = "configure-v2" )
@@ -80,7 +81,6 @@ public class NewModel {
         SystemValidator<ClearCaseUCMTarget> val2 = new SystemValidator<ClearCaseUCMTarget>( build2 );
         val2.checkExpectedResult( Result.SUCCESS ).
                 checkCompatability( true ).
-                checkWasReconfigured( false ).
                 checkTargets( new ClearCaseUCMTarget( "model-3@" + ccenv.getPVob() + ", INITIAL, false" ), new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
                 validate();
     }
@@ -90,7 +90,7 @@ public class NewModel {
     @ClearCaseUniqueVobName( name = "wrong-targets-configure-v2" )
     public void wrongTargets() throws IOException, ExecutionException, InterruptedException {
 
-        ProjectBuilder builder = new ProjectBuilder( new ClearCaseUCM( ccenv.getPVob() ) ).setName( "project02" );
+        ProjectBuilder builder = new ProjectBuilder( new ClearCaseUCM( ccenv.getPVob() ) ).setName( "project03" );
         ConfigRotatorProject project = builder.getProject();
 
         project.addTarget( new ClearCaseUCMTarget( "model-wrong@" + ccenv.getPVob() + ", INITIAL, false" ) ).
@@ -108,7 +108,7 @@ public class NewModel {
     @Test
     @ClearCaseUniqueVobName( name = "revert-configuration-v2" )
     public void revert() throws IOException, ExecutionException, InterruptedException {
-        ProjectBuilder builder = new ProjectBuilder( new ClearCaseUCM( ccenv.getPVob() ) ).setName( "project02" );
+        ProjectBuilder builder = new ProjectBuilder( new ClearCaseUCM( ccenv.getPVob() ) ).setName( "project04" );
         ConfigRotatorProject project = builder.getProject();
 
         project.addTarget( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
@@ -135,7 +135,6 @@ public class NewModel {
         SystemValidator<ClearCaseUCMTarget> val2 = new SystemValidator<ClearCaseUCMTarget>( build3 );
         val2.checkExpectedResult( Result.SUCCESS ).
                 checkCompatability( true ).
-                checkWasReconfigured( true ).
                 checkTargets( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, false" ), new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
                 validate();
     }

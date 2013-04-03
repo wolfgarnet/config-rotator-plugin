@@ -7,11 +7,14 @@ import hudson.scm.SCM;
 import java.io.PrintStream;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 public class SystemValidator<T extends AbstractTarget> {
+
+    private static Logger logger = Logger.getLogger( SystemValidator.class.getName() );
 
     private ConfigurationRotator cr;
     private AbstractBuild<?, ?> build;
@@ -58,31 +61,33 @@ public class SystemValidator<T extends AbstractTarget> {
 
     public void validate() {
 
+        logger.info( "[Validating build] " + this.build.getProject().getDisplayName() + " : " + this.build.getDisplayName() );
+
         if( this.checkExpectedResult ) {
             out.println( "[Validating expected result] must be " + this.expectedResult );
             assertThat( "Validating expected result", build.getResult(), is( this.expectedResult ) );
         }
 
         if( this.checkCompatible ) {
-            out.println( "[Validating compatability] must be " + ( this.compatible ? "compatible" : "incompatible" ) );
+            logger.info( "[Validating compatability] must be " + ( this.compatible ? "compatible" : "incompatible" ) );
             assertThat( "Validating compatability", action.isCompatible(), is( this.compatible ) );
         }
 
         if( this.checkWasReconfigured ) {
-            out.println( "[Validating reconfigured] must be " + this.wasReconfigured );
-            assertThat( "Validating reconfiguration", cr.getAcrs().wasReconfigured( build.getProject() ), is( this.wasReconfigured) );
+            logger.info( "[Validating reconfigured] must be " + this.wasReconfigured );
+            assertThat( "Validating reconfiguration", cr.getAcrs().wasReconfigured( build.getProject() ), is( this.wasReconfigured ) );
         }
 
         if( this.checkTargets ) {
-            out.println( "[Validating targets] must be " + this.targets );
+            logger.info( "[Validating targets] must be " + this.targets );
             for( int i = 0 ; i < this.targets.size() ; i++ ) {
-                out.println( " * " + cr.getAcrs().getTargets().get( i ) + " == " + is( this.targets.get( i ) ) );
+                logger.info( " * " + cr.getAcrs().getTargets().get( i ) + " == " + is( this.targets.get( i ) ) );
                 assertThat( "Validating target", cr.getAcrs().getTargets().get( i ), is( this.targets.get( i ) ) );
             }
         }
 
         if( this.checkActionIsValid ) {
-            out.println( "[Validating action] must be " + ( this.actionIsValid ? "valid" : "invalid" ) );
+            logger.info( "[Validating action] must be " + ( this.actionIsValid ? "valid" : "invalid" ) );
             if( this.actionIsValid ) {
                 assertNotNull( "Action was not valid", action );
             } else {
@@ -90,7 +95,7 @@ public class SystemValidator<T extends AbstractTarget> {
             }
         }
 
-        out.println( "Successfully validated system" );
+        logger.info( "Successfully validated system" );
     }
 
     public SystemValidator checkExpectedResult( Result expectedResult ) {

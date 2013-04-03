@@ -69,6 +69,8 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 
     @Override
     public boolean wasReconfigured( AbstractProject<?, ?> project ) {
+        logger.finest( "Checking reconfiguration" );
+
         ConfigurationRotatorBuildAction action = getLastResult( project, ClearCaseUCM.class );
 
         if( action == null ) {
@@ -93,11 +95,14 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
         List<ClearCaseUCMTarget> list = getConfigurationAsTargets( configuration );
         for( int i = 0; i < targets.size(); ++i ) {
             if( !targets.get( i ).equals( list.get( i ) ) ) {
+                logger.finest( "Config: " + list.get( i ) );
+                logger.finest( "Target: " + targets.get( i ) );
                 logger.fine( "Configuration was not equal" );
                 return true;
             }
         }
 
+        logger.finest( "UCM was not reconfigured" );
         return false;
     }
 

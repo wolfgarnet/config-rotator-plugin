@@ -140,7 +140,12 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
     }
 	
 	public abstract void setConfigurationByAction( AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action ) throws IOException;
-	
+
+    /**
+     * This method only makes sense when the variable justConfigured is set. Meaning the configuration was just saved.
+     * @param project
+     * @return
+     */
 	public abstract boolean wasReconfigured( AbstractProject<?, ?> project );
     
     public abstract ConfigRotatorChangeLogParser createChangeLogParser();

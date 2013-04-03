@@ -11,6 +11,7 @@ import net.praqma.jenkins.configrotator.fake.*;
 import org.junit.ClassRule;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
 
 /**

@@ -29,6 +29,8 @@ public class ConfigRotatorProject {
     public ConfigRotatorProject( String name, AbstractConfigurationRotatorSCM crSCM ) throws IOException {
         this.crSCM = crSCM;
 
+        crSCM.setTargets( targets );
+
         SCM scm = new ConfigurationRotator( crSCM );
         jenkinsProject = (Project) Hudson.getInstance().createProject( projectClass, name );
         jenkinsProject.setScm( scm );
