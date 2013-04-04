@@ -24,7 +24,7 @@ public class NewModel {
 
     private static Logger logger = Logger.getLogger( NewModel.class.getName() );
 
-    public static ClearCaseRule ccenv =  new ClearCaseRule( "cr1" );
+    public static ClearCaseRule ccenv = new ClearCaseRule( "cr1" );
 
     public static LoggingRule lrule = new LoggingRule( "net.praqma" ).setFormat( PraqmaticLogFormatter.TINY_FORMAT );
 
@@ -187,6 +187,33 @@ public class NewModel {
         val2.checkExpectedResult( Result.NOT_BUILT ).
                 checkAction( false ).
                 checkTargets( new ClearCaseUCMTarget( "model-3@" + ccenv.getPVob() + ", INITIAL, false" ), new ClearCaseUCMTarget( "client-3@" + ccenv.getPVob() + ", INITIAL, false" ) ).
+                validate();
+    }
+
+
+    @Test
+    @ClearCaseUniqueVobName( name = "fixed-targets-v2" )
+    public void fixedTargets() throws IOException, ExecutionException, InterruptedException {
+        ProjectBuilder builder = new ProjectBuilder( new ClearCaseUCM( ccenv.getPVob() ) ).setName( "project-fixed" );
+        ConfigRotatorProject project = builder.getProject();
+
+        project.addTarget( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, true" ) ).
+                addTarget( new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, true" ) );
+
+        AbstractBuild<?, ?> build1 = crrule.buildProject( project.getJenkinsProject(), false, null );
+
+        /* Verify first build */
+        SystemValidator<ClearCaseUCMTarget> val = new SystemValidator<ClearCaseUCMTarget>( build1 );
+        val.checkExpectedResult( Result.SUCCESS ).checkCompatability( true ).validate();
+
+        /* Do the second build */
+        AbstractBuild<?, ?> build2 = crrule.buildProject( project.getJenkinsProject(), false, null );
+
+        /* Verify second build */
+        SystemValidator<ClearCaseUCMTarget> val2 = new SystemValidator<ClearCaseUCMTarget>( build2 );
+        val2.checkExpectedResult( Result.SUCCESS ).
+                checkCompatability( true ).
+                checkTargets( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, false" ), new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
                 validate();
     }
 }
