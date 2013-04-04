@@ -7,13 +7,17 @@ import hudson.model.Slave;
 import org.jvnet.hudson.test.JenkinsRule;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.logging.Logger;
 
 /**
  * @author cwolfgang
  */
 public class ConfigRotatorRule2 extends JenkinsRule {
+
+    private static Logger logger = Logger.getLogger( ConfigRotatorRule2.class.getName() );
 
     private File outputDir;
 
@@ -33,8 +37,6 @@ public class ConfigRotatorRule2 extends JenkinsRule {
         this.outputDir.mkdirs();
     }
 
-    private static Logger logger = Logger.getLogger( ConfigRotatorRule2.class.getName() );
-
     public AbstractBuild<?, ?> buildProject( AbstractProject<?, ?> project, boolean fail, Slave slave ) throws IOException {
 
         if( slave != null ) {
@@ -47,20 +49,23 @@ public class ConfigRotatorRule2 extends JenkinsRule {
             EnableLoggerAction action = new EnableLoggerAction( outputDir );
             build = project.scheduleBuild2( 0, new Cause.UserCause(), action ).get();
         } catch( Exception e ) {
-            logger.info( "Build failed(" + (fail?"on purpose":"it should not?") + "): " + e.getMessage() );
+            e.printStackTrace();
         }
 
-        logger.info( "Build info for: " + build );
+        PrintStream out = new PrintStream( new File( outputDir, "jenkins." + build.getNumber() + ".log" ) );
 
-        logger.info( "Workspace: " + build.getWorkspace() );
-
-        logger.info( "Logfile: " + build.getLogFile() );
-
-        logger.info( "DESCRIPTION: " + build.getDescription() );
-
-        logger.info( "-------------------------------------------------\nJENKINS LOG: " );
-        logger.info( getLog( build ) );
-        logger.info( "\n-------------------------------------------------\n" );
+        out.println( "Build      : " + build );
+        out.println( "Workspace  : " + build.getWorkspace() );
+        out.println( "Logfile    : " + build.getLogFile() );
+        out.println( "Description: " + build.getDescription() );
+        out.println();
+        out.println( "-------------------------------------------------" );
+        out.println( "                JENKINS LOG: " );
+        out.println( "-------------------------------------------------" );
+        out.println( getLog( build ) );
+        out.println( "-------------------------------------------------" );
+        out.println( "-------------------------------------------------" );
+        out.println();
 
         return build;
     }
