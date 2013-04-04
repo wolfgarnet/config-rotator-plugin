@@ -8,6 +8,8 @@ import net.praqma.jenkins.configrotator.ConfigRotatorRule2;
 import net.praqma.jenkins.configrotator.ProjectBuilder;
 import net.praqma.jenkins.configrotator.SystemValidator;
 import net.praqma.jenkins.configrotator.fake.*;
+import net.praqma.logging.PraqmaticLogFormatter;
+import net.praqma.util.test.junit.LoggingRule;
 import org.junit.ClassRule;
 import org.junit.Test;
 
@@ -20,7 +22,10 @@ import java.io.IOException;
 public class ModelTest {
 
     @ClassRule
-    public static ConfigRotatorRule2 crRule = new ConfigRotatorRule2();
+    public static ConfigRotatorRule2 crRule = new ConfigRotatorRule2( ModelTest.class );
+
+    @ClassRule
+    public static LoggingRule lrule = new LoggingRule( "net.praqma" ).setFormat( PraqmaticLogFormatter.TINY_FORMAT );
 
     @Test
     public void newProject() throws IOException {

@@ -20,7 +20,7 @@ public class ConfigRotatorRule2 extends JenkinsRule {
 
     private File outputDir;
 
-    public ConfigRotatorRule2() {
+    public ConfigRotatorRule2( Class<?> clazz ) {
 
         //System.out.println( "ENVS: " +  System.getenv() );
 
@@ -28,7 +28,7 @@ public class ConfigRotatorRule2 extends JenkinsRule {
             String bname = System.getenv( "JOB_NAME" );
             Integer number = new Integer( System.getenv( "BUILD_NUMBER" ) );
 
-            this.outputDir = new File( new File( new File( System.getProperty( "user.dir" ) ), "test-logs" ), number.toString() );
+            this.outputDir = new File( new File( new File( new File( System.getProperty( "user.dir" ) ), "test-logs" ), number.toString() ), ConfigRotatorProject.getSafeName( clazz.getName() ) );
         } else {
             this.outputDir = new File( new File( System.getProperty( "user.dir" ) ), "runs" );
         }

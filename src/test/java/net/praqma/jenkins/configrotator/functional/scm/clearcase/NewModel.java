@@ -32,13 +32,12 @@ public class NewModel {
     public static TestRule chain = RuleChain.outerRule( lrule ).around( ccenv );
 
     @ClassRule
-    public static ConfigRotatorRule2 crrule = new ConfigRotatorRule2();
+    public static ConfigRotatorRule2 crrule = new ConfigRotatorRule2( NewModel.class );
 
     @Test
-    @ClearCaseUniqueVobName( name = "configure-v2" )
     public void test1() throws IOException, ExecutionException, InterruptedException {
 
-        ProjectBuilder builder = new ProjectBuilder( new ClearCaseUCM( ccenv.getPVob() ) ).setName( "project01" );
+        ProjectBuilder builder = new ProjectBuilder( new ClearCaseUCM( ccenv.getPVob() ) ).setName( "normal" );
         ConfigRotatorProject project = builder.getProject();
         project.addTarget( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
                 addTarget( new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, false" ) );
@@ -54,10 +53,9 @@ public class NewModel {
     }
 
     @Test
-    @ClearCaseUniqueVobName( name = "fail-v2" )
     public void fail() throws IOException, ExecutionException, InterruptedException {
 
-        ProjectBuilder builder = new ProjectBuilder( new ClearCaseUCM( ccenv.getPVob() ) ).setName( "project-fail" );
+        ProjectBuilder builder = new ProjectBuilder( new ClearCaseUCM( ccenv.getPVob() ) ).setName( "fail" );
         ConfigRotatorProject project = builder.getProject();
         project.addTarget( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
                 addTarget( new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, false" ) );
@@ -73,9 +71,8 @@ public class NewModel {
     }
 
     @Test
-    @ClearCaseUniqueVobName( name = "reconfigure-v2" )
     public void reconfigure() throws IOException, ExecutionException, InterruptedException {
-        ProjectBuilder builder = new ProjectBuilder( new ClearCaseUCM( ccenv.getPVob() ) ).setName( "project02" );
+        ProjectBuilder builder = new ProjectBuilder( new ClearCaseUCM( ccenv.getPVob() ) ).setName( "reconfigure" );
         ConfigRotatorProject project = builder.getProject();
 
         project.addTarget( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
@@ -107,10 +104,9 @@ public class NewModel {
 
 
     @Test
-    @ClearCaseUniqueVobName( name = "wrong-targets-configure-v2" )
     public void wrongTargets() throws IOException, ExecutionException, InterruptedException {
 
-        ProjectBuilder builder = new ProjectBuilder( new ClearCaseUCM( ccenv.getPVob() ) ).setName( "project03" );
+        ProjectBuilder builder = new ProjectBuilder( new ClearCaseUCM( ccenv.getPVob() ) ).setName( "wrong-targets" );
         ConfigRotatorProject project = builder.getProject();
 
         project.addTarget( new ClearCaseUCMTarget( "model-wrong@" + ccenv.getPVob() + ", INITIAL, false" ) ).
@@ -126,9 +122,8 @@ public class NewModel {
 
 
     @Test
-    @ClearCaseUniqueVobName( name = "revert-configuration-v2" )
     public void revert() throws IOException, ExecutionException, InterruptedException {
-        ProjectBuilder builder = new ProjectBuilder( new ClearCaseUCM( ccenv.getPVob() ) ).setName( "project04" );
+        ProjectBuilder builder = new ProjectBuilder( new ClearCaseUCM( ccenv.getPVob() ) ).setName( "revert" );
         ConfigRotatorProject project = builder.getProject();
 
         project.addTarget( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
@@ -162,9 +157,8 @@ public class NewModel {
 
 
     @Test
-    @ClearCaseUniqueVobName( name = "full-v2" )
     public void full() throws IOException, ExecutionException, InterruptedException {
-        ProjectBuilder builder = new ProjectBuilder( new ClearCaseUCM( ccenv.getPVob() ) ).setName( "project-full" );
+        ProjectBuilder builder = new ProjectBuilder( new ClearCaseUCM( ccenv.getPVob() ) ).setName( "full" );
         ConfigRotatorProject project = builder.getProject();
 
         project.addTarget( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
@@ -192,9 +186,8 @@ public class NewModel {
 
 
     @Test
-    @ClearCaseUniqueVobName( name = "fixed-targets-v2" )
     public void fixedTargets() throws IOException, ExecutionException, InterruptedException {
-        ProjectBuilder builder = new ProjectBuilder( new ClearCaseUCM( ccenv.getPVob() ) ).setName( "project-fixed" );
+        ProjectBuilder builder = new ProjectBuilder( new ClearCaseUCM( ccenv.getPVob() ) ).setName( "fixed" );
         ConfigRotatorProject project = builder.getProject();
 
         project.addTarget( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, true" ) ).
@@ -211,9 +204,8 @@ public class NewModel {
 
         /* Verify second build */
         SystemValidator<ClearCaseUCMTarget> val2 = new SystemValidator<ClearCaseUCMTarget>( build2 );
-        val2.checkExpectedResult( Result.SUCCESS ).
-                checkCompatability( true ).
-                checkTargets( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, false" ), new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
+        val2.checkExpectedResult( Result.NOT_BUILT ).
+                checkTargets( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, true" ), new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, true" ) ).
                 validate();
     }
 }

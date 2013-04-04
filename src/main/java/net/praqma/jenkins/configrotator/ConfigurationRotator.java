@@ -158,6 +158,8 @@ public class ConfigurationRotator extends SCM {
         } catch( Exception e ) {
             logger.log( Level.SEVERE, "Unable to create configuration", e );
             e.printStackTrace( out );
+            DiedBecauseAction da = new DiedBecauseAction( e.getMessage(), DiedBecauseAction.Die.die );
+            build.addAction( da );
             throw new AbortException( e.getMessage() );
         }
 
@@ -166,6 +168,8 @@ public class ConfigurationRotator extends SCM {
             // We fail build if there is now new baseline.
             // An alternative would be to do like the CCUCM plugin and make the
             // build result "grey" with an comment "nothing to do".
+            DiedBecauseAction da = new DiedBecauseAction( "Nothing to rotate", DiedBecauseAction.Die.survive );
+            build.addAction( da );
             throw new AbortException( "Nothing new to rotate" );
         } else {
 

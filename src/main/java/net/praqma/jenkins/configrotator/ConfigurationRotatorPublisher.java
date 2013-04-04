@@ -59,8 +59,15 @@ public class ConfigurationRotatorPublisher extends Notifier {
 				return AbstractPostConfigurationRotator.doit( build.getWorkspace(), listener, action );
 
 			} else {
+                DiedBecauseAction da = build.getAction( DiedBecauseAction.class );
 				out.println( ConfigurationRotator.LOGGERNAME + "Action was null, unable to set compatibility of configuration" );
-                hadNothingToDo( build );
+                logger.fine( "Die action: " + da );
+                if( da != null ) {
+                    logger.fine( da.toString() );
+                    if( !da.died() ) {
+                        hadNothingToDo( build );
+                    }
+                }
 			}
 		} else {
 			out.println( ConfigurationRotator.LOGGERNAME + "SCM not part of ConfigRotator" );
