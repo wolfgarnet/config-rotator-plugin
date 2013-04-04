@@ -64,7 +64,7 @@ public class SystemValidator<T extends AbstractTarget> {
         logger.info( "[Validating build] " + this.build.getProject().getDisplayName() + " : " + this.build.getDisplayName() );
 
         if( this.checkExpectedResult ) {
-            out.println( "[Validating expected result] must be " + this.expectedResult );
+            logger.info( "[Validating expected result] must be " + this.expectedResult );
             assertThat( "Validating expected result", build.getResult(), is( this.expectedResult ) );
         }
 

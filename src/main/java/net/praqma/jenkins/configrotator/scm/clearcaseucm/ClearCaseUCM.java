@@ -302,9 +302,8 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
         /* Create baselines list */
         List<Baseline> selectedBaselines = new ArrayList<Baseline>();
         logger.fine( "Selected baselines:" );
-        listener.getLogger().println( "Configratioanmwd: " + configuration );
         for( ClearCaseUCMConfigurationComponent config : configuration.getList() ) {
-            listener.getLogger().println( "Component: " + config );
+            logger.fine( "Component: " + config );
             logger.fine( ConfigurationRotator.LOGGERNAME + config.getBaseline().getNormalizedName() );
             selectedBaselines.add( config.getBaseline() );
         }

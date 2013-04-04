@@ -52,7 +52,7 @@ public class ConfigRotatorRule2 extends JenkinsRule {
             e.printStackTrace();
         }
 
-        PrintStream out = new PrintStream( new File( outputDir, "jenkins." + build.getNumber() + ".log" ) );
+        PrintStream out = new PrintStream( new File( outputDir, "jenkins." + ConfigRotatorProject.getSafeName( project.getDisplayName() ) + "." + build.getNumber() + ".log" ) );
 
         out.println( "Build      : " + build );
         out.println( "Workspace  : " + build.getWorkspace() );

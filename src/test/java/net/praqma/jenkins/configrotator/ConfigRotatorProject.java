@@ -60,4 +60,8 @@ public class ConfigRotatorProject {
     public Project<?, ?> getJenkinsProject() {
         return jenkinsProject;
     }
+
+    public static String getSafeName( String name ) {
+        return name.replace( "[\\\\~#%&*{}/:<>?|\\\"-]", "_" );
+    }
 }
