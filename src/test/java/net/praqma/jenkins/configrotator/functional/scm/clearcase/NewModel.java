@@ -178,7 +178,7 @@ public class NewModel {
             AbstractBuild<?, ?> build = crrule.buildProject( project.getJenkinsProject(), false, null );
 
             SystemValidator<ClearCaseUCMTarget> val = new SystemValidator<ClearCaseUCMTarget>( build );
-            val.checkExpectedResult( Result.SUCCESS ).checkCompatability( true ).checkWasReconfigured( false ).validate();
+            val.checkExpectedResult( Result.SUCCESS ).checkCompatability( true ).validate();
         }
 
         /* Do the final build */
