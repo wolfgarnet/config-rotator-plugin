@@ -69,8 +69,8 @@ public class SystemValidator<T extends AbstractTarget> {
         }
 
         if( this.checkCompatible ) {
-            logger.info( "[Validating compatability] must be " + ( this.compatible ? "compatible" : "incompatible" ) );
-            assertThat( "Validating compatability", action.isCompatible(), is( this.compatible ) );
+            logger.info( "[Validating compatibility] must be " + ( this.compatible ? "compatible" : "incompatible" ) );
+            assertThat( "Validating compatibility", action.isCompatible(), is( this.compatible ) );
         }
 
         if( this.checkWasReconfigured ) {
