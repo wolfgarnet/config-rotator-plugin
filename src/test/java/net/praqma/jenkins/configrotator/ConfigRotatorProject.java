@@ -62,6 +62,6 @@ public class ConfigRotatorProject {
     }
 
     public static String getSafeName( String name ) {
-        return name.replace( "[\\\\~#%&*{}/:<>?|\\\"-]", "_" );
+        return name.replaceAll( "[^\\w]", "_" );
     }
 }

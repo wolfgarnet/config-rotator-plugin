@@ -28,7 +28,7 @@ public class LoggerListener extends RunListener<AbstractBuild> {
         EnableLoggerAction action = run.getAction( EnableLoggerAction.class );
 
         if( action != null ) {
-            File output = new File( action.getOutputDir(), run.getProject().getDisplayName().replace( "[\\\\~#%&*{}/:<>?|\\\"-]", "_" ) + "." + run.getNumber() + ".log" );
+            File output = new File( action.getOutputDir(), ConfigRotatorProject.getSafeName( run.getProject().getDisplayName() ) + "." + run.getNumber() + ".log" );
             List<String> loggers = new ArrayList<String>(2);
             loggers.add( "net.praqma" );
             try {
