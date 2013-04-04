@@ -18,10 +18,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.junit.Assert.assertNotNull;
 
 public class NewModel {
+
+    private static Logger logger = Logger.getLogger( NewModel.class.getName() );
 
     public static ClearCaseRule ccenv =  new ClearCaseRule( "cr1" );
 
@@ -48,6 +51,25 @@ public class NewModel {
         val.checkExpectedResult( Result.SUCCESS ).
                 checkAction( true ).
                 checkCompatability( true ).
+                checkTargets( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, false" ), new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
+                validate();
+    }
+
+    @Test
+    @ClearCaseUniqueVobName( name = "fail-v2" )
+    public void fail() throws IOException, ExecutionException, InterruptedException {
+
+        ProjectBuilder builder = new ProjectBuilder( new ClearCaseUCM( ccenv.getPVob() ) ).setName( "project-fail" );
+        ConfigRotatorProject project = builder.getProject();
+        project.addTarget( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
+                addTarget( new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, false" ) );
+
+        AbstractBuild<?, ?> build = crrule.buildProject( project.getJenkinsProject(), true, null );
+
+        SystemValidator<ClearCaseUCMTarget> val = new SystemValidator<ClearCaseUCMTarget>( build );
+        val.checkExpectedResult( Result.FAILURE ).
+                checkAction( true ).
+                checkCompatability( false ).
                 checkTargets( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, false" ), new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
                 validate();
     }
@@ -136,6 +158,38 @@ public class NewModel {
         val2.checkExpectedResult( Result.SUCCESS ).
                 checkCompatability( true ).
                 checkTargets( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, false" ), new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
+                validate();
+    }
+
+
+
+    @Test
+    @ClearCaseUniqueVobName( name = "full-v2" )
+    public void full() throws IOException, ExecutionException, InterruptedException {
+        ProjectBuilder builder = new ProjectBuilder( new ClearCaseUCM( ccenv.getPVob() ) ).setName( "project-full" );
+        ConfigRotatorProject project = builder.getProject();
+
+        project.addTarget( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
+                addTarget( new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, false" ) );
+
+
+        for( int i = 1 ; i < 6 ; i++ ) {
+            logger.info( "Running build #" + i );
+            AbstractBuild<?, ?> build = crrule.buildProject( project.getJenkinsProject(), false, null );
+
+            SystemValidator<ClearCaseUCMTarget> val = new SystemValidator<ClearCaseUCMTarget>( build );
+            val.checkExpectedResult( Result.SUCCESS ).checkCompatability( true ).checkWasReconfigured( false ).validate();
+        }
+
+        /* Do the final build */
+        AbstractBuild<?, ?> finalBuild = crrule.buildProject( project.getJenkinsProject(), false, null );
+
+        /* Verify the final build */
+        SystemValidator<ClearCaseUCMTarget> val2 = new SystemValidator<ClearCaseUCMTarget>( finalBuild );
+        val2.checkExpectedResult( Result.SUCCESS ).
+                checkCompatability( false ).
+                checkAction( false ).
+                checkTargets( new ClearCaseUCMTarget( "model-3@" + ccenv.getPVob() + ", INITIAL, false" ), new ClearCaseUCMTarget( "client-3@" + ccenv.getPVob() + ", INITIAL, false" ) ).
                 validate();
     }
 }
