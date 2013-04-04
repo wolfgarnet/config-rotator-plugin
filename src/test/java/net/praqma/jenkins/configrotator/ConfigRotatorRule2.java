@@ -1,10 +1,9 @@
 package net.praqma.jenkins.configrotator;
 
-import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
-import hudson.model.Cause;
-import hudson.model.Slave;
+import hudson.Launcher;
+import hudson.model.*;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.TestBuilder;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -37,11 +36,19 @@ public class ConfigRotatorRule2 extends JenkinsRule {
         this.outputDir.mkdirs();
     }
 
-    public AbstractBuild<?, ?> buildProject( AbstractProject<?, ?> project, boolean fail, Slave slave ) throws IOException {
+    public AbstractBuild<?, ?> buildProject( Project<?, ?> project, boolean fail, Slave slave ) throws IOException {
 
         if( slave != null ) {
             logger.fine( "Running on " + slave );
             project.setAssignedNode( slave );
+        }
+
+        if( fail ) {
+            logger.info( "Failing " + project );
+            project.getBuildersList().add( new Failer() );
+        } else {
+            /* Should remove fail task */
+            project.getBuildersList().remove( Failer.class );
         }
 
         AbstractBuild<?, ?> build = null;
@@ -68,5 +75,13 @@ public class ConfigRotatorRule2 extends JenkinsRule {
         out.println();
 
         return build;
+    }
+
+    public static class Failer extends TestBuilder {
+
+        @Override
+        public boolean perform( AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener ) throws InterruptedException, IOException {
+            return false;
+        }
     }
 }
