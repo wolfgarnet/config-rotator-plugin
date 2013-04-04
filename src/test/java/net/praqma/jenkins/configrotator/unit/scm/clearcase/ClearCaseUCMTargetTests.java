@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package net.praqma.jenkins.configrotator.functional.scm.clearcase;
+package net.praqma.jenkins.configrotator.unit.scm.clearcase;
 
 import junit.framework.TestCase;
 import net.praqma.clearcase.ucm.entities.Project;
