@@ -7,6 +7,7 @@ import net.praqma.clearcase.test.junit.ClearCaseRule;
 import net.praqma.jenkins.configrotator.*;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCM;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMTarget;
+import net.praqma.logging.PraqmaticLogFormatter;
 import net.praqma.util.test.junit.LoggingRule;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -25,7 +26,7 @@ public class NewModel {
 
     public static ClearCaseRule ccenv =  new ClearCaseRule( "cr1" );
 
-    public static LoggingRule lrule = new LoggingRule( "net.praqma" );
+    public static LoggingRule lrule = new LoggingRule( "net.praqma" ).setFormat( PraqmaticLogFormatter.TINY_FORMAT );
 
     @ClassRule
     public static TestRule chain = RuleChain.outerRule( lrule ).around( ccenv );
