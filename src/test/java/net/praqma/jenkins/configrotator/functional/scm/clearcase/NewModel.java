@@ -183,7 +183,7 @@ public class NewModel {
 
         /* Verify the final build */
         SystemValidator<ClearCaseUCMTarget> val2 = new SystemValidator<ClearCaseUCMTarget>( finalBuild );
-        val2.checkExpectedResult( Result.SUCCESS ).
+        val2.checkExpectedResult( Result.NOT_BUILT ).
                 checkCompatability( false ).
                 checkAction( false ).
                 checkTargets( new ClearCaseUCMTarget( "model-3@" + ccenv.getPVob() + ", INITIAL, false" ), new ClearCaseUCMTarget( "client-3@" + ccenv.getPVob() + ", INITIAL, false" ) ).
