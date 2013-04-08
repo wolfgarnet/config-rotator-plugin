@@ -55,21 +55,24 @@ public class PrepareWorkspace implements FileCallable<SnapshotView> {
 		/* If the stream exists, change it */
 		if( devStream.exists() ) {
 			out.println( ConfigurationRotator.LOGGERNAME + "Stream exists" );
+
+            try {
+                out.println( ConfigurationRotator.LOGGERNAME + "Rebasing stream to " + devStream.getNormalizedName() );
+                //Rebase rebase = new Rebase( devStream, view, baselines );
+                new Rebase( devStream ).addBaselines( baselines ).dropFromStream().rebase( true );
+            } catch( ClearCaseException e ) {
+                throw new IOException( "Could not load " + devStream, e );
+            }
 			
-			/* First we need the view */
+			/* The view */
 			try {
+                out.println( ConfigurationRotator.LOGGERNAME + "View root: " + new File( workspace, "view" ) );
+                out.println( ConfigurationRotator.LOGGERNAME + "View tag : " + viewtag );
 				view = ViewUtils.createView( out, devStream, "ALL", new File( workspace, "view" ), viewtag, true );
 			} catch( ClearCaseException e ) {
 				throw new IOException( "Unable to create view", e );
 			}
-			
-			try {
-				out.println( ConfigurationRotator.LOGGERNAME + "Rebasing stream to " + devStream.getNormalizedName() );
-				Rebase rebase = new Rebase( devStream, view, baselines );
-				rebase.rebase( true );
-			} catch( ClearCaseException e ) {
-				throw new IOException( "Could not load " + devStream, e );
-			}
+
 		} else {
 			/* Create new */
 			
