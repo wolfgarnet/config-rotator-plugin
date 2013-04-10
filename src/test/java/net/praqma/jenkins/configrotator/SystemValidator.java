@@ -47,6 +47,10 @@ public class SystemValidator<T extends AbstractTarget> {
     private boolean checkPathElements = false;
     private Map<FilePath, List<Element>> pathsToCheck = new HashMap<FilePath, List<Element>>();
 
+    public SystemValidator() {
+
+    }
+
     public SystemValidator( AbstractBuild<?, ?> build ) {
         this( build, System.out );
     }
@@ -114,6 +118,15 @@ public class SystemValidator<T extends AbstractTarget> {
 
         logger.info( "-----= Successfully validated system =-----" );
         logger.info( "" );
+    }
+
+    public void validatePath() {
+        logger.info( "Validating path elements" );
+        try {
+            doCheckPaths();
+        } catch( Exception e ) {
+            fail( e.getMessage() );
+        }
     }
 
     public SystemValidator checkExpectedResult( Result expectedResult ) {

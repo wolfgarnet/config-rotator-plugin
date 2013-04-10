@@ -4,7 +4,14 @@ import hudson.FilePath;
 import hudson.model.AbstractBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.Result;
+import net.praqma.clearcase.Rebase;
+import net.praqma.clearcase.exceptions.ClearCaseException;
 import net.praqma.clearcase.test.junit.ClearCaseRule;
+import net.praqma.clearcase.ucm.entities.Baseline;
+import net.praqma.clearcase.ucm.entities.Stream;
+import net.praqma.clearcase.ucm.view.GetView;
+import net.praqma.clearcase.ucm.view.SnapshotView;
+import net.praqma.clearcase.ucm.view.UpdateView;
 import net.praqma.jenkins.configrotator.ConfigRotatorProject;
 import net.praqma.jenkins.configrotator.ConfigRotatorRule2;
 import net.praqma.jenkins.configrotator.ProjectBuilder;
@@ -20,6 +27,8 @@ import org.junit.rules.TestRule;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
@@ -74,8 +83,62 @@ public class FB8790 {
                 validate();
     }
 
+
+    @Test
+    public void testView() throws IOException, ClearCaseException, InterruptedException {
+        File path = createTempPath();
+        String viewTag = ccenv.getUniqueName() + "_TAG";
+
+        Stream oneInt = ccenv.context.streams.get( "one_int" );
+        Baseline model1 = ccenv.context.baselines.get( "model-1" );
+        Baseline client1 = ccenv.context.baselines.get( "client-1" );
+
+        List<Baseline> bls = new ArrayList<Baseline>( 2 );
+        bls.add( model1 );
+        bls.add( client1 );
+        Stream container = Stream.create( oneInt, "container", true, bls );
+
+        GetView gv = new GetView( path, viewTag ).createIfAbsent().setStream( container );
+        SnapshotView view = gv.get();
+
+        SnapshotView.LoadRules lr = new SnapshotView.LoadRules( view, SnapshotView.Components.ALL );
+        new UpdateView( view ).setLoadRules( lr ).update();
+
+        /* Verify first */
+        FilePath viewroot = new FilePath( view.getViewRoot() );
+        FilePath filepath = new FilePath( viewroot, ccenv.getUniqueName() );
+        listPath( filepath );
+
+        new SystemValidator().addElementToPathCheck( filepath, new SystemValidator.Element( "Model", true ) ).
+                addElementToPathCheck( filepath, new SystemValidator.Element( "Clientapp", true ) ).
+                validatePath();
+
+        new Rebase( container ).addBaseline( model1 ).dropFromStream().rebase( true );
+
+        new UpdateView( view ).update();
+        
+        new SystemValidator().addElementToPathCheck( filepath, new SystemValidator.Element( "Model", true ) ).
+                addElementToPathCheck( filepath, new SystemValidator.Element( "Clientapp", false ) ).
+                validatePath();
+    }
+
+    public File createTempPath() throws IOException {
+        File path = path = File.createTempFile( "snapshot", "view" );
+
+        if( !path.delete() ) {
+            throw new IOException( "Unable to delete dir " + path );
+        }
+
+        if( !path.mkdirs() ) {
+            throw new IOException( "Unable to make dir " + path );
+        }
+        System.out.println( "Path: " + path );
+
+        return path;
+    }
+
     protected void listPath( FilePath path ) throws IOException, InterruptedException {
-        logger.info( "Listing " + path );
+        logger.info( "Listing " + path + "(" + path.exists() + ")" );
         for( FilePath f : path.list() ) {
             logger.info( " * " + f );
         }
