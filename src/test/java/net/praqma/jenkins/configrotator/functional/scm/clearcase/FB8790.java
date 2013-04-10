@@ -58,11 +58,16 @@ public class FB8790 {
 
         AbstractBuild<?, ?> build = crrule.buildProject( project.getJenkinsProject(), false, null );
 
+        FilePath path = new FilePath( project.getJenkinsProject().getLastBuiltOn().getWorkspaceFor( (FreeStyleProject)project.getJenkinsProject() ), "view/" + ccenv.getUniqueName() );
+        listPath( path );
+
         SystemValidator<ClearCaseUCMTarget> val = new SystemValidator<ClearCaseUCMTarget>( build );
         val.checkExpectedResult( Result.SUCCESS ).
                 checkAction( true ).
                 checkCompatability( true ).
                 checkTargets( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, false" ), new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
+                addElementToPathCheck( path, new SystemValidator.Element( "Model", true ) ).
+                addElementToPathCheck( path, new SystemValidator.Element( "Clientapp", true ) ).
                 validate();
 
 
@@ -72,14 +77,12 @@ public class FB8790 {
         AbstractBuild<?, ?> build2 = crrule.buildProject( project.getJenkinsProject(), false, null );
 
         /* Verify second build */
-        FilePath path = new FilePath( project.getJenkinsProject().getLastBuiltOn().getWorkspaceFor( (FreeStyleProject)project.getJenkinsProject() ), "view/" + ccenv.getUniqueName() );
-        listPath( path );
         SystemValidator<ClearCaseUCMTarget> val2 = new SystemValidator<ClearCaseUCMTarget>( build2 );
         val2.checkExpectedResult( Result.SUCCESS ).
                 checkCompatability( true ).
                 checkTargets( new ClearCaseUCMTarget( "model-2@" + ccenv.getPVob() + ", INITIAL, false" ) ).
                 addElementToPathCheck( path, new SystemValidator.Element( "Model", true ) ).
-                addElementToPathCheck( path, new SystemValidator.Element( "Client", false ) ).
+                addElementToPathCheck( path, new SystemValidator.Element( "Clientapp", false ) ).
                 validate();
     }
 
