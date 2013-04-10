@@ -15,9 +15,11 @@ import net.praqma.clearcase.exceptions.UnableToInitializeEntityException;
 import net.praqma.clearcase.ucm.entities.Baseline;
 import net.praqma.clearcase.ucm.entities.Project;
 import net.praqma.clearcase.ucm.entities.Stream;
+import net.praqma.clearcase.ucm.view.GetView;
 import net.praqma.clearcase.ucm.view.SnapshotView;
+import net.praqma.clearcase.ucm.view.UpdateView;
+import net.praqma.clearcase.util.ViewUtils;
 import net.praqma.jenkins.configrotator.ConfigurationRotator;
-import net.praqma.jenkins.utils.ViewUtils;
 
 public class PrepareWorkspace implements FileCallable<SnapshotView> {
 
@@ -68,7 +70,9 @@ public class PrepareWorkspace implements FileCallable<SnapshotView> {
 			try {
                 out.println( ConfigurationRotator.LOGGERNAME + "View root: " + new File( workspace, "view" ) );
                 out.println( ConfigurationRotator.LOGGERNAME + "View tag : " + viewtag );
-				view = ViewUtils.createView( out, devStream, "ALL", new File( workspace, "view" ), viewtag, true );
+				//view = ViewUtils.createView( devStream, "ALL", new File( workspace, "view" ), viewtag, true );
+                view = new GetView( new File( workspace, "view" ), viewtag ).validateView().get();
+                new UpdateView( view ).setLoadRules( new SnapshotView.LoadRules( view, SnapshotView.Components.ALL ) ).swipe().generate().overwrite().update();
 			} catch( ClearCaseException e ) {
 				throw new IOException( "Unable to create view", e );
 			}
@@ -86,7 +90,9 @@ public class PrepareWorkspace implements FileCallable<SnapshotView> {
 			}
 			
 			try {
-				view = ViewUtils.createView( out, devStream, "ALL", new File( workspace, "view" ), viewtag, true );
+				//view = ViewUtils.createView( devStream, "ALL", new File( workspace, "view" ), viewtag, true );
+                view = new GetView( new File( workspace, "view" ), viewtag ).setStream( devStream ).createIfAbsent().get();
+                new UpdateView( view ).setLoadRules( new SnapshotView.LoadRules( view, SnapshotView.Components.ALL ) ).generate().update();
 			} catch( ClearCaseException e ) {
 				throw new IOException( "Unable to create view", e );
 			}
