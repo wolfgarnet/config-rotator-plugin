@@ -77,6 +77,8 @@ public class FB8790 {
         /* Do the second build */
         AbstractBuild<?, ?> build2 = crrule.buildProject( project.getJenkinsProject(), false, null );
 
+        listPath( path );
+
         /* Verify second build */
         SystemValidator<ClearCaseUCMTarget> val2 = new SystemValidator<ClearCaseUCMTarget>( build2 );
         val2.checkExpectedResult( Result.SUCCESS ).

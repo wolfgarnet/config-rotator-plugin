@@ -212,10 +212,12 @@ public class SystemValidator<T extends AbstractTarget> {
             for( Element element : elements ) {
                 if( element.mustExist ) {
                     logger.info( "Path must have " + element );
-                    assertTrue( "The path " + path + " does not have " + element, new FilePath( path, element.element ).exists() );
+                    assertTrue( "The path " + path + " does not have1 " + element, new FilePath( path, element.element ).exists() );
+                    //assertTrue( "The path " + path + " does not have2 " + element, new File( new File( path.toURI() ), element.element ).exists() );
                 } else {
                     logger.info( "Path must NOT have " + element );
-                    assertFalse( "The path " + path + " does have " + element, !new FilePath( path, element.element ).exists() );
+                    assertFalse( "The path " + path + " does have " + element, new FilePath( path, element.element ).exists() );
+                    //assertFalse( "The path " + path + " does have " + element, new File( new File( path.toURI() ), element.element ).exists() );
                 }
             }
         }

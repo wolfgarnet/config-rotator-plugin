@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.List;
 
+import net.praqma.clearcase.ConfigSpec;
 import net.praqma.clearcase.Rebase;
 import net.praqma.clearcase.exceptions.ClearCaseException;
 import net.praqma.clearcase.exceptions.UnableToInitializeEntityException;
@@ -59,9 +60,17 @@ public class PrepareWorkspace implements FileCallable<SnapshotView> {
 			out.println( ConfigurationRotator.LOGGERNAME + "Stream exists" );
 
             try {
+                view = new GetView( viewroot, viewtag ).get();
+            } catch( ClearCaseException e ) {
+                throw new IOException( "Could not get view", e );
+            }
+
+            try {
                 out.println( ConfigurationRotator.LOGGERNAME + "Rebasing stream to " + devStream.getNormalizedName() );
                 //Rebase rebase = new Rebase( devStream, view, baselines );
-                new Rebase( devStream ).addBaselines( baselines ).dropFromStream().rebase( true );
+                //view.end();
+                new Rebase( devStream ).setViewTag( viewtag ).addBaselines( baselines ).dropFromStream().rebase( true );
+                //new Rebase( view ).addBaselines( baselines ).dropFromStream().rebase( true );
             } catch( ClearCaseException e ) {
                 throw new IOException( "Could not load " + devStream, e );
             }
@@ -71,7 +80,9 @@ public class PrepareWorkspace implements FileCallable<SnapshotView> {
                 out.println( ConfigurationRotator.LOGGERNAME + "View root: " + new File( workspace, "view" ) );
                 out.println( ConfigurationRotator.LOGGERNAME + "View tag : " + viewtag );
 				//view = ViewUtils.createView( devStream, "ALL", new File( workspace, "view" ), viewtag, true );
-                view = new GetView( new File( workspace, "view" ), viewtag ).get();
+
+                new ConfigSpec( viewroot ).addLoadRulesFromBaselines( baselines ).generate().appy();
+
                 new UpdateView( view ).swipe().overwrite().update();
 			} catch( ClearCaseException e ) {
 				throw new IOException( "Unable to create view", e );
@@ -91,7 +102,7 @@ public class PrepareWorkspace implements FileCallable<SnapshotView> {
 			
 			try {
 				//view = ViewUtils.createView( devStream, "ALL", new File( workspace, "view" ), viewtag, true );
-                view = new GetView( new File( workspace, "view" ), viewtag ).setStream( devStream ).createIfAbsent().get();
+                view = new GetView( viewroot, viewtag ).setStream( devStream ).createIfAbsent().get();
                 new UpdateView( view ).setLoadRules( new SnapshotView.LoadRules( view, SnapshotView.Components.ALL ) ).generate().update();
 			} catch( ClearCaseException e ) {
 				throw new IOException( "Unable to create view", e );
