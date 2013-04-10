@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 
+import javax.servlet.ServletException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -83,6 +84,32 @@ public class FB8790 {
                 checkTargets( new ClearCaseUCMTarget( "model-2@" + ccenv.getPVob() + ", INITIAL, false" ) ).
                 addElementToPathCheck( path, new SystemValidator.Element( "Model", true ) ).
                 addElementToPathCheck( path, new SystemValidator.Element( "Clientapp", false ) ).
+                validate();
+    }
+
+
+    @Test
+    public void wipedWorkspace() throws IOException, ExecutionException, InterruptedException, ServletException {
+        ProjectBuilder builder = new ProjectBuilder( new ClearCaseUCM( ccenv.getPVob() ) ).setName( "wiped-workspace" );
+        ConfigRotatorProject project = builder.getProject();
+        project.addTarget( new ClearCaseUCMTarget( "model-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
+                addTarget( new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, false" ) );
+
+        AbstractBuild<?, ?> build = crrule.buildProject( project.getJenkinsProject(), false, null );
+
+        project.getJenkinsProject().doDoWipeOutWorkspace();
+
+        /* Do the second build */
+        AbstractBuild<?, ?> build2 = crrule.buildProject( project.getJenkinsProject(), false, null );
+
+        FilePath path = new FilePath( project.getJenkinsProject().getLastBuiltOn().getWorkspaceFor( (FreeStyleProject)project.getJenkinsProject() ), "view/" + ccenv.getUniqueName() );
+
+        /* Verify second build */
+        SystemValidator<ClearCaseUCMTarget> val2 = new SystemValidator<ClearCaseUCMTarget>( build2 );
+        val2.checkExpectedResult( Result.SUCCESS ).
+                checkCompatability( true ).
+                addElementToPathCheck( path, new SystemValidator.Element( "Model", true ) ).
+                addElementToPathCheck( path, new SystemValidator.Element( "Clientapp", true ) ).
                 validate();
     }
 
