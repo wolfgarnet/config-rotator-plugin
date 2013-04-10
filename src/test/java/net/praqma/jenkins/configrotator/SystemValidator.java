@@ -1,12 +1,14 @@
 package net.praqma.jenkins.configrotator;
 
+import hudson.FilePath;
 import hudson.model.AbstractBuild;
 import hudson.model.Result;
 import hudson.scm.SCM;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 import static org.hamcrest.CoreMatchers.*;
@@ -40,6 +42,10 @@ public class SystemValidator<T extends AbstractTarget> {
     /**/
     private List<AbstractTarget> targets = new LinkedList<AbstractTarget>();
     private boolean checkTargets = false;
+
+    /* Validate path elements */
+    private boolean checkPathElements = false;
+    private Map<FilePath, List<Element>> pathsToCheck = new HashMap<FilePath, List<Element>>();
 
     public SystemValidator( AbstractBuild<?, ?> build ) {
         this( build, System.out );
@@ -95,6 +101,15 @@ public class SystemValidator<T extends AbstractTarget> {
             }
         }
 
+        if( this.checkPathElements ) {
+            logger.info( "Checking path elements" );
+            try {
+                doCheckPaths();
+            } catch( Exception e ) {
+                fail( e.getMessage() );
+            }
+        }
+
         logger.info( "Successfully validated system" );
 
         logger.info( "-----= Successfully validated system =-----" );
@@ -136,5 +151,60 @@ public class SystemValidator<T extends AbstractTarget> {
         this.checkTargets = true;
 
         return this;
+    }
+
+    public static class Element {
+        private boolean mustExist;
+        private String element;
+
+        public Element( String element, boolean mustExist ) {
+            this.element = element;
+            this.mustExist = mustExist;
+        }
+
+        @Override
+        public String toString() {
+            return element;
+        }
+    }
+
+    public SystemValidator checkPath( FilePath path, List<Element> elements ) {
+        this.checkPathElements = true;
+
+        pathsToCheck.put( path, elements );
+        String[] l = new String[] {};
+
+        return this;
+    }
+
+    public SystemValidator addElementToPathCheck( FilePath path, Element element ) {
+        this.checkPathElements = true;
+
+        if( pathsToCheck.containsKey( path ) ) {
+            pathsToCheck.get( path ).add( element );
+        } else {
+            List<Element> e = new ArrayList<Element>();
+            e.add( element );
+            pathsToCheck.put( path, e );
+        }
+
+        return this;
+    }
+
+    private void doCheckPaths() throws IOException, InterruptedException {
+        for( FilePath path : pathsToCheck.keySet() ) {
+            List<Element> elements = pathsToCheck.get( path );
+            logger.severe( "Checking " + path );
+
+            for( Element element : elements ) {
+                if( element.mustExist ) {
+                    logger.info( "Path must have " + element );
+                    assertTrue( "The path " + path + " does not have " + element, new FilePath( path, element.element ).exists() );
+                } else {
+                    logger.info( "Path must NOT have " + element );
+                    assertFalse( "The path " + path + " does have " + element, !new FilePath( path, element.element ).exists() );
+                }
+            }
+        }
     }
 }

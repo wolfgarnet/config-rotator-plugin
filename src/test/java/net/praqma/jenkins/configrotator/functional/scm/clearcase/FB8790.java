@@ -1,6 +1,8 @@
 package net.praqma.jenkins.configrotator.functional.scm.clearcase;
 
+import hudson.FilePath;
 import hudson.model.AbstractBuild;
+import hudson.model.FreeStyleProject;
 import hudson.model.Result;
 import net.praqma.clearcase.test.junit.ClearCaseRule;
 import net.praqma.jenkins.configrotator.ConfigRotatorProject;
@@ -16,6 +18,7 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
@@ -60,10 +63,21 @@ public class FB8790 {
         AbstractBuild<?, ?> build2 = crrule.buildProject( project.getJenkinsProject(), false, null );
 
         /* Verify second build */
+        FilePath path = new FilePath( project.getJenkinsProject().getLastBuiltOn().getWorkspaceFor( (FreeStyleProject)project.getJenkinsProject() ), "view/" + ccenv.getUniqueName() );
+        listPath( path );
         SystemValidator<ClearCaseUCMTarget> val2 = new SystemValidator<ClearCaseUCMTarget>( build2 );
         val2.checkExpectedResult( Result.SUCCESS ).
                 checkCompatability( true ).
                 checkTargets( new ClearCaseUCMTarget( "model-2@" + ccenv.getPVob() + ", INITIAL, false" ) ).
+                addElementToPathCheck( path, new SystemValidator.Element( "Model", true ) ).
+                addElementToPathCheck( path, new SystemValidator.Element( "Client", false ) ).
                 validate();
+    }
+
+    protected void listPath( FilePath path ) throws IOException, InterruptedException {
+        logger.info( "Listing " + path );
+        for( FilePath f : path.list() ) {
+            logger.info( " * " + f );
+        }
     }
 }
