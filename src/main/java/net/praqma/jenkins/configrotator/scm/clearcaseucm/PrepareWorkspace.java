@@ -71,8 +71,8 @@ public class PrepareWorkspace implements FileCallable<SnapshotView> {
                 out.println( ConfigurationRotator.LOGGERNAME + "View root: " + new File( workspace, "view" ) );
                 out.println( ConfigurationRotator.LOGGERNAME + "View tag : " + viewtag );
 				//view = ViewUtils.createView( devStream, "ALL", new File( workspace, "view" ), viewtag, true );
-                view = new GetView( new File( workspace, "view" ), viewtag ).validateView().get();
-                new UpdateView( view ).overwrite().update();
+                view = new GetView( new File( workspace, "view" ), viewtag ).get();
+                new UpdateView( view ).update();
 			} catch( ClearCaseException e ) {
 				throw new IOException( "Unable to create view", e );
 			}

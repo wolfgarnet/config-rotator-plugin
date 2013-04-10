@@ -116,7 +116,7 @@ public class FB8790 {
         new Rebase( container ).addBaseline( model1 ).dropFromStream().rebase( true );
 
         new UpdateView( view ).update();
-        
+
         new SystemValidator().addElementToPathCheck( filepath, new SystemValidator.Element( "Model", true ) ).
                 addElementToPathCheck( filepath, new SystemValidator.Element( "Clientapp", false ) ).
                 validatePath();
