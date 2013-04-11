@@ -14,7 +14,6 @@ public class ClearCaseUCMPostBuild extends AbstractPostConfigurationRotator {
 
 	@Override
 	public boolean perform( FilePath workspace, TaskListener listener, ConfigurationRotatorBuildAction action ) {
-		listener.getLogger().println( "In post build" );
         ClearCaseUCMConfiguration current = action.getConfiguration();
         
         try {
