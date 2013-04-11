@@ -32,6 +32,11 @@ public class ConfigurationRotator extends SCM {
 
     private AbstractConfigurationRotatorSCM acrs;
 
+    /**
+     * Just for backwards compatibility.
+     */
+    private boolean printDebug = false;
+
     private static Logger logger = Logger.getLogger( ConfigurationRotator.class.getName() );
 
     public enum ResultType {
