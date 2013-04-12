@@ -79,6 +79,10 @@ public class ConfigurationRotator extends SCM {
         }
     }
 
+    public static final File getFeedPath() {
+        return FEED_PATH;
+    }
+
     /**
      * Determines whether a new configuration has been entered. If true, the
      * input is new.
