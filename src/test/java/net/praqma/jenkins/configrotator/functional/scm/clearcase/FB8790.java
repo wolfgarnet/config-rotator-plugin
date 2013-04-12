@@ -4,6 +4,7 @@ import hudson.FilePath;
 import hudson.model.AbstractBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.Result;
+import net.praqma.clearcase.ConfigSpec;
 import net.praqma.clearcase.Rebase;
 import net.praqma.clearcase.exceptions.ClearCaseException;
 import net.praqma.clearcase.test.junit.ClearCaseRule;
@@ -145,7 +146,9 @@ public class FB8790 {
                 addElementToPathCheck( filepath, new SystemValidator.Element( "Clientapp", true ) ).
                 validatePath();
 
+
         new Rebase( container ).addBaseline( model1 ).dropFromStream().rebase( true );
+        new ConfigSpec( new File( viewroot.toURI() ) ).addLoadRulesFromBaseline( model1 ).generate().appy();
 
         new UpdateView( view ).update();
 
