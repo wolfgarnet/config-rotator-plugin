@@ -148,9 +148,9 @@ public class FB8790 {
 
 
         new Rebase( container ).addBaseline( model1 ).dropFromStream().rebase( true );
-        new ConfigSpec( new File( viewroot.toURI() ) ).addLoadRulesFromBaseline( model1 ).generate().appy();
+        new ConfigSpec( view.getViewRoot() ).addLoadRulesFromBaseline( model1 ).generate().appy();
 
-        new UpdateView( view ).update();
+        new UpdateView( view ).swipe().overwrite().update();
 
         new SystemValidator().addElementToPathCheck( filepath, new SystemValidator.Element( "Model", true ) ).
                 addElementToPathCheck( filepath, new SystemValidator.Element( "Clientapp", false ) ).
