@@ -66,7 +66,7 @@ public abstract class ConfigurationRotatorFeedAction implements Action {
 
         ArrayList<File> list = new ArrayList<File>();
 
-        File path = new File( ConfigurationRotator.FEED_PATH, getComponentName() );
+        File path = new File( ConfigurationRotator.getFeedPath(), getComponentName() );
 
         for( File f : path.listFiles( filter ) ) {
             list.add( f );
@@ -78,7 +78,7 @@ public abstract class ConfigurationRotatorFeedAction implements Action {
 
     public void doFeed( StaplerRequest req, StaplerResponse rsp ) throws IOException, ServletException {
         String component = req.getParameter( "component" );
-        File file = new File( new File( ConfigurationRotator.FEED_PATH, getComponentName() ), component + ".xml" );
+        File file = new File( new File( ConfigurationRotator.getFeedPath(), getComponentName() ), component + ".xml" );
 
         if( file != null && file.exists() ) {
             rsp.serveFile( req, FileUtils.openInputStream( file ), file.lastModified(), file.getTotalSpace(), file.getName() );
