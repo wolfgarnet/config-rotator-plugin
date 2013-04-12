@@ -67,8 +67,8 @@ public class ConfigurationRotator extends SCM {
     public static final String SEPARATOR = getProperty( "file.separator" );
     public static final String FEED_DIR = "config-rotator-feeds" + SEPARATOR;
 
-    public static File FEED_PATH;
-    public static String VERSION = "Unresolved";
+    private static File FEED_PATH;
+    private static String VERSION = "Unresolved";
 
     static {
         if( Jenkins.getInstance() != null ) {
@@ -297,7 +297,6 @@ public class ConfigurationRotator extends SCM {
 
         @Override
         public SCM newInstance( StaplerRequest req, JSONObject formData ) throws FormException {
-            out.println( "FORM: " + formData.toString( 2 ) );
             ConfigurationRotator r = (ConfigurationRotator) super.newInstance( req, formData );
             ConfigurationRotatorSCMDescriptor<AbstractConfigurationRotatorSCM> d = (ConfigurationRotatorSCMDescriptor<AbstractConfigurationRotatorSCM>) r.getAcrs().getDescriptor();
             r.acrs = d.newInstance( req, formData, r.acrs );

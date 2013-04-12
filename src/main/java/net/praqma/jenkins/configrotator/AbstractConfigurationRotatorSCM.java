@@ -242,7 +242,9 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
             } catch( IOException e ) {
                 listener.getLogger().println( "Unable to create change log!" + e );
             } finally {
-                writer.close();
+                if( writer != null ) {
+                    writer.close();
+                }
             }
         }
     }

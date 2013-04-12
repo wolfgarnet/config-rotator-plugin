@@ -89,9 +89,6 @@
     <profiles>
         <profile>
             <id>unitTests</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <build>
 
                 <plugins>
@@ -150,9 +147,6 @@
 
         <profile>
             <id>cobertura</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
             <build>
 
                 <plugins>
