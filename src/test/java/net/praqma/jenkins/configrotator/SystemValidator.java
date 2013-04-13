@@ -4,6 +4,7 @@ import hudson.FilePath;
 import hudson.model.AbstractBuild;
 import hudson.model.Result;
 import hudson.scm.SCM;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -110,6 +111,15 @@ public class SystemValidator<T extends AbstractTarget> {
             try {
                 doCheckPaths();
             } catch( Exception e ) {
+                fail( e.getMessage() );
+            }
+        }
+
+        if( this.checkContent ) {
+            logger.info( "Checking content of " + contentFile );
+            try {
+                doCheckContent();
+            } catch ( Exception e ) {
                 fail( e.getMessage() );
             }
         }
@@ -221,5 +231,24 @@ public class SystemValidator<T extends AbstractTarget> {
                 }
             }
         }
+    }
+
+    private boolean checkContent = false;
+    private File contentFile;
+    private String content = "";
+
+    public SystemValidator checkContent( File file, String content ) {
+        this.checkContent = true;
+        this.contentFile = file;
+        this.content = content;
+
+        return this;
+    }
+
+    private void doCheckContent() throws IOException {
+        String oc = FileUtils.readFileToString( contentFile );
+
+        logger.info( "Content of " + contentFile + " must be " + content + "(" + oc + ")" );
+        assertThat( oc, is( content ) );
     }
 }

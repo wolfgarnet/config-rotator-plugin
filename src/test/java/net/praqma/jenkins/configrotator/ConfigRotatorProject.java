@@ -5,7 +5,6 @@ import hudson.model.Hudson;
 import hudson.model.Project;
 import hudson.model.TopLevelItem;
 import hudson.scm.SCM;
-import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMTarget;
 
 import java.io.IOException;
 import java.util.ArrayList;
