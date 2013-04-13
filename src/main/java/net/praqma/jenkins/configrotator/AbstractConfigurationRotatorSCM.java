@@ -125,7 +125,7 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
         public abstract C getInitialConfiguration() throws ConfigurationRotatorException, IOException;
         public abstract C getNextConfiguration( ConfigurationRotatorBuildAction action ) throws ConfigurationRotatorException;
         public abstract void checkConfiguration( C configuration ) throws ConfigurationRotatorException;
-        public abstract void createWorkspace( C configuration ) throws ConfigurationRotatorException;
+        public abstract void createWorkspace( C configuration ) throws ConfigurationRotatorException, IOException, InterruptedException;
         public Class getSCMClass() {
                 return AbstractConfigurationRotatorSCM.this.getClass();
         }

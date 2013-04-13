@@ -15,6 +15,8 @@ import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -68,6 +70,7 @@ public class ResolveConfigurationComponent implements FilePath.FileCallable<GitC
 
         try {
             logger.fine( "Cloning repo from " + repository );
+
             try {
                 org.eclipse.jgit.api.Git.cloneRepository().setURI( repository ).setDirectory( local ).setCloneAllBranches( true ).call();
             } catch( JGitInternalException e ) {
@@ -79,7 +82,7 @@ public class ResolveConfigurationComponent implements FilePath.FileCallable<GitC
             org.eclipse.jgit.api.Git git = new org.eclipse.jgit.api.Git( repo );
 
             try {
-                logger.fine( "Updating to " + branch );
+                logger.fine( "Creating branch " + branch );
                 git.branchCreate().setUpstreamMode( CreateBranchCommand.SetupUpstreamMode.SET_UPSTREAM ).setName( branch ).setStartPoint( "origin/" + branch ).call();
             } catch( Exception e ) {
                 logger.fine( e.getMessage() );
@@ -89,16 +92,13 @@ public class ResolveConfigurationComponent implements FilePath.FileCallable<GitC
             try {
                 logger.fine( "Pulling" );
                 git.pull().call();
-                //git.fetch().setRefSpecs( new RefSpec( "refs/heads/*" ).setForceUpdate( true ) ).call();
             } catch( GitAPIException e ) {
                 throw new IOException( e );
             }
 
-
-            //repo.updateRef( branch );
-            git.checkout().setName( branch ).call();
-            logger.fine( "BRANCH: " + repo.getBranch() );
             RevWalk w = new RevWalk( repo );
+
+            logger.fine( "The commit id: " + commitId );
 
             if( commitId == null || commitId.matches( "^\\s*$" ) ) {
                 logger.fine( "Initial commit not defined, using HEAD" );
@@ -115,6 +115,13 @@ public class ResolveConfigurationComponent implements FilePath.FileCallable<GitC
 
         } catch( GitAPIException e ) {
             throw new IOException( e );
+        }
+    }
+
+    private void listPath( PrintStream logger, File path ) {
+        logger.println( "PATH: " + path );
+        for( String f : path.list() ) {
+            logger.println( " * " + f );
         }
     }
 }

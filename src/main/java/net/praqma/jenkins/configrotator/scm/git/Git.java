@@ -76,8 +76,8 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
         }
 
         @Override
-        public void createWorkspace( GitConfiguration configuration ) {
-            /* No need */
+        public void createWorkspace( GitConfiguration configuration ) throws IOException, InterruptedException {
+            configuration.checkout( workspace, listener );
         }
 
         @Override
@@ -166,12 +166,11 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
 
     @Override
     public AbstractConfiguration nextConfiguration( TaskListener listener, AbstractConfiguration configuration, FilePath workspace ) throws ConfigurationRotatorException {
-        logger.fine("Getting next Git configuration: " + configuration);
+        logger.fine( "Getting next Git configuration: " + configuration);
 
         RevCommit oldest = null;
         GitConfigurationComponent chosen = null;
         GitConfiguration nconfig = (GitConfiguration) configuration.clone();
-
 
         /* Find oldest commit, newer than current */
         for( GitConfigurationComponent config : nconfig.getList() ) {

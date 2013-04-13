@@ -5,6 +5,7 @@ import hudson.model.TaskListener;
 import net.praqma.jenkins.configrotator.*;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,6 +31,12 @@ public class GitConfiguration extends AbstractConfiguration<GitConfigurationComp
 
             logger.fine("Adding " + c);
             list.add( c );
+        }
+    }
+
+    public void checkout( FilePath workspace, TaskListener listener ) throws IOException, InterruptedException {
+        for( GitConfigurationComponent c : getList() ) {
+            c.checkout( workspace, listener );
         }
     }
 

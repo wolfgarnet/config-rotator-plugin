@@ -1,8 +1,11 @@
 package net.praqma.jenkins.configrotator.scm.git;
 
+import hudson.FilePath;
+import hudson.model.TaskListener;
 import net.praqma.jenkins.configrotator.AbstractConfigurationComponent;
 import org.eclipse.jgit.revwalk.RevCommit;
 
+import java.io.IOException;
 import java.util.logging.Logger;
 
 public class GitConfigurationComponent extends AbstractConfigurationComponent {
@@ -32,6 +35,10 @@ public class GitConfigurationComponent extends AbstractConfigurationComponent {
         this.name = name;
         this.branch = branch;
         this.repository = repository;
+    }
+
+    public void checkout( FilePath workspace, TaskListener listener ) throws IOException, InterruptedException {
+        workspace.act( new Checkout( name,  branch, commitId ) );
     }
 
     public String getBranch() {

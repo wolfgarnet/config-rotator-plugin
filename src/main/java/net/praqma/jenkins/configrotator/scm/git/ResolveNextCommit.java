@@ -31,14 +31,14 @@ public class ResolveNextCommit implements FilePath.FileCallable<RevCommit> {
 
         File local = new File( workspace, name );
         FileRepositoryBuilder builder = new FileRepositoryBuilder();
-        logger.fine("Initializing repo");
+        logger.fine( "Initializing repo" );
         Repository repo = builder.setGitDir( new File( local, ".git" ) ).readEnvironment().findGitDir().build();
         org.eclipse.jgit.api.Git git = new org.eclipse.jgit.api.Git( repo );
 
-        logger.fine("Updating to " + branch);
+        logger.fine( "Updating to " + branch );
 
         try {
-            logger.fine("Pulling");
+            logger.fine( "Pulling" );
             git.pull().call();
         } catch( GitAPIException e ) {
             throw new IOException( e );
