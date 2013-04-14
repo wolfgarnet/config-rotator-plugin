@@ -82,7 +82,8 @@ public class GitTarget extends AbstractTarget implements Serializable {
 		if( other instanceof GitTarget ) {
 			GitTarget o = (GitTarget)other;
 			
-			return repository.equals( o.repository );
+			//return repository.equals( o.repository );
+            return commitId.equals( o.commitId );
 		} else {
 			return false;
 		}

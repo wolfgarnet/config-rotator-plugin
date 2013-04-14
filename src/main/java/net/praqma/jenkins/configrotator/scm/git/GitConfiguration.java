@@ -41,6 +41,33 @@ public class GitConfiguration extends AbstractConfiguration<GitConfigurationComp
     }
 
     @Override
+    public boolean equals( Object other ) {
+        if( other == this ) {
+            return true;
+        }
+
+        if( other instanceof GitConfiguration ) {
+            GitConfiguration o = (GitConfiguration) other;
+            /* Check size */
+            if( o.getList().size() != list.size() ) {
+                return false;
+            }
+
+            /* Check elements, the size is identical */
+            for( int i = 0; i < list.size(); ++i ) {
+                if( !o.list.get( i ).equals( list.get( i ) ) ) {
+                    return false;
+                }
+            }
+
+            /* Everything is ok */
+            return true;
+        } else {
+            return true;
+        }
+    }
+
+    @Override
     public List<ConfigRotatorChangeLogEntry> difference( GitConfigurationComponent component, GitConfigurationComponent other ) throws ConfigurationRotatorException {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }

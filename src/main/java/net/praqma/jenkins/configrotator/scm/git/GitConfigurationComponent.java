@@ -87,8 +87,26 @@ public class GitConfigurationComponent extends AbstractConfigurationComponent {
     }
 
     @Override
+    public boolean equals( Object other ) {
+        if( other == this ) {
+            return true;
+        }
+
+        if( other instanceof GitConfigurationComponent ) {
+            GitConfigurationComponent o = (GitConfigurationComponent) other;
+
+            logger.finest( "Other: " + o.commitId + " == " + commitId );
+
+            return ( o.commitId.equals( commitId ) && ( o.isFixed() == fixed ) );
+        } else {
+            return false;
+        }
+    }
+
+    @Override
     public String toString() {
-        return "GitComponent[" + name + ": " + repository + ", " + branch + ", " + commitId + "]";
+        //return "GitComponent[" + name + ": " + repository + ", " + branch + ", " + commitId + "]";
+        return "GC[" + commitId + "]";
     }
 
     @Override
