@@ -280,8 +280,8 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
         }
 
         @Override
-        public AbstractConfigurationRotatorSCM newInstance( StaplerRequest req, JSONObject formData, AbstractConfigurationRotatorSCM i ) throws FormException {
-            Git instance = (Git)i;
+        public AbstractConfigurationRotatorSCM newInstance( StaplerRequest req, JSONObject formData, Git instance ) throws FormException {
+
             //Default to an empty configuration. When the plugin is first started this should be an empty list
             List<GitTarget> targets = new ArrayList<GitTarget>();
 

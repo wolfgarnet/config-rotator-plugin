@@ -1,12 +1,18 @@
 package net.praqma.jenkins.configrotator.scm.dvcs;
 
 import hudson.AbortException;
+import hudson.Extension;
 import hudson.FilePath;
 import hudson.model.AbstractProject;
 import hudson.model.TaskListener;
+import hudson.util.FormValidation;
 import net.praqma.jenkins.configrotator.*;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import org.kohsuke.stapler.StaplerRequest;
 
+import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -167,6 +173,55 @@ public abstract class BaseDVCS<COMPONENT extends BaseDVCSConfigurationComponent,
             return getConfigurationAsTargets( (CONFIG) projectConfiguration );
         } else {
             return targets;
+        }
+    }
+
+
+
+
+    public abstract static class DVCSDescriptor<VCS extends BaseDVCS> extends ConfigurationRotatorSCMDescriptor<VCS> {
+
+        @Override
+        public String getFeedComponentName() {
+            return this.getClass().getSimpleName();
+        }
+
+        public FormValidation doTest(  ) throws IOException, ServletException {
+            return FormValidation.ok();
+        }
+
+        @Override
+        public AbstractConfigurationRotatorSCM newInstance( StaplerRequest req, JSONObject formData, VCS i ) throws FormException {
+            VCS instance = (VCS) i;
+            //Default to an empty configuration. When the plugin is first started this should be an empty list
+            List<BaseDVCSTarget> targets = new ArrayList<BaseDVCSTarget>();
+
+
+            try {
+                JSONArray obj = formData.getJSONObject( "acrs" ).getJSONArray( "targets" );
+                targets = req.bindJSONToList( BaseDVCSTarget.class, obj );
+            } catch (net.sf.json.JSONException jasonEx) {
+                //This happens if the targets is not an array!
+                JSONObject obj = formData.getJSONObject( "acrs" ).getJSONObject( "targets" );
+                if(obj != null) {
+                    BaseDVCSTarget target = req.bindJSON(BaseDVCSTarget.class, obj);
+                    if(target != null && target.getRepository() != null && !target.getRepository().equals("")) {
+                        targets.add(target);
+                    }
+                }
+            }
+            instance.targets = targets;
+
+            save();
+            return instance;
+        }
+
+        public List<BaseDVCSTarget> getTargets( VCS instance ) {
+            if( instance == null ) {
+                return new ArrayList<BaseDVCSTarget>();
+            } else {
+                return instance.getTargets();
+            }
         }
     }
 }

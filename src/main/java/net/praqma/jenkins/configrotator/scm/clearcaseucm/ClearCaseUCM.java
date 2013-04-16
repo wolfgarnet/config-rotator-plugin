@@ -417,8 +417,8 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
         }
 
         @Override
-        public AbstractConfigurationRotatorSCM newInstance( StaplerRequest req, JSONObject formData, AbstractConfigurationRotatorSCM i ) throws FormException {
-            ClearCaseUCM instance = (ClearCaseUCM) i;
+        public AbstractConfigurationRotatorSCM newInstance( StaplerRequest req, JSONObject formData, ClearCaseUCM instance ) throws FormException {
+
             //Default to an empty configuration. When the plugin is first started this should be an empty list
             List<ClearCaseUCMTarget> targets = new ArrayList<ClearCaseUCMTarget>();
 

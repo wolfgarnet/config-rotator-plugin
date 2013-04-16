@@ -1,5 +1,6 @@
 package net.praqma.jenkins.configrotator.scm.mercurial;
 
+import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
@@ -96,5 +97,14 @@ public class Mercurial extends BaseDVCS<MercurialConfigurationComponent, Mercuri
     @Override
     public MercurialTarget createTarget( String name, String repository, String branch, String commitId, boolean fixed ) {
         return new MercurialTarget( name, repository, branch, commitId, fixed );
+    }
+
+    @Extension
+    public static class MercurialDescriptor extends DVCSDescriptor<Mercurial> {
+
+        @Override
+        public String getDisplayName() {
+            return "Mercurial Repositories";
+        }
     }
 }

@@ -29,9 +29,9 @@
                     </tr>
                     <j:forEach var="version" items="${cs.versions}" varStatus="loop">
                         <tr>
-                            <td style="border-style:solid;border-width:1px;border-color:black;">${version.file}</td>
-                            <td style="border-style:solid;border-width:1px;border-color:black;">${version.name}</td>
-                            <td style="border-style:solid;border-width:1px;border-color:black;">${version.user}</td>
+                            <td style="border-style:solid;border-width:1px;border-color:black; padding-left: 5px; padding-right: 5px">${version.file}</td>
+                            <td style="border-style:solid;border-width:1px;border-color:black; padding-left: 5px; padding-right: 5px;">${version.name}</td>
+                            <td style="border-style:solid;border-width:1px;border-color:black; padding-left: 5px; padding-right: 5px;">${version.user}</td>
                         </tr>
                     </j:forEach>
                 </j:forEach>

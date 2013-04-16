@@ -8,7 +8,7 @@ import hudson.model.Descriptor;
 
 public abstract class ConfigurationRotatorSCMDescriptor<T extends AbstractConfigurationRotatorSCM> extends Descriptor<AbstractConfigurationRotatorSCM> {
 
-	public AbstractConfigurationRotatorSCM newInstance( StaplerRequest req, JSONObject formData, AbstractConfigurationRotatorSCM instance ) throws FormException {
+	public AbstractConfigurationRotatorSCM newInstance( StaplerRequest req, JSONObject formData, T instance ) throws FormException {
 		return super.newInstance( req, formData );
 	}
 
