@@ -15,6 +15,7 @@ import org.kohsuke.stapler.StaplerRequest;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -179,7 +180,7 @@ public abstract class BaseDVCS<COMPONENT extends BaseDVCSConfigurationComponent,
 
 
 
-    public abstract static class DVCSDescriptor<VCS extends BaseDVCS> extends ConfigurationRotatorSCMDescriptor<VCS> {
+    public abstract static class DVCSDescriptor<TARGET extends BaseDVCSTarget, VCS extends BaseDVCS> extends ConfigurationRotatorSCMDescriptor<VCS> {
 
         @Override
         public String getFeedComponentName() {
@@ -190,23 +191,25 @@ public abstract class BaseDVCS<COMPONENT extends BaseDVCSConfigurationComponent,
             return FormValidation.ok();
         }
 
+        public abstract Class<TARGET> getTargetClass();
+
         @Override
         public AbstractConfigurationRotatorSCM newInstance( StaplerRequest req, JSONObject formData, VCS i ) throws FormException {
             VCS instance = (VCS) i;
             //Default to an empty configuration. When the plugin is first started this should be an empty list
-            List<BaseDVCSTarget> targets = new ArrayList<BaseDVCSTarget>();
+            List<TARGET> targets = new ArrayList<TARGET>();
 
 
             try {
                 JSONArray obj = formData.getJSONObject( "acrs" ).getJSONArray( "targets" );
-                targets = req.bindJSONToList( BaseDVCSTarget.class, obj );
+                targets = req.bindJSONToList( getTargetClass(), obj );
             } catch (net.sf.json.JSONException jasonEx) {
                 //This happens if the targets is not an array!
                 JSONObject obj = formData.getJSONObject( "acrs" ).getJSONObject( "targets" );
                 if(obj != null) {
-                    BaseDVCSTarget target = req.bindJSON(BaseDVCSTarget.class, obj);
+                    TARGET target = req.bindJSON( getTargetClass(), obj );
                     if(target != null && target.getRepository() != null && !target.getRepository().equals("")) {
-                        targets.add(target);
+                        targets.add( target );
                     }
                 }
             }

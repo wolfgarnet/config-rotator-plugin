@@ -12,6 +12,7 @@ import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
 import net.praqma.jenkins.configrotator.scm.dvcs.BaseDVCS;
 import net.praqma.jenkins.configrotator.scm.dvcs.BaseDVCSCommit;
 import net.praqma.jenkins.configrotator.scm.dvcs.NextCommitResolver;
+import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +26,10 @@ import java.util.logging.Logger;
 public class Mercurial extends BaseDVCS<MercurialConfigurationComponent, MercurialTarget, MercurialConfiguration> {
 
     private static Logger logger = Logger.getLogger( Mercurial.class.getName() );
+
+    @DataBoundConstructor
+    public Mercurial() {
+    }
 
     @Override
     public String getName() {
@@ -85,12 +90,8 @@ public class Mercurial extends BaseDVCS<MercurialConfigurationComponent, Mercuri
     }
 
     @Override
-    public List<MercurialTarget> getTargets() {
-        return null;
-    }
-
-    @Override
     public ChangeLogWriter getChangeLogWriter( File changeLogFile, BuildListener listener, AbstractBuild<?, ?> build ) {
+        /* TODO implement */
         return null;
     }
 
@@ -100,11 +101,16 @@ public class Mercurial extends BaseDVCS<MercurialConfigurationComponent, Mercuri
     }
 
     @Extension
-    public static class MercurialDescriptor extends DVCSDescriptor<Mercurial> {
+    public static class MercurialDescriptor extends DVCSDescriptor<MercurialTarget, Mercurial> {
 
         @Override
         public String getDisplayName() {
             return "Mercurial Repositories";
+        }
+
+        @Override
+        public Class<MercurialTarget> getTargetClass() {
+            return MercurialTarget.class;
         }
     }
 }

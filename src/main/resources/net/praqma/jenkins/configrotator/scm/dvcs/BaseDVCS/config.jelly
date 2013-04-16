@@ -9,23 +9,23 @@
                     <tr>
                         <td align="left" style="width:10%" class="components">
                             ${%Name}
-                            <f:textbox name="git.target.name" value="${targets.name}"/>
+                            <f:textbox name="target.name" value="${targets.name}"/>
                         </td>
                         <td align="left" style="width:40%">
                             ${%Repository}
-                            <f:textbox name="git.target.repository" value="${targets.repository}"/>
+                            <f:textbox name="target.repository" value="${targets.repository}"/>
                         </td>
                         <td align="left" style="width:10%">
                             ${%Branch}
-                            <f:textbox name="git.target.branch" value="${targets.branch}"/>
+                            <f:textbox name="target.branch" value="${targets.branch}"/>
                         </td>
                         <td align="left" style="width:35%">
                             ${%Commit}
-                            <f:textbox name="git.target.commitId" value="${targets.commitId}"/>
+                            <f:textbox name="target.commitId" value="${targets.commitId}"/>
                         </td>
                         <td align="left">
                             ${%Fixed}
-                            <f:checkbox name="git.target.fixed" checked="${targets.fixed}"/>
+                            <f:checkbox name="target.fixed" checked="${targets.fixed}"/>
                         </td>
                         <td>
                             <f:repeatableDeleteButton/>
