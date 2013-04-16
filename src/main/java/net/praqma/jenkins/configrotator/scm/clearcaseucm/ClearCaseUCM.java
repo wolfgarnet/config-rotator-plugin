@@ -131,7 +131,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
         @Override
         public ClearCaseUCMConfiguration getNextConfiguration( ConfigurationRotatorBuildAction action ) throws ConfigurationRotatorException {
             ClearCaseUCMConfiguration oldconfiguration = action.getConfiguration();
-            return (ClearCaseUCMConfiguration) nextConfiguration( listener, oldconfiguration, workspace );
+            return new NextClearCaseUCMConfigurationResolver().resolve( listener, oldconfiguration, workspace );
         }
 
         @Override
@@ -241,54 +241,61 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
 
 
     @Override
-    public AbstractConfiguration nextConfiguration( TaskListener listener, AbstractConfiguration configuration, FilePath workspace ) throws ConfigurationRotatorException {
+    public NextConfigurationResolver getNextConfigurationResolver() {
+        return null;
+    }
 
-        Baseline oldest = null, current;
-        ClearCaseUCMConfigurationComponent chosen = null;
+    public class NextClearCaseUCMConfigurationResolver implements NextConfigurationResolver<ClearCaseUCMConfigurationComponent, ClearCaseUCMTarget, ClearCaseUCMConfiguration> {
 
-        ClearCaseUCMConfiguration nconfig = (ClearCaseUCMConfiguration) configuration.clone();
+        @Override
+        public ClearCaseUCMConfiguration resolve( TaskListener listener, ClearCaseUCMConfiguration configuration, FilePath workspace ) throws ConfigurationRotatorException {
+            Baseline oldest = null, current;
+            ClearCaseUCMConfigurationComponent chosen = null;
 
-        logger.fine( "Foreach configuration component" );
-        for( ClearCaseUCMConfigurationComponent config : nconfig.getList() ) {
-            logger.fine( ConfigurationRotator.LOGGERNAME + " * " + config );
-            /* This configuration is not fixed */
-            if( !config.isFixed() ) {
-                logger.fine( ConfigurationRotator.LOGGERNAME + "Wasn't fixed: " + config.getBaseline().getNormalizedName() );
+            ClearCaseUCMConfiguration nconfig = (ClearCaseUCMConfiguration) configuration.clone();
 
-                try {
-                    //current = workspace.act( new GetBaselines( listener, config.getBaseline().getComponent(), config.getBaseline().getStream(), config.getPlevel(), 1, config.getBaseline() ) ).get( 0 ); //.get(0) newest baseline, they are sorted!
-                    current = workspace.act( new NextBaseline( config.getBaseline().getStream(), config.getBaseline().getComponent(), config.getPlevel(), config.getBaseline() ) );
-                    if( oldest == null || current.getDate().before( oldest.getDate() ) ) {
-                        logger.fine( ConfigurationRotator.LOGGERNAME + "Was older: " + current );
-                        oldest = current;
-                        chosen = config;
+            logger.fine( "Foreach configuration component" );
+            for( ClearCaseUCMConfigurationComponent config : nconfig.getList() ) {
+                logger.fine( ConfigurationRotator.LOGGERNAME + " * " + config );
+                /* This configuration is not fixed */
+                if( !config.isFixed() ) {
+                    logger.fine( ConfigurationRotator.LOGGERNAME + "Wasn't fixed: " + config.getBaseline().getNormalizedName() );
+
+                    try {
+                        //current = workspace.act( new GetBaselines( listener, config.getBaseline().getComponent(), config.getBaseline().getStream(), config.getPlevel(), 1, config.getBaseline() ) ).get( 0 ); //.get(0) newest baseline, they are sorted!
+                        current = workspace.act( new NextBaseline( config.getBaseline().getStream(), config.getBaseline().getComponent(), config.getPlevel(), config.getBaseline() ) );
+                        if( oldest == null || current.getDate().before( oldest.getDate() ) ) {
+                            logger.fine( ConfigurationRotator.LOGGERNAME + "Was older: " + current );
+                            oldest = current;
+                            chosen = config;
+                        }
+
+                        /* Reset */
+                        config.setChangedLast( false );
+
+                    } catch( Exception e ) {
+                        /* No baselines found .get(0) above throws exception if no new baselines*/
+                        logger.fine( ConfigurationRotator.LOGGERNAME + "No baselines found: " + e.getMessage() );
                     }
 
-                    /* Reset */
-                    config.setChangedLast( false );
-
-                } catch( Exception e ) {
-                    /* No baselines found .get(0) above throws exception if no new baselines*/
-                    logger.fine( ConfigurationRotator.LOGGERNAME + "No baselines found: " + e.getMessage() );
                 }
-
             }
-        }
 
-        /**/
-        logger.fine( ConfigurationRotator.LOGGERNAME + "chosen: " + chosen );
-        logger.fine( ConfigurationRotator.LOGGERNAME + "oldest: " + oldest );
-        if( chosen != null && oldest != null ) {
-            logger.fine( ConfigurationRotator.LOGGERNAME + "There was a new baseline: " + oldest );
-            listener.getLogger().println( ConfigurationRotator.LOGGERNAME + "There was a new baseline: " + oldest );
-            chosen.setBaseline( oldest );
-            chosen.setChangedLast( true );
-        } else {
-            listener.getLogger().println( ConfigurationRotator.LOGGERNAME + "No new baselines" );
-            return null;
-        }
+            /**/
+            logger.fine( ConfigurationRotator.LOGGERNAME + "chosen: " + chosen );
+            logger.fine( ConfigurationRotator.LOGGERNAME + "oldest: " + oldest );
+            if( chosen != null && oldest != null ) {
+                logger.fine( ConfigurationRotator.LOGGERNAME + "There was a new baseline: " + oldest );
+                listener.getLogger().println( ConfigurationRotator.LOGGERNAME + "There was a new baseline: " + oldest );
+                chosen.setBaseline( oldest );
+                chosen.setChangedLast( true );
+            } else {
+                listener.getLogger().println( ConfigurationRotator.LOGGERNAME + "No new baselines" );
+                return null;
+            }
 
-        return nconfig;
+            return nconfig;
+        }
     }
 
     public SnapshotView createView( TaskListener listener, AbstractBuild<?, ?> build, ClearCaseUCMConfiguration configuration, FilePath workspace, PVob pvob ) throws IOException, InterruptedException {
@@ -375,7 +382,7 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
         return new UCMChangeLogWriter( changeLogFile, listener, build );
     }
 
-    public class UCMChangeLogWriter extends ChangeLogWriter<ClearCaseUCMConfigurationComponent, ClearCaseUCMConfiguration> {
+    public class UCMChangeLogWriter extends ChangeLogWriter<ClearCaseUCMTarget, ClearCaseUCMConfigurationComponent, ClearCaseUCMConfiguration> {
 
         public UCMChangeLogWriter( File changeLogFile, BuildListener listener, AbstractBuild<?, ?> build ) {
             super( changeLogFile, listener, build );

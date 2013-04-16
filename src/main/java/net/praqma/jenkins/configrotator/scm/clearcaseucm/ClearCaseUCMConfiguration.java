@@ -21,7 +21,7 @@ import net.praqma.jenkins.configrotator.*;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorVersion;
 
-public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUCMConfigurationComponent> {
+public class ClearCaseUCMConfiguration extends AbstractConfiguration<ClearCaseUCMConfigurationComponent, ClearCaseUCMTarget> {
 
     private static Logger logger = Logger.getLogger( ClearCaseUCMConfiguration.class.getName() );
 

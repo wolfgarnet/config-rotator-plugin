@@ -138,9 +138,9 @@ public class ConfigurationRotator extends SCM {
             logger.fine( "Was reconfigured: " + reconfigure );
         }
 
-        AbstractConfigurationRotatorSCM.Performer<AbstractConfiguration<?>> performer = acrs.getPerform( build, launcher, workspace, listener );
+        AbstractConfigurationRotatorSCM.Performer<AbstractConfiguration<?, ?>> performer = acrs.getPerform( build, launcher, workspace, listener );
         ConfigurationRotatorBuildAction lastAction = acrs.getLastResult( build.getProject(), performer.getSCMClass() );
-        AbstractConfiguration<?> configuration = null;
+        AbstractConfiguration<?, ?> configuration = null;
 
         /* Regarding JENKINS-14746 */
         ensurePublisher( build );

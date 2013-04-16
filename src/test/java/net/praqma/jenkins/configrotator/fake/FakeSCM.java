@@ -24,7 +24,7 @@ public class FakeSCM extends AbstractConfigurationRotatorSCM {
     }
 
     @Override
-    public AbstractConfiguration nextConfiguration( TaskListener listener, AbstractConfiguration configuration, FilePath workspace ) throws ConfigurationRotatorException {
+    public NextConfigurationResolver getNextConfigurationResolver() {
         return null;
     }
 

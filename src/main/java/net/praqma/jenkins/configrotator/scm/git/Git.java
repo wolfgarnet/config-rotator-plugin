@@ -67,7 +67,7 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
         @Override
         public GitConfiguration getNextConfiguration( ConfigurationRotatorBuildAction action ) throws ConfigurationRotatorException {
             GitConfiguration oldconfiguration = action.getConfiguration();
-            return (GitConfiguration) nextConfiguration(listener, oldconfiguration, workspace );
+            return new NextGitConfigurationResolver().resolve( listener, oldconfiguration, workspace );
         }
 
         @Override
@@ -145,7 +145,7 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
         return new GitChangeLogWriter(changeLogFile, listener, build);
     }
 
-    public class GitChangeLogWriter extends ChangeLogWriter<GitConfigurationComponent, GitConfiguration> {
+    public class GitChangeLogWriter extends ChangeLogWriter<GitTarget, GitConfigurationComponent, GitConfiguration> {
 
         public GitChangeLogWriter( File changeLogFile, BuildListener listener, AbstractBuild<?, ?> build ) {
             super( changeLogFile, listener, build );
@@ -165,55 +165,61 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
     }
 
     @Override
-    public AbstractConfiguration nextConfiguration( TaskListener listener, AbstractConfiguration configuration, FilePath workspace ) throws ConfigurationRotatorException {
-        logger.fine( "Getting next Git configuration: " + configuration);
+    public NextConfigurationResolver getNextConfigurationResolver() {
+        return new NextGitConfigurationResolver();
+    }
 
-        RevCommit oldest = null;
-        GitConfigurationComponent chosen = null;
-        GitConfiguration nconfig = (GitConfiguration) configuration.clone();
+    public class NextGitConfigurationResolver implements NextConfigurationResolver<GitConfigurationComponent, GitTarget, GitConfiguration> {
+        public GitConfiguration resolve( TaskListener listener, GitConfiguration configuration, FilePath workspace ) throws ConfigurationRotatorException {
+            logger.fine( "Getting next Git configuration: " + configuration);
 
-        /* Find oldest commit, newer than current */
-        for( GitConfigurationComponent config : nconfig.getList() ) {
-            if( !config.isFixed() ) {
-                try {
-                    logger.fine("Config: " + config);
-                    RevCommit commit = workspace.act( new ResolveNextCommit( config.getName(), config.getCommitId() ) );
-                    if( commit != null ) {
-                        logger.fine( "Current commit: " + commit.getName() );
-                        logger.fine( "Current commit: " + commit.getCommitTime() );
-                        if( oldest != null ) {
-                            logger.fine( "Oldest  commit: " + oldest.getName() );
-                            logger.fine( "Oldest  commit: " + oldest.getCommitTime() );
+            RevCommit oldest = null;
+            GitConfigurationComponent chosen = null;
+            GitConfiguration nconfig = (GitConfiguration) configuration.clone();
+
+            /* Find oldest commit, newer than current */
+            for( GitConfigurationComponent config : nconfig.getList() ) {
+                if( !config.isFixed() ) {
+                    try {
+                        logger.fine("Config: " + config);
+                        RevCommit commit = workspace.act( new ResolveNextCommit( config.getName(), config.getCommitId() ) );
+                        if( commit != null ) {
+                            logger.fine( "Current commit: " + commit.getName() );
+                            logger.fine( "Current commit: " + commit.getCommitTime() );
+                            if( oldest != null ) {
+                                logger.fine( "Oldest  commit: " + oldest.getName() );
+                                logger.fine( "Oldest  commit: " + oldest.getCommitTime() );
+                            }
+                            if( oldest == null || commit.getCommitTime() < oldest.getCommitTime() ) {
+                                oldest = commit;
+                                chosen = config;
+                            }
+
+                            config.setChangedLast( false );
                         }
-                        if( oldest == null || commit.getCommitTime() < oldest.getCommitTime() ) {
-                            oldest = commit;
-                            chosen = config;
-                        }
 
-                        config.setChangedLast( false );
+                    } catch( Exception e ) {
+                        logger.log( Level.FINE, "No commit found", e );
                     }
 
-                } catch( Exception e ) {
-                    logger.log( Level.FINE, "No commit found", e );
                 }
-
             }
-        }
 
-        logger.fine( "Configuration component: " + chosen );
-        logger.fine( "Oldest valid commit: " + oldest );
-        if( chosen != null && oldest != null ) {
-            logger.fine( "There was a new commit: " + oldest );
-            listener.getLogger().println( ConfigurationRotator.LOGGERNAME + "Next commit: " + chosen );
-            chosen.setCommitId( oldest.getName() );
-            chosen.setChangedLast( true );
-        } else {
-            listener.getLogger().println( ConfigurationRotator.LOGGERNAME + "No new commits" );
-            logger.fine( "No new commits" );
-            return null;
-        }
+            logger.fine( "Configuration component: " + chosen );
+            logger.fine( "Oldest valid commit: " + oldest );
+            if( chosen != null && oldest != null ) {
+                logger.fine( "There was a new commit: " + oldest );
+                listener.getLogger().println( ConfigurationRotator.LOGGERNAME + "Next commit: " + chosen );
+                chosen.setCommitId( oldest.getName() );
+                chosen.setChangedLast( true );
+            } else {
+                listener.getLogger().println( ConfigurationRotator.LOGGERNAME + "No new commits" );
+                logger.fine( "No new commits" );
+                return null;
+            }
 
-        return nconfig;
+            return nconfig;
+        }
     }
 
 

@@ -6,6 +6,7 @@ import hudson.DescriptorExtensionList;
 import hudson.model.*;
 import net.praqma.jenkins.configrotator.scm.clearcaseucm.ClearCaseUCMFeedAction;
 import net.praqma.jenkins.configrotator.scm.git.GitFeedAction;
+import net.praqma.jenkins.configrotator.scm.mercurial.MercurialFeedAction;
 import net.praqma.util.xml.feed.AtomPublisher;
 import net.praqma.util.xml.feed.Feed;
 import net.praqma.util.xml.feed.FeedException;
@@ -50,8 +51,9 @@ public class ConfigurationRotatorReport extends Actionable implements Unprotecte
     @Override
     public synchronized List<Action> getActions() {
         /* TODO make this more generic */
-        List<Action> actions = new ArrayList<Action>();
+        List<Action> actions = new ArrayList<Action>( 3 );
         actions.add( new GitFeedAction() );
+        actions.add( new MercurialFeedAction() );
         actions.add( new ClearCaseUCMFeedAction() );
         return actions;
     }

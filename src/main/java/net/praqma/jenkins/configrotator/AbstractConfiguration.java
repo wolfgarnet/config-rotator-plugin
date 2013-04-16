@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractConfiguration<T extends AbstractConfigurationComponent> implements Serializable {
+public abstract class AbstractConfiguration<T extends AbstractConfigurationComponent, TARGET extends AbstractTarget> implements Serializable {
     public abstract List<ConfigRotatorChangeLogEntry> difference( T component, T other ) throws ConfigurationRotatorException;
 
     protected List<T> list = new ArrayList<T>();

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class GitConfiguration extends AbstractConfiguration<GitConfigurationComponent> {
+public class GitConfiguration extends AbstractConfiguration<GitConfigurationComponent, GitTarget> {
 
     private static Logger logger = Logger.getLogger( GitConfiguration.class.getName() );
 

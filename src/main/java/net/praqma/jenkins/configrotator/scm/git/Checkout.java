@@ -12,7 +12,7 @@ import java.io.IOException;
 /**
  * @author cwolfgang
  */
-public class Checkout implements FilePath.FileCallable< Boolean> {
+public class Checkout implements FilePath.FileCallable<Boolean> {
 
     private String commitId;
     private String name;

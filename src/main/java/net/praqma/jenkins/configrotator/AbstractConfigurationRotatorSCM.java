@@ -40,7 +40,8 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
         return projectConfiguration;
     }
 
-    public abstract AbstractConfiguration nextConfiguration( TaskListener listener, AbstractConfiguration configuration, FilePath workspace ) throws ConfigurationRotatorException;
+    //public abstract <COMPONENT extends AbstractConfigurationComponent, TARGET extends AbstractTarget, CONFIG extends AbstractConfiguration<COMPONENT, TARGET>> CONFIG nextConfiguration( TaskListener listener, CONFIG configuration, FilePath workspace ) throws ConfigurationRotatorException;
+    //public abstract AbstractConfiguration<? extends AbstractConfigurationComponent, ? extends AbstractTarget> nextConfiguration( TaskListener listener, AbstractConfiguration<? extends AbstractConfigurationComponent, ? extends AbstractTarget> configuration, FilePath workspace ) throws ConfigurationRotatorException;
 
     public abstract Poller getPoller( AbstractProject<?, ?> project, Launcher launcher, FilePath workspace, TaskListener listener );
 
@@ -71,7 +72,9 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
                 logger.fine( "Resolving next configuration based on " + configuration );
                 try {
                     AbstractConfiguration other;
-                    other = nextConfiguration( listener, configuration, workspace );
+                    NextConfigurationResolver nr = getNextConfigurationResolver();
+                    //other = nextConfiguration( listener, configuration, workspace );
+                    other = nr.resolve( listener, configuration, workspace );
                     if( other != null ) {
                         logger.fine( "Found changes" );
                         printConfiguration( out, other );
@@ -92,6 +95,12 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
                 return PollingResult.BUILD_NOW;
             }
         }
+    }
+
+    public abstract NextConfigurationResolver getNextConfigurationResolver();
+
+    public interface NextConfigurationResolver<COMPONENT extends AbstractConfigurationComponent, TARGET extends AbstractTarget, CONFIG extends AbstractConfiguration<COMPONENT, TARGET>> {
+        public abstract CONFIG resolve( TaskListener listener, CONFIG configuration, FilePath workspace ) throws ConfigurationRotatorException;
     }
 
     /**
@@ -138,6 +147,8 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
             build.addAction( action1 );
         }
     }
+
+    //public abstract <T extends AbstractTarget, CC extends AbstractConfigurationComponent, C extends AbstractConfiguration<CC, T>> C getNextConfiguration( TaskListener listener, C configuration, FilePath workspace );
 	
 	public abstract void setConfigurationByAction( AbstractProject<?, ?> project, ConfigurationRotatorBuildAction action ) throws IOException;
 
@@ -181,7 +192,7 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
 
     public abstract ChangeLogWriter getChangeLogWriter( File changeLogFile, BuildListener listener, AbstractBuild<?, ?> build );
 
-    public abstract class ChangeLogWriter<C extends AbstractConfigurationComponent, T extends AbstractConfiguration<C>> {
+    public abstract class ChangeLogWriter<TARGET extends AbstractTarget, COMPONENT extends AbstractConfigurationComponent, CONFIG extends AbstractConfiguration<COMPONENT, TARGET>> {
         protected File changeLogFile;
         protected BuildListener listener;
         protected AbstractBuild<?, ?> build;
@@ -192,9 +203,9 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
             this.build = build;
         }
 
-        public C getComponent( T configuration ) throws ConfigurationRotatorException {
+        public COMPONENT getComponent( CONFIG configuration ) throws ConfigurationRotatorException {
             if( configuration != null ) {
-                for( C acc : configuration.getList() ) {
+                for( COMPONENT acc : configuration.getList() ) {
                     if( acc.isChangedLast() ) {
                         return acc;
                     }
@@ -204,9 +215,9 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
             throw new ConfigurationRotatorException( "No such component, " + configuration );
         }
 
-        protected abstract List<ConfigRotatorChangeLogEntry> getChangeLogEntries( T configuration, C configurationComponent ) throws ConfigurationRotatorException;
+        protected abstract List<ConfigRotatorChangeLogEntry> getChangeLogEntries( CONFIG configuration, COMPONENT configurationComponent ) throws ConfigurationRotatorException;
 
-        public List<ConfigRotatorChangeLogEntry> getChangeLogEntries( T configuration ) throws ConfigurationRotatorException {
+        public List<ConfigRotatorChangeLogEntry> getChangeLogEntries( CONFIG configuration ) throws ConfigurationRotatorException {
             return getChangeLogEntries( configuration, getComponent( configuration ) );
         }
 

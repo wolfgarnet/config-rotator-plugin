@@ -56,7 +56,7 @@ public class ResolveChangeLog implements FilePath.FileCallable<ConfigRotatorChan
         List<DiffEntry> diffs = df.scan( parent.getTree(), commit.getTree() );
         ConfigRotatorChangeLogEntry entry = new ConfigRotatorChangeLogEntry( commit.getFullMessage(), commit.getAuthorIdent().getName(), new ArrayList<ConfigRotatorVersion>());
         for( DiffEntry diff : diffs ) {
-            entry.addVersion( new ConfigRotatorVersion( diff.getNewPath(), "", commit.getAuthorIdent().getName() ) );
+            entry.addVersion( new ConfigRotatorVersion( diff.getNewPath(), commitId, commit.getAuthorIdent().getName() ) );
         }
 
         logger.fine("ENTRY: " + entry);

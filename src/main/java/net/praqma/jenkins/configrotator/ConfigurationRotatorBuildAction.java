@@ -76,7 +76,7 @@ public class ConfigurationRotatorBuildAction implements Action {
 		return build;
 	}
 	
-	public <T extends AbstractConfiguration<? extends AbstractConfigurationComponent>> T getConfiguration() {
+	public <T extends AbstractConfiguration<? extends AbstractConfigurationComponent, ? extends AbstractTarget>> T getConfiguration() {
 		return (T)configuration;
 	}
 

@@ -4,8 +4,6 @@ import net.praqma.jenkins.configrotator.AbstractConfigurationComponent;
 
 /**
  * User: cwolfgang
- * Date: 02-11-12
- * Time: 12:53
  */
 public class FakeConfigurationComponent extends AbstractConfigurationComponent {
 
