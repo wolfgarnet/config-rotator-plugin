@@ -7,6 +7,7 @@ import net.praqma.jenkins.configrotator.AbstractTarget;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorException;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,11 +15,13 @@ import java.util.logging.Logger;
 /**
  * @author cwolfgang
  */
-public abstract class BaseDVCSConfiguration<T extends BaseDVCSConfigurationComponent> extends AbstractConfiguration<T> {
+public abstract class BaseDVCSConfiguration<T extends BaseDVCSConfigurationComponent, TARGET extends BaseDVCSTarget> extends AbstractConfiguration<T, TARGET> {
 
     private static Logger logger = Logger.getLogger( BaseDVCSConfiguration.class.getName() );
 
-    public BaseDVCSConfiguration( List<BaseDVCSTarget> targets, FilePath workspace, TaskListener listener ) throws ConfigurationRotatorException {
+    public BaseDVCSConfiguration() {}
+
+    public BaseDVCSConfiguration( List<TARGET> targets, FilePath workspace, TaskListener listener ) throws ConfigurationRotatorException {
         for( AbstractTarget t : targets ) {
             BaseDVCSTarget target = (BaseDVCSTarget)t;
 
@@ -38,6 +41,8 @@ public abstract class BaseDVCSConfiguration<T extends BaseDVCSConfigurationCompo
 
     public abstract FilePath.FileCallable<T> getConfigurationComponentResolver( TaskListener listener, String name, String repository, String branch, String commitId, boolean fixed );
 
+    public abstract void checkout( FilePath workspace, TaskListener listener ) throws IOException, InterruptedException;
+
     @Override
     public List<ConfigRotatorChangeLogEntry> difference( T component, T other ) throws ConfigurationRotatorException {
         return null;
@@ -56,7 +61,7 @@ public abstract class BaseDVCSConfiguration<T extends BaseDVCSConfigurationCompo
         }
 
         if( this.getClass().isInstance( other ) ) {
-            BaseDVCSConfiguration<T> o = (BaseDVCSConfiguration<T>) other;
+            BaseDVCSConfiguration<T, TARGET> o = (BaseDVCSConfiguration<T, TARGET>) other;
             /* Check size */
             if( o.getList().size() != list.size() ) {
                 return false;

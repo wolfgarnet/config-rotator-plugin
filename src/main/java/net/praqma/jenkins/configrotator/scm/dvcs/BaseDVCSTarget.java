@@ -5,7 +5,7 @@ import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.io.Serializable;
 
-public class BaseDVCSTarget extends AbstractTarget implements Serializable {
+public abstract class BaseDVCSTarget extends AbstractTarget implements Serializable {
 
     private String name;
 	private String repository;
