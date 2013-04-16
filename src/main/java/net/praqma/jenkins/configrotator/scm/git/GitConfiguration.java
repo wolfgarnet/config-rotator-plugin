@@ -69,7 +69,7 @@ public class GitConfiguration extends AbstractConfiguration<GitConfigurationComp
 
     @Override
     public List<ConfigRotatorChangeLogEntry> difference( GitConfigurationComponent component, GitConfigurationComponent other ) throws ConfigurationRotatorException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null; /* Not used by DVCS's */
     }
 
     @Override
