@@ -1,0 +1,5 @@
+<j:jelly xmlns:j="jelly:core"
+         xmlns:f="/lib/form">
+
+    <j:include file="../../dvcs/BaseDVCS/config.jelly" />
+</j:jelly>
