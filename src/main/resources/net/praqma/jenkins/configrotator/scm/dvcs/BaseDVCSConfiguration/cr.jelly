@@ -6,7 +6,7 @@
             <td style="font-weight:bold">Repository</td>
             <td style="font-weight:bold">Branch</td>
             <td style="font-weight:bold">Commit</td>
-            <td style="font-weight:bold">Fixed</td>
+            <td style="font-weight:bold"></td>
         </tr>
         <j:forEach var="component" items="${it.getList()}">
 
@@ -17,10 +17,17 @@
                 <j:set var="highlight" value="font-weight:bold;border-bottom-style:solid;background-color:#FF6633"/>
             </j:if>
             <tr>
-                <td style="padding-right:10px;${highlight};">${component.getRepository()}</td>
-                <td style="padding-right:10px;${highlight};">${component.getBranch()}</td>
-                <td style="padding-right:10px;${highlight};">${component.getCommitId()}</td>
-                <td style="${highlight};">${component.isFixed()}</td>
+                <td style="padding-right:10px;${highlight}">${component.getRepository()}</td>
+                <td style="padding-right:10px;${highlight}">${component.getBranch()}</td>
+                <td style="padding-right:10px;${highlight}" align="center">${component.getCommitId()}</td>
+                <j:choose>
+                    <j:when test="${component.isFixed()}">
+                        <td style="${highlight}">Fixed</td>
+                    </j:when>
+                    <j:otherwise>
+                        <td style="${highlight}">Not fixed</td>
+                    </j:otherwise>
+                </j:choose>
             </tr>
 
         </j:forEach>

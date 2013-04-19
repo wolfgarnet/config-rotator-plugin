@@ -28,7 +28,7 @@
                     <tr>
                         <td valign="top">
                         <j:set var="class" value="${action.getConfiguration().getClass()}" />
-                        <st:include it="${action.getConfiguration()}" page="/${action.getConfiguration().getView(class)}" />
+                        <st:include it="${action.getConfiguration()}" page="${action.getConfiguration().getViewPage(class, 'cr.jelly')}" />
                         </td>
                     </tr>
                 </table>

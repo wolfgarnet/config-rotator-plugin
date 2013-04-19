@@ -37,8 +37,8 @@ public class Mercurial extends BaseDVCS<MercurialConfigurationComponent, Mercuri
     }
 
     @Override
-    public NextCommitResolver<MercurialCommit> getNextCommitResolver( String name, String commitId ) {
-        return new ResolveNextCommit( name, commitId );
+    public NextCommitResolver<MercurialCommit> getNextCommitResolver( String name, String branchName, String commitId ) {
+        return new ResolveNextCommit( name, branchName, commitId );
     }
 
     @Override

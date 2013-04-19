@@ -29,6 +29,8 @@ public abstract class BaseDVCSConfigurationComponent extends AbstractConfigurati
 
     public abstract void checkout( FilePath workspace, TaskListener listener ) throws IOException, InterruptedException;
 
+    public abstract String getType();
+
     public String getBranch() {
         return branch;
     }
@@ -57,6 +59,11 @@ public abstract class BaseDVCSConfigurationComponent extends AbstractConfigurati
     @Override
     public String prettyPrint() {
         return name + ": " + repository + ", " + branch + ", " + commitId;
+    }
+
+    @Override
+    public String toString() {
+        return getType() + "[" + name + ": " + repository + ", " + branch + ", " + commitId + "]";
     }
 
     @Override

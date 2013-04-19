@@ -39,6 +39,7 @@ public abstract class BaseConfigurationComponentResolver<T extends BaseDVCSConfi
     public abstract void ensureBranch( String branchName );
     public abstract void pull();
     public abstract T getConfigurationComponent();
+    public abstract String getDefaultBranchName();
 
     @Override
     public T invoke( File workspace, VirtualChannel channel ) throws IOException, InterruptedException {
@@ -53,7 +54,7 @@ public abstract class BaseConfigurationComponentResolver<T extends BaseDVCSConfi
 
         /* Fixing branch */
         if( branch == null || branch.equals( "" ) ) {
-            branch = "master";
+            branch = getDefaultBranchName();
         }
 
         File local = new File( workspace, name );

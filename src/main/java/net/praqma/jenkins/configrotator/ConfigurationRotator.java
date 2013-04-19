@@ -159,7 +159,7 @@ public class ConfigurationRotator extends SCM {
             acrs.printConfiguration( out, configuration );
 
             if( configuration != null ) {
-                out.println( LOGGERNAME + "Checking configuration(" + configuration.getClass() + ") " + configuration );
+                out.println( LOGGERNAME + "Checking configuration" );
                 performer.checkConfiguration( configuration );
 
                 out.println( LOGGERNAME + "Creating workspace" );

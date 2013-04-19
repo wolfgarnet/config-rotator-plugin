@@ -5,9 +5,14 @@ import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.logging.Logger;
 
 public abstract class AbstractConfiguration<T extends AbstractConfigurationComponent, TARGET extends AbstractTarget> implements Serializable {
+
+    private static Logger logger = Logger.getLogger( AbstractConfiguration.class.getName() );
+
     public abstract List<ConfigRotatorChangeLogEntry> difference( T component, T other ) throws ConfigurationRotatorException;
 
     protected List<T> list = new ArrayList<T>();
@@ -17,6 +22,21 @@ public abstract class AbstractConfiguration<T extends AbstractConfigurationCompo
 
     public String getView( Class<?> clazz ) {
         return clazz.getName().replace( '.', '/' ).replace( '$', '/' ) + "/" + "cr.jelly";
+    }
+
+    public String getViewPage( Class<?> clazz, String pageName ) {
+        String origin = clazz.getName();
+
+        while( clazz != Object.class && clazz != null ) {
+            String name = clazz.getName().replace( '.', '/' ).replace( '$', '/' ) + "/" + pageName;
+
+            if( clazz.getClassLoader().getResource( name ) != null ) {
+                return '/' + name;
+            }
+            clazz = clazz.getSuperclass();
+        }
+
+        throw new IllegalStateException( origin + " does not have " + pageName );
     }
 
     public AbstractConfigurationComponent getChangedComponent() {

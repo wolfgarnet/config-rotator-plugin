@@ -26,7 +26,7 @@ public abstract class BaseDVCSConfiguration<T extends BaseDVCSConfigurationCompo
             BaseDVCSTarget target = (BaseDVCSTarget)t;
 
             logger.fine("Getting component for " + target);
-            T c = null;
+            T c;
             try {
                 c = workspace.act( getConfigurationComponentResolver( listener, target.getName(), target.getRepository(), target.getBranch(), target.getCommitId(), target.getFixed() ) );
             } catch( Exception e ) {

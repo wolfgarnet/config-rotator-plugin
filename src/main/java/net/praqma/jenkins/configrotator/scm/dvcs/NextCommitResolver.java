@@ -12,17 +12,20 @@ import java.io.IOException;
 public abstract class NextCommitResolver<T extends BaseDVCSCommit> implements FilePath.FileCallable<T> {
 
     protected String name;
-    protected String commitId;
+    protected String commitOrigin;
+    protected String branchName;
 
-    public NextCommitResolver( String name, String commitId ) {
+    public NextCommitResolver( String name, String branchName, String commitOrigin ) {
         this.name = name;
-        this.commitId = commitId;
+        this.commitOrigin = commitOrigin;
+        this.branchName = branchName;
     }
 
     @Override
     public T invoke( File f, VirtualChannel channel ) throws IOException, InterruptedException {
-        return resolve();
+        File workspace = new File( f, name );
+        return resolve( workspace );
     }
 
-    public abstract T resolve();
+    public abstract T resolve( File workspace );
 }

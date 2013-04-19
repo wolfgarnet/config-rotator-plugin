@@ -22,12 +22,14 @@ public class MercurialConfiguration extends BaseDVCSConfiguration<MercurialConfi
 
     @Override
     public FilePath.FileCallable<MercurialConfigurationComponent> getConfigurationComponentResolver( TaskListener listener, String name, String repository, String branch, String commitId, boolean fixed ) {
-        return null;
+        return new ResolveConfigurationComponent( listener, name, repository, branch, commitId, fixed );
     }
 
     @Override
     public void checkout( FilePath workspace, TaskListener listener ) throws IOException, InterruptedException {
-        /* TODO implement */
+        for( MercurialConfigurationComponent c : getList() ) {
+            c.checkout( workspace, listener );
+        }
     }
 
     @Override

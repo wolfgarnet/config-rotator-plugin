@@ -102,7 +102,7 @@ public abstract class BaseDVCS<COMPONENT extends BaseDVCSConfigurationComponent,
                 if( !config.isFixed() ) {
                     try {
                         logger.fine("Config: " + config);
-                        BaseDVCSCommit commit = workspace.act( getNextCommitResolver( config.getName(), config.getCommitId() ) );
+                        BaseDVCSCommit commit = workspace.act( getNextCommitResolver( config.getName(), config.getBranch(), config.getCommitId() ) );
                         if( commit != null ) {
                             logger.fine( "Current commit: " + commit.getName() );
                             logger.fine( "Current commit: " + commit.getCommitTime() );
@@ -129,11 +129,11 @@ public abstract class BaseDVCS<COMPONENT extends BaseDVCSConfigurationComponent,
             logger.fine( "Oldest valid commit: " + oldest );
             if( chosen != null && oldest != null ) {
                 logger.fine( "There was a new commit: " + oldest );
-                listener.getLogger().println( ConfigurationRotator.LOGGERNAME + "Next commit: " + chosen );
+                listener.getLogger().println( ConfigurationRotator.LOGGERNAME + "Component to rotate: " + chosen );
                 chosen.setCommitId( oldest.getName() );
                 chosen.setChangedLast( true );
             } else {
-                listener.getLogger().println( ConfigurationRotator.LOGGERNAME + "No new commits" );
+                listener.getLogger().println( ConfigurationRotator.LOGGERNAME + "No new commits to rotate" );
                 logger.fine( "No new commits" );
                 return null;
             }
@@ -142,7 +142,7 @@ public abstract class BaseDVCS<COMPONENT extends BaseDVCSConfigurationComponent,
         }
     }
 
-    public abstract <CT extends BaseDVCSCommit> NextCommitResolver<CT> getNextCommitResolver( String name, String commitId );
+    public abstract <CT extends BaseDVCSCommit> NextCommitResolver<CT> getNextCommitResolver( String name, String branchName, String commitId );
 
     public abstract TARGET createTarget( String name, String repository, String branch, String commitId, boolean fixed );
 
