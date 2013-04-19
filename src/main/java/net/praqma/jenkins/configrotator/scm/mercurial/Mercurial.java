@@ -10,6 +10,7 @@ import hudson.model.TaskListener;
 import net.praqma.jenkins.configrotator.*;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
 import net.praqma.jenkins.configrotator.scm.dvcs.BaseDVCS;
+import net.praqma.jenkins.configrotator.scm.dvcs.BaseDVCSChangeLogResolver;
 import net.praqma.jenkins.configrotator.scm.dvcs.BaseDVCSCommit;
 import net.praqma.jenkins.configrotator.scm.dvcs.NextCommitResolver;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -89,11 +90,12 @@ public class Mercurial extends BaseDVCS<MercurialConfigurationComponent, Mercuri
         this.targets = (List<MercurialTarget>) targets;
     }
 
+    /*
     @Override
     public ChangeLogWriter getChangeLogWriter( File changeLogFile, BuildListener listener, AbstractBuild<?, ?> build ) {
-        /* TODO implement */
         return null;
     }
+    */
 
     @Override
     public MercurialTarget createTarget( String name, String repository, String branch, String commitId, boolean fixed ) {
@@ -112,5 +114,10 @@ public class Mercurial extends BaseDVCS<MercurialConfigurationComponent, Mercuri
         public Class<MercurialTarget> getTargetClass() {
             return MercurialTarget.class;
         }
+    }
+
+    @Override
+    protected BaseDVCSChangeLogResolver getChangelogResolver( String name, String commitId, String branchName ) {
+        return new MercurialChangelogResolver( name, commitId, branchName );
     }
 }

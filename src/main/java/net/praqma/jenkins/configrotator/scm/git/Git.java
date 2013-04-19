@@ -241,13 +241,6 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
         }
     }
 
-    /*
-    @Override
-    public void setTargets( List<AbstractTarget> targets ) {
-        this.targets = (List<GitTarget>) targets;
-    }
-    */
-
     @Override
     public <TT extends AbstractTarget> void setTargets( List<TT> targets ) {
         this.targets = (List<GitTarget>) targets;

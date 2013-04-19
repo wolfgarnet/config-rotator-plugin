@@ -3,16 +3,20 @@ package net.praqma.jenkins.configrotator.scm.dvcs;
 import hudson.AbortException;
 import hudson.Extension;
 import hudson.FilePath;
+import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
+import hudson.model.BuildListener;
 import hudson.model.TaskListener;
 import hudson.util.FormValidation;
 import net.praqma.jenkins.configrotator.*;
+import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.StaplerRequest;
 
 import javax.servlet.ServletException;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -227,4 +231,30 @@ public abstract class BaseDVCS<COMPONENT extends BaseDVCSConfigurationComponent,
             }
         }
     }
+
+    @Override
+    public ChangeLogWriter getChangeLogWriter( File changeLogFile, BuildListener listener, AbstractBuild<?, ?> build ) {
+        return new DVCSChangeLogWriter( changeLogFile, listener, build );
+    }
+
+    public class DVCSChangeLogWriter extends ChangeLogWriter<TARGET, COMPONENT, CONFIG> {
+
+        public DVCSChangeLogWriter( File changeLogFile, BuildListener listener, AbstractBuild<?, ?> build ) {
+            super( changeLogFile, listener, build );
+        }
+
+        @Override
+        protected List<ConfigRotatorChangeLogEntry> getChangeLogEntries( CONFIG configuration, COMPONENT configurationComponent ) throws ConfigurationRotatorException {
+            logger.fine( "Change log entry, " + configurationComponent );
+            try {
+                ConfigRotatorChangeLogEntry entry = build.getWorkspace().act( getChangelogResolver( configurationComponent.getName(), configurationComponent.getCommitId(), configurationComponent.getBranch() ) );
+                logger.fine("ENTRY: " + entry);
+                return Collections.singletonList( entry );
+            } catch( Exception e ) {
+                throw new ConfigurationRotatorException( "Unable to resolve changelog " + configurationComponent.getCommitId(), e );
+            }
+        }
+    }
+
+    protected abstract BaseDVCSChangeLogResolver getChangelogResolver( String name, String commitId, String branchName );
 }
