@@ -188,7 +188,7 @@ public abstract class BaseDVCS<COMPONENT extends BaseDVCSConfigurationComponent,
 
         @Override
         public String getFeedComponentName() {
-            return this.getClass().getSimpleName();
+            return this.getClass().getEnclosingClass().getSimpleName();
         }
 
         public FormValidation doTest(  ) throws IOException, ServletException {
