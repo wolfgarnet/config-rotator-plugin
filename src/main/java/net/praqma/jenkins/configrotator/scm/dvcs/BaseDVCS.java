@@ -92,31 +92,35 @@ public abstract class BaseDVCS<COMPONENT extends BaseDVCSConfigurationComponent,
 
     public class NextDVCSConfigurationResolver implements NextConfigurationResolver<COMPONENT, TARGET, CONFIG> {
 
+        public BaseDVCSCommit getCommit( FilePath workspace, String name, String branchName, String commitId ) throws IOException, InterruptedException {
+            return workspace.act( getNextCommitResolver( name, branchName, commitId ) );
+        }
+
         @Override
         public CONFIG resolve( TaskListener listener, CONFIG configuration, FilePath workspace ) throws ConfigurationRotatorException {
             logger.fine( "Getting next configuration: " + configuration );
 
-            BaseDVCSCommit oldest = null;
-            COMPONENT chosen = null;
+            BaseDVCSCommit oldestCommit = null;
+            COMPONENT chosenComponent = null;
             CONFIG nconfig = configuration.clone();
 
             /* Find oldest commit, newer than current */
-            for( COMPONENT config : nconfig.getList() ) {
-                if( !config.isFixed() ) {
+            for( COMPONENT currentComponent : nconfig.getList() ) {
+                if( !currentComponent.isFixed() ) {
                     try {
-                        logger.fine( "Configuration: " + config );
-                        BaseDVCSCommit commit = workspace.act( getNextCommitResolver( config.getName(), config.getBranch(), config.getCommitId() ) );
-                        if( commit != null ) {
-                            logger.fine( "Current commit: " + commit.getName() + ", " + commit.getCommitTime() );
-                            if( oldest != null ) {
-                                logger.fine( "Oldest commit: " + oldest.getName() + ", " + oldest.getCommitTime() );
+                        logger.fine( "Configuration: " + currentComponent );
+                        BaseDVCSCommit nextCommit = getCommit( workspace, currentComponent.getName(), currentComponent.getBranch(), currentComponent.getCommitId() );
+                        if( nextCommit != null ) {
+                            logger.fine( "Current commit: " + nextCommit.getName() + ", " + nextCommit.getCommitTime() );
+                            if( oldestCommit != null ) {
+                                logger.fine( "Oldest commit: " + oldestCommit.getName() + ", " + oldestCommit.getCommitTime() );
                             }
-                            if( oldest == null || commit.getCommitTime() < oldest.getCommitTime() ) {
-                                oldest = commit;
-                                chosen = config;
+                            if( oldestCommit == null || nextCommit.getCommitTime() < oldestCommit.getCommitTime() ) {
+                                oldestCommit = nextCommit;
+                                chosenComponent = currentComponent;
                             }
 
-                            config.setChangedLast( false );
+                            currentComponent.setChangedLast( false );
                         }
 
                     } catch( Exception e ) {
@@ -126,13 +130,13 @@ public abstract class BaseDVCS<COMPONENT extends BaseDVCSConfigurationComponent,
                 }
             }
 
-            logger.fine( "Configuration component: " + chosen );
-            logger.fine( "Oldest valid commit: " + oldest );
-            if( chosen != null && oldest != null ) {
-                logger.fine( "There was a new commit: " + oldest );
-                listener.getLogger().println( ConfigurationRotator.LOGGERNAME + "Component to rotate: " + chosen );
-                chosen.setCommitId( oldest.getName() );
-                chosen.setChangedLast( true );
+            logger.fine( "Configuration component: " + chosenComponent );
+            logger.fine( "Oldest valid commit: " + oldestCommit );
+            if( chosenComponent != null && oldestCommit != null ) {
+                logger.fine( "There was a new commit: " + oldestCommit );
+                listener.getLogger().println( ConfigurationRotator.LOGGERNAME + "Component to rotate: " + chosenComponent );
+                chosenComponent.setCommitId( oldestCommit.getName() );
+                chosenComponent.setChangedLast( true );
             } else {
                 listener.getLogger().println( ConfigurationRotator.LOGGERNAME + "No new commits to rotate" );
                 logger.fine( "No new commits" );

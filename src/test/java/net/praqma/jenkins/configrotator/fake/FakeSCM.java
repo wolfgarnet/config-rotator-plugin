@@ -73,11 +73,6 @@ public class FakeSCM extends AbstractConfigurationRotatorSCM {
         public void createWorkspace( FakeConfiguration configuration ) throws ConfigurationRotatorException {
             /* No op */
         }
-
-        @Override
-        public void print( FakeConfiguration configuration ) {
-            //To change body of implemented methods use File | Settings | File Templates.
-        }
     }
 
     /* Initial configuration */

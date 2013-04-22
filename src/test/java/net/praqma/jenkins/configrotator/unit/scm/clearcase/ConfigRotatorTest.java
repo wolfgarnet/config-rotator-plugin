@@ -35,10 +35,6 @@ import net.praqma.clearcase.ucm.entities.Project.PromotionLevel;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorException;
 import net.praqma.jenkins.configrotator.ConfigurationRotator.ResultType;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorBuildAction;
-import net.praqma.util.debug.Logger;
-import net.praqma.util.debug.Logger.LogLevel;
-import net.praqma.util.debug.appenders.Appender;
-import net.praqma.util.debug.appenders.ConsoleAppender;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -47,13 +43,7 @@ import org.junit.runner.RunWith;
 @RunWith( PowerMockRunner.class )
 @PrepareForTest( ClearCaseUCMConfiguration.class )
 public class ConfigRotatorTest extends TestCase {
-	
-	static {
-		Appender appender = new ConsoleAppender();
-		appender.setMinimumLevel( LogLevel.DEBUG );
-		Logger.addAppender( appender );
-	}
-	
+
 	/* Typical jenkins objects */
 	AbstractProject<?, ?> project;
 	AbstractBuild<?, ?> build;
