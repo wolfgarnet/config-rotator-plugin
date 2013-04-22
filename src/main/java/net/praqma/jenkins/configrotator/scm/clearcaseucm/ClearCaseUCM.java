@@ -154,11 +154,6 @@ public class ClearCaseUCM extends AbstractConfigurationRotatorSCM implements Ser
                 throw new ConfigurationRotatorException( "Unable to create view", e );
             }
         }
-
-        @Override
-        public void print( ClearCaseUCMConfiguration configuration ) {
-            printConfiguration( out, configuration );
-        }
     }
 
     /**

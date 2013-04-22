@@ -79,11 +79,6 @@ public class Git extends AbstractConfigurationRotatorSCM implements Serializable
         public void createWorkspace( GitConfiguration configuration ) throws IOException, InterruptedException {
             configuration.checkout( workspace, listener );
         }
-
-        @Override
-        public void print( GitConfiguration configuration ) {
-            /* TODO: implement */
-        }
     }
 
 

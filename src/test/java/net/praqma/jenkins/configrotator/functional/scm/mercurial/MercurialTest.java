@@ -28,4 +28,9 @@ public class MercurialTest extends BaseTest<Changeset, MercurialTarget> {
     public String getRevision( Changeset commit ) {
         return String.valueOf( commit.getRevision() );
     }
+
+    @Override
+    public String getDefaultBranchName() {
+        return "default";
+    }
 }

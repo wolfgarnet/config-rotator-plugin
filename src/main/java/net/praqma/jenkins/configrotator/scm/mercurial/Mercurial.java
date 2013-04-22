@@ -78,24 +78,12 @@ public class Mercurial extends BaseDVCS<MercurialConfigurationComponent, Mercuri
         public void createWorkspace( MercurialConfiguration configuration ) throws ConfigurationRotatorException, IOException, InterruptedException {
             configuration.checkout( workspace, listener );
         }
-
-        @Override
-        public void print( MercurialConfiguration configuration ) {
-            /* TODO: implement */
-        }
     }
 
     @Override
     public <TT extends AbstractTarget> void setTargets( List<TT> targets ) {
         this.targets = (List<MercurialTarget>) targets;
     }
-
-    /*
-    @Override
-    public ChangeLogWriter getChangeLogWriter( File changeLogFile, BuildListener listener, AbstractBuild<?, ?> build ) {
-        return null;
-    }
-    */
 
     @Override
     public MercurialTarget createTarget( String name, String repository, String branch, String commitId, boolean fixed ) {

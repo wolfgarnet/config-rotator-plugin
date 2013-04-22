@@ -32,7 +32,7 @@ public abstract class BaseTest<T extends Object, TARGET extends BaseDVCSTarget> 
     public static ConfigRotatorRule2 crRule = new ConfigRotatorRule2( BaseTest.class );
 
     @ClassRule
-    public static LoggingRule lrule = new LoggingRule( Level.ALL, "net.praqma" ).setFormat( PraqmaticLogFormatter.NORMAL_FORMAT );
+    public static LoggingRule lrule = new LoggingRule( Level.ALL, "net.praqma" ).setFormat( PraqmaticLogFormatter.TINY_FORMAT );
 
     protected DVCSRule<T> drule;
 

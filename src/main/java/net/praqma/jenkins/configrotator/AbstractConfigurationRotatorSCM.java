@@ -139,8 +139,6 @@ public abstract class AbstractConfigurationRotatorSCM implements Describable<Abs
                 return AbstractConfigurationRotatorSCM.this.getClass();
         }
 
-        public abstract void print( C configuration );
-
         public void save( C configuration ) {
             projectConfiguration = (AbstractConfiguration) configuration;
             final ConfigurationRotatorBuildAction action1 = new ConfigurationRotatorBuildAction( build, getSCMClass(), (AbstractConfiguration) configuration );
