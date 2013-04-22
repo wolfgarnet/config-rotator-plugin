@@ -1,7 +1,6 @@
 package net.praqma.jenkins.configrotator.scm.dvcs;
 
 import hudson.AbortException;
-import hudson.Extension;
 import hudson.FilePath;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
@@ -95,7 +94,7 @@ public abstract class BaseDVCS<COMPONENT extends BaseDVCSConfigurationComponent,
 
         @Override
         public CONFIG resolve( TaskListener listener, CONFIG configuration, FilePath workspace ) throws ConfigurationRotatorException {
-            logger.fine( "Getting next Git configuration: " + configuration);
+            logger.fine( "Getting next configuration: " + configuration );
 
             BaseDVCSCommit oldest = null;
             COMPONENT chosen = null;
@@ -105,14 +104,12 @@ public abstract class BaseDVCS<COMPONENT extends BaseDVCSConfigurationComponent,
             for( COMPONENT config : nconfig.getList() ) {
                 if( !config.isFixed() ) {
                     try {
-                        logger.fine("Config: " + config);
+                        logger.fine( "Configuration: " + config );
                         BaseDVCSCommit commit = workspace.act( getNextCommitResolver( config.getName(), config.getBranch(), config.getCommitId() ) );
                         if( commit != null ) {
-                            logger.fine( "Current commit: " + commit.getName() );
-                            logger.fine( "Current commit: " + commit.getCommitTime() );
+                            logger.fine( "Current commit: " + commit.getName() + ", " + commit.getCommitTime() );
                             if( oldest != null ) {
-                                logger.fine( "Oldest  commit: " + oldest.getName() );
-                                logger.fine( "Oldest  commit: " + oldest.getCommitTime() );
+                                logger.fine( "Oldest commit: " + oldest.getName() + ", " + oldest.getCommitTime() );
                             }
                             if( oldest == null || commit.getCommitTime() < oldest.getCommitTime() ) {
                                 oldest = commit;

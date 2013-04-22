@@ -11,7 +11,6 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 
 /**
@@ -24,7 +23,7 @@ public class MercurialChangelogResolver extends BaseDVCSChangeLogResolver {
     }
 
     @Override
-    protected ConfigRotatorChangeLogEntry getChangeLogEntry( File workspace) {
+    protected ConfigRotatorChangeLogEntry getChangeLogEntry( File workspace ) {
         Logger logger = Logger.getLogger( MercurialChangelogResolver.class.getName() );
 
         File local = new File( workspace, name );
@@ -40,7 +39,7 @@ public class MercurialChangelogResolver extends BaseDVCSChangeLogResolver {
             entry.addVersion( new ConfigRotatorVersion( file, commitId, user ) );
         }
 
-        logger.fine("ENTRY: " + entry);
+        logger.fine( "ENTRY: " + entry );
 
         return entry;
     }
