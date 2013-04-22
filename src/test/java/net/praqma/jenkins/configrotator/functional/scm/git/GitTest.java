@@ -57,7 +57,7 @@ public class GitTest {
         FilePath path = new FilePath( project.getJenkinsProject().getLastBuiltOn().getWorkspaceFor( (FreeStyleProject)project.getJenkinsProject() ), "test" );
         File filePath = new File( path.toURI() );
 
-        SystemValidator<ClearCaseUCMTarget> val = new SystemValidator<ClearCaseUCMTarget>( build );
+        SystemValidator<GitTarget> val = new SystemValidator<GitTarget>( build );
         val.checkExpectedResult( Result.SUCCESS ).
                 checkAction( true ).
                 checkCompatability( true ).
@@ -80,7 +80,7 @@ public class GitTest {
         FilePath path = new FilePath( project.getJenkinsProject().getLastBuiltOn().getWorkspaceFor( (FreeStyleProject)project.getJenkinsProject() ), "test" );
         File filePath = new File( path.toURI() );
 
-        SystemValidator<ClearCaseUCMTarget> val = new SystemValidator<ClearCaseUCMTarget>( build );
+        SystemValidator<GitTarget> val = new SystemValidator<GitTarget>( build );
         val.checkExpectedResult( Result.SUCCESS ).
                 checkAction( true ).
                 checkCompatability( true ).
@@ -111,7 +111,7 @@ public class GitTest {
         FilePath path = new FilePath( project.getJenkinsProject().getLastBuiltOn().getWorkspaceFor( (FreeStyleProject)project.getJenkinsProject() ), "test" );
         File filePath = new File( path.toURI() );
 
-        SystemValidator<ClearCaseUCMTarget> val2 = new SystemValidator<ClearCaseUCMTarget>( build2 );
+        SystemValidator<GitTarget> val2 = new SystemValidator<GitTarget>( build2 );
         val2.checkExpectedResult( Result.SUCCESS ).
                 checkAction( true ).
                 checkCompatability( true ).
