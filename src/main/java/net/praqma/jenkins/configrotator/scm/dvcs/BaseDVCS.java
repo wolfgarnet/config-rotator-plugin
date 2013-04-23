@@ -12,6 +12,7 @@ import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogEntry;
 import net.praqma.jenkins.configrotator.scm.ConfigRotatorChangeLogParser;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang.ObjectUtils;
 import org.kohsuke.stapler.StaplerRequest;
 
 import javax.servlet.ServletException;
@@ -103,6 +104,11 @@ public abstract class BaseDVCS<COMPONENT extends BaseDVCSConfigurationComponent,
             BaseDVCSCommit oldestCommit = null;
             COMPONENT chosenComponent = null;
             CONFIG nconfig = configuration.clone();
+
+            logger.info( "" + ObjectUtils.identityToString( configuration ) );
+            logger.info( "" + configuration );
+            logger.info( "" + ObjectUtils.identityToString( nconfig ) );
+            logger.info( "" + nconfig );
 
             /* Find oldest commit, newer than current */
             for( COMPONENT currentComponent : nconfig.getList() ) {

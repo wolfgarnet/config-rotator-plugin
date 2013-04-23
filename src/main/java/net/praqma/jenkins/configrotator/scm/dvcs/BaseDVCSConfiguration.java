@@ -22,10 +22,9 @@ public abstract class BaseDVCSConfiguration<T extends BaseDVCSConfigurationCompo
     public BaseDVCSConfiguration() {}
 
     public BaseDVCSConfiguration( List<TARGET> targets, FilePath workspace, TaskListener listener ) throws ConfigurationRotatorException {
-        for( AbstractTarget t : targets ) {
-            BaseDVCSTarget target = (BaseDVCSTarget)t;
+        for( TARGET target : targets ) {
 
-            logger.fine("Getting component for " + target);
+            logger.fine( "Getting component for " + target );
             T c;
             try {
                 c = workspace.act( getConfigurationComponentResolver( listener, target.getName(), target.getRepository(), target.getBranch(), target.getCommitId(), target.getFixed() ) );
@@ -34,7 +33,7 @@ public abstract class BaseDVCSConfiguration<T extends BaseDVCSConfigurationCompo
                 throw new ConfigurationRotatorException( "Unable to get component for " + target, e );
             }
 
-            logger.fine("Adding " + c);
+            logger.fine( "Adding " + c );
             list.add( c );
         }
     }
