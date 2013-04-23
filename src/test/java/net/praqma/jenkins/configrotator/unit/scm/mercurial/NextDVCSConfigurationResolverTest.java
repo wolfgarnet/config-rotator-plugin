@@ -1,27 +1,16 @@
 package net.praqma.jenkins.configrotator.unit.scm.mercurial;
 
 import hudson.FilePath;
-import hudson.model.TaskListener;
-import hudson.remoting.VirtualChannel;
-import net.praqma.jenkins.configrotator.AbstractConfigurationRotatorSCM;
 import net.praqma.jenkins.configrotator.ConfigurationRotatorException;
 import net.praqma.jenkins.configrotator.scm.dvcs.BaseDVCS;
 import net.praqma.jenkins.configrotator.scm.mercurial.*;
 import net.praqma.jenkins.configrotator.unit.scm.dvcs.BaseUnitTest;
-import net.praqma.logging.PraqmaticLogFormatter;
-import net.praqma.util.test.junit.LoggingRule;
-import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static org.hamcrest.core.Is.is;
@@ -33,9 +22,9 @@ import static org.junit.Assert.assertThat;
 /**
  * @author cwolfgang
  */
-public class MercurialUnitTests extends BaseUnitTest<MercurialCommit, MercurialConfigurationComponent, MercurialTarget, MercurialConfiguration> {
+public class NextDVCSConfigurationResolverTest extends BaseUnitTest<MercurialCommit, MercurialConfigurationComponent, MercurialTarget, MercurialConfiguration> {
 
-    private static Logger logger = Logger.getLogger( MercurialUnitTests.class.getName() );
+    private static Logger logger = Logger.getLogger( NextDVCSConfigurationResolverTest.class.getName() );
 
     @Test
     public void testNextDVCSConfigurationResolverOneNewCommit() throws ConfigurationRotatorException, IOException, InterruptedException {
