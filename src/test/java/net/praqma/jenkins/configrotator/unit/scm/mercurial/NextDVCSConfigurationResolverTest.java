@@ -27,7 +27,7 @@ public class NextDVCSConfigurationResolverTest extends BaseUnitTest<MercurialCom
     private static Logger logger = Logger.getLogger( NextDVCSConfigurationResolverTest.class.getName() );
 
     @Test
-    public void testNextDVCSConfigurationResolverOneNewCommit() throws ConfigurationRotatorException, IOException, InterruptedException {
+    public void oneNewCommit() throws ConfigurationRotatorException, IOException, InterruptedException {
         Mercurial hg = new Mercurial();
 
         BaseDVCS.NextDVCSConfigurationResolver next = (BaseDVCS.NextDVCSConfigurationResolver) hg.getNextConfigurationResolver();
@@ -50,7 +50,7 @@ public class NextDVCSConfigurationResolverTest extends BaseUnitTest<MercurialCom
     }
 
     @Test
-    public void testNextDVCSConfigurationResolverExceptionGetCommit() throws ConfigurationRotatorException, IOException, InterruptedException {
+    public void exceptionGetCommit() throws ConfigurationRotatorException, IOException, InterruptedException {
         Mercurial hg = new Mercurial();
 
         BaseDVCS.NextDVCSConfigurationResolver next = (BaseDVCS.NextDVCSConfigurationResolver) hg.getNextConfigurationResolver();
@@ -68,7 +68,7 @@ public class NextDVCSConfigurationResolverTest extends BaseUnitTest<MercurialCom
     }
 
     @Test
-    public void testNextDVCSConfigurationResolverOneNewCommitTwoComponents() throws ConfigurationRotatorException, IOException, InterruptedException {
+    public void oneNewCommitTwoComponents() throws ConfigurationRotatorException, IOException, InterruptedException {
         Mercurial hg = new Mercurial();
 
         BaseDVCS.NextDVCSConfigurationResolver next = (BaseDVCS.NextDVCSConfigurationResolver) hg.getNextConfigurationResolver();
@@ -94,7 +94,7 @@ public class NextDVCSConfigurationResolverTest extends BaseUnitTest<MercurialCom
     }
 
     @Test
-    public void testNextDVCSConfigurationResolverTwoNewCommitsTwoComponents() throws ConfigurationRotatorException, IOException, InterruptedException {
+    public void twoNewCommitsTwoComponents() throws ConfigurationRotatorException, IOException, InterruptedException {
         Mercurial hg = new Mercurial();
 
         BaseDVCS.NextDVCSConfigurationResolver next = (BaseDVCS.NextDVCSConfigurationResolver) hg.getNextConfigurationResolver();
@@ -122,7 +122,7 @@ public class NextDVCSConfigurationResolverTest extends BaseUnitTest<MercurialCom
     }
 
     @Test
-    public void testNextDVCSConfigurationResolverTwoNewCommitsTwoComponentsNewer() throws ConfigurationRotatorException, IOException, InterruptedException {
+    public void twoNewCommitsTwoComponentsNewer() throws ConfigurationRotatorException, IOException, InterruptedException {
         Mercurial hg = new Mercurial();
 
         BaseDVCS.NextDVCSConfigurationResolver next = (BaseDVCS.NextDVCSConfigurationResolver) hg.getNextConfigurationResolver();
@@ -150,7 +150,7 @@ public class NextDVCSConfigurationResolverTest extends BaseUnitTest<MercurialCom
     }
 
     @Test
-    public void testNextDVCSConfigurationResolverTwoNewCommitsTwoComponentsOneFixed() throws ConfigurationRotatorException, IOException, InterruptedException {
+    public void twoNewCommitsTwoComponentsOneFixed() throws ConfigurationRotatorException, IOException, InterruptedException {
         Mercurial hg = new Mercurial();
 
         BaseDVCS.NextDVCSConfigurationResolver next = (BaseDVCS.NextDVCSConfigurationResolver) hg.getNextConfigurationResolver();
@@ -176,7 +176,7 @@ public class NextDVCSConfigurationResolverTest extends BaseUnitTest<MercurialCom
     }
 
     @Test
-    public void testNextDVCSConfigurationResolverTwoComponentsNothingNewer() throws ConfigurationRotatorException, IOException, InterruptedException {
+    public void twoComponentsNothingNewer() throws ConfigurationRotatorException, IOException, InterruptedException {
         Mercurial hg = new Mercurial();
 
         BaseDVCS.NextDVCSConfigurationResolver next = (BaseDVCS.NextDVCSConfigurationResolver) hg.getNextConfigurationResolver();

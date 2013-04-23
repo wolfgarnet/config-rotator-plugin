@@ -105,11 +105,6 @@ public abstract class BaseDVCS<COMPONENT extends BaseDVCSConfigurationComponent,
             COMPONENT chosenComponent = null;
             CONFIG nconfig = configuration.clone();
 
-            logger.info( "" + ObjectUtils.identityToString( configuration ) );
-            logger.info( "" + configuration );
-            logger.info( "" + ObjectUtils.identityToString( nconfig ) );
-            logger.info( "" + nconfig );
-
             /* Find oldest commit, newer than current */
             for( COMPONENT currentComponent : nconfig.getList() ) {
                 if( !currentComponent.isFixed() ) {
