@@ -22,7 +22,7 @@ import java.util.logging.Level;
 public abstract class BaseUnitTest<COMMIT extends BaseDVCSCommit, COMPONENT extends BaseDVCSConfigurationComponent, TARGET extends BaseDVCSTarget, CONFIG extends BaseDVCSConfiguration<COMPONENT, TARGET>> {
 
     @ClassRule
-    public static LoggingRule lrule = new LoggingRule( Level.ALL, "net.praqma" ).setFormat( PraqmaticLogFormatter.TINY_FORMAT );
+    public static LoggingRule lrule = new LoggingRule( "net.praqma" ).setFormat( PraqmaticLogFormatter.TINY_FORMAT );
 
     protected TaskListener tasklistener;
     protected FilePath workspace;
