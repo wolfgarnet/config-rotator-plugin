@@ -336,7 +336,7 @@
         <dependency>
             <groupId>com.aragost.javahg</groupId>
             <artifactId>javahg</artifactId>
-            <version>0.6-SNAPSHOT</version>
+            <version>0.4</version>
         </dependency>
 
 
