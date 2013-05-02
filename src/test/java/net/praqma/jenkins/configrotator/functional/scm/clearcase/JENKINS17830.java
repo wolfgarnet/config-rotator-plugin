@@ -38,10 +38,10 @@ public class JENKINS17830 {
 
     @Test
     public void test() throws IOException {
-        ProjectBuilder builder = new ProjectBuilder( new ClearCaseUCM( ccenv.getPVob() ) ).setName( "remove-target" );
+        ProjectBuilder builder = new ProjectBuilder( new ClearCaseUCM( ccenv.getPVob() ) ).setName( "config-spec" );
         ConfigRotatorProject project = builder.getProject();
-        project.addTarget( new ClearCaseUCMTarget( "_Server@" + ccenv.getPVob() + ", INITIAL, false" ) ).
-                addTarget( new ClearCaseUCMTarget( "_Client@" + ccenv.getPVob() + ", INITIAL, false" ) );
+        project.addTarget( new ClearCaseUCMTarget( "server-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
+                addTarget( new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, false" ) );
 
         AbstractBuild<?, ?> build = crrule.buildProject( project.getJenkinsProject(), false, null );
 
