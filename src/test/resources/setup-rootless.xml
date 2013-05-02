@@ -129,7 +129,7 @@
   <!-- First -->
   <add file="Service/service.h" content="#1" />
   
-  <baseline name="server-1" label="full" comment="" component="_Server" pvob="${pvobname}" />
+  <baseline name="server-1111" label="full" comment="" component="_Server" pvob="${pvobname}" />
   
   <!-- Second -->
   <add file="Clientapp/client.h" content="#1" />
