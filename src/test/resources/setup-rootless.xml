@@ -138,7 +138,7 @@
   
   
   <!-- Third -->
-  <checkout comment="" file="Model/model.h" />
+  <checkout comment="" file="Service/service.h" />
   
   <content file="Service/service.h" content="#2" />
   
@@ -148,7 +148,7 @@
   
   
   <!-- Fourth -->
-  <checkout comment="" file="Model/model.h" />
+  <checkout comment="" file="Service/service.h" />
   
   <content file="Service/service.h" content="#3" />
   
