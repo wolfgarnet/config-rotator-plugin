@@ -73,8 +73,8 @@ public class JENKINS17830 {
                 checkTargets( new ClearCaseUCMTarget( "a-baseline-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
                 addElementToPathCheck( path, new SystemValidator.Element( "a-server", true ) ).
                 addElementToPathCheck( path, new SystemValidator.Element( "a-client", true ) ).
-                addElementToPathCheck( path, new SystemValidator.Element( "b-server", true ) ).
-                addElementToPathCheck( path, new SystemValidator.Element( "b-client", true ) ).
+                addElementToPathCheck( path, new SystemValidator.Element( "b-server", false ) ).
+                addElementToPathCheck( path, new SystemValidator.Element( "b-client", false ) ).
                 checkCompatability( true ).
                 validate();
     }
