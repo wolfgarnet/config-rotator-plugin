@@ -148,7 +148,7 @@ public class FB8790 {
 
 
         new Rebase( container ).addBaseline( model1 ).dropFromStream().rebase( true );
-        new ConfigSpec( view.getViewRoot() ).addLoadRulesFromBaseline( model1 ).generate().appy();
+        new ConfigSpec( view.getViewRoot() ).addLoadRule( model1 ).generate().appy();
 
         new UpdateView( view ).swipe().overwrite().update();
 
