@@ -81,7 +81,7 @@ public class PrepareWorkspace implements FileCallable<SnapshotView> {
                 out.println( ConfigurationRotator.LOGGERNAME + "View tag : " + viewtag );
 				//view = ViewUtils.createView( devStream, "ALL", new File( workspace, "view" ), viewtag, true );
 
-                new ConfigSpec( viewroot ).addLoadRulesFromBaselines( baselines ).generate().appy();
+                new ConfigSpec( viewroot ).addLoadRule( baselines ).generate().appy();
 
                 new UpdateView( view ).swipe().overwrite().update();
 			} catch( ClearCaseException e ) {
