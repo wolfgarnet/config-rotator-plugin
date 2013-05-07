@@ -40,26 +40,26 @@ public class JENKINS17830 {
     public void test() throws IOException {
         ProjectBuilder builder = new ProjectBuilder( new ClearCaseUCM( ccenv.getPVob() ) ).setName( "config-spec" );
         ConfigRotatorProject project = builder.getProject();
-        project.addTarget( new ClearCaseUCMTarget( "server-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
-                addTarget( new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, false" ) );
+        project.addTarget( new ClearCaseUCMTarget( "a-baseline-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
+                addTarget( new ClearCaseUCMTarget( "b-baseline-1@" + ccenv.getPVob() + ", INITIAL, false" ) );
 
         AbstractBuild<?, ?> build = crrule.buildProject( project.getJenkinsProject(), false, null );
 
         SystemValidator<ClearCaseUCMTarget> val = new SystemValidator<ClearCaseUCMTarget>( build );
         val.checkExpectedResult( Result.SUCCESS ).
                 checkAction( true ).
-                checkTargets( new ClearCaseUCMTarget( "server-1@" + ccenv.getPVob() + ", INITIAL, false" ), new ClearCaseUCMTarget( "client-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
+                checkTargets( new ClearCaseUCMTarget( "a-baseline-1@" + ccenv.getPVob() + ", INITIAL, false" ), new ClearCaseUCMTarget( "b-baseline-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
                 checkCompatability( true ).
                 validate();
 
-        project.reconfigure().addTarget( new ClearCaseUCMTarget( "server-1@" + ccenv.getPVob() + ", INITIAL, false" ) );
+        project.reconfigure().addTarget( new ClearCaseUCMTarget( "a-baseline-1@" + ccenv.getPVob() + ", INITIAL, false" ) );
 
         AbstractBuild<?, ?> build2 = crrule.buildProject( project.getJenkinsProject(), false, null );
 
         SystemValidator<ClearCaseUCMTarget> val2 = new SystemValidator<ClearCaseUCMTarget>( build2 );
         val2.checkExpectedResult( Result.SUCCESS ).
                 checkAction( true ).
-                checkTargets( new ClearCaseUCMTarget( "server-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
+                checkTargets( new ClearCaseUCMTarget( "a-baseline-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
                 checkCompatability( true ).
                 validate();
     }
