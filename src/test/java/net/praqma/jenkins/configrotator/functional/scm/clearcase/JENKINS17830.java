@@ -54,8 +54,10 @@ public class JENKINS17830 {
         val.checkExpectedResult( Result.SUCCESS ).
                 checkAction( true ).
                 checkTargets( new ClearCaseUCMTarget( "a-baseline-1@" + ccenv.getPVob() + ", INITIAL, false" ), new ClearCaseUCMTarget( "b-baseline-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
-                addElementToPathCheck( path, new SystemValidator.Element( "Server", true ) ).
-                addElementToPathCheck( path, new SystemValidator.Element( "Client", true ) ).
+                addElementToPathCheck( path, new SystemValidator.Element( "a-server", true ) ).
+                addElementToPathCheck( path, new SystemValidator.Element( "a-client", true ) ).
+                addElementToPathCheck( path, new SystemValidator.Element( "b-server", true ) ).
+                addElementToPathCheck( path, new SystemValidator.Element( "b-client", true ) ).
                 checkCompatability( true ).
                 validate();
 
@@ -69,8 +71,10 @@ public class JENKINS17830 {
         val2.checkExpectedResult( Result.SUCCESS ).
                 checkAction( true ).
                 checkTargets( new ClearCaseUCMTarget( "a-baseline-1@" + ccenv.getPVob() + ", INITIAL, false" ) ).
-                addElementToPathCheck( path, new SystemValidator.Element( "Server", true ) ).
-                addElementToPathCheck( path, new SystemValidator.Element( "Client", false ) ).
+                addElementToPathCheck( path, new SystemValidator.Element( "a-server", true ) ).
+                addElementToPathCheck( path, new SystemValidator.Element( "a-client", true ) ).
+                addElementToPathCheck( path, new SystemValidator.Element( "b-server", true ) ).
+                addElementToPathCheck( path, new SystemValidator.Element( "b-client", true ) ).
                 checkCompatability( true ).
                 validate();
     }
