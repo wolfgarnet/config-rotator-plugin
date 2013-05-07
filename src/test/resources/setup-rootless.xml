@@ -146,7 +146,7 @@
 
   <context mvfs="m:\" linux="/view" view="a-${name}_one_int" vob="${vobname}"/>
   
-  <activity comment="" headline="Adding initial files into components" in="a-one_int" name="initial_files" pvob="${pvobname}" />
+  <activity comment="" headline="Adding initial files into components" in="a-one_int" name="a-initial_files" pvob="${pvobname}" />
   
   <setactivity activity="a-initial_files" pvob="${pvobname}" />
   
@@ -165,7 +165,7 @@
 
     <context mvfs="m:\" linux="/view" view="b-${name}_one_int" vob="${vobname}"/>
 
-    <activity comment="" headline="Adding initial files into components" in="b-one_int" name="initial_files" pvob="${pvobname}" />
+    <activity comment="" headline="Adding initial files into components" in="b-one_int" name="b-initial_files" pvob="${pvobname}" />
 
     <setactivity activity="b-initial_files" pvob="${pvobname}" />
 
