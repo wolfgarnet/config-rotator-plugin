@@ -6,86 +6,130 @@
   <vob storetag="pvobname" tag="${pvobname}" linuxtag="/vobs/${pvobname}" comment="PVOB" ucmproject="true" stgloc="-auto" mounted="true"/>
   <vob storetag="vobname" tag="${vobname}" linuxtag="/vobs/${vobname}" stgloc="-auto" mounted="true"/>
 
-  <view tag="${name}_setupview" stgloc="-auto"/>
-  <context mvfs="m:\" linux="/view" view="${name}_setupview" vob="${vobname}"/>
+
+  <!-- REPEAT STARTS HERE -->
+
+  <view tag="a-${name}_setupview" stgloc="-auto"/>
+  <context mvfs="m:\" linux="/view" view="a-${name}_setupview" vob="${vobname}"/>
   
-  <component root="" comment="" name="_System" pvob="${pvobname}" />
-  <component root="" comment="" name="_Server" pvob="${pvobname}" />
-  <component root="" comment="" name="_Client" pvob="${pvobname}" />
-  <component root="Service" comment="" name="Service" pvob="${pvobname}" />
-  <component root="Model" comment="" name="Model" pvob="${pvobname}" />
-  <component root="Clientapp" comment="" name="Clientapp" pvob="${pvobname}" />
+  <component root="" comment="" name="_a-System" pvob="${pvobname}" />
+  <component root="a-server" comment="" name="a-Server" pvob="${pvobname}" />
+  <component root="a-client" comment="" name="a-Client" pvob="${pvobname}" />
   
-  <folder name="one-folder" in="RootFolder" pvob="${pvobname}" />
+  <folder name="a-folder" in="RootFolder" pvob="${pvobname}" />
    
-  <project name="bootstrap" comment="" model="SIMPLE" pvob="${pvobname}" in="one-folder">
+  <project name="a-bootstrap" comment="" model="SIMPLE" pvob="${pvobname}" in="a-folder">
     <components>
-      <component name="Service" pvob="${pvobname}" />
-      <component name="Model" pvob="${pvobname}"  />
-      <component name="Clientapp" pvob="${pvobname}" />
+      <component name="a-Server" pvob="${pvobname}" />
+      <component name="a-Client" pvob="${pvobname}" />
     </components>
     <policies>
       <policy>POLICY_INTERPROJECT_DELIVER</policy>
     </policies>
   </project>
   
-  <stream name="bootstrap_int" in="bootstrap" comment="" pvob="${pvobname}" type="integration">
+  <stream name="a-bootstrap_int" in="a-bootstrap" comment="" pvob="${pvobname}" type="integration">
     <baselines>
-      <baseline name="_System_INITIAL" pvob="${pvobname}" />
-      <baseline name="_Server_INITIAL" pvob="${pvobname}" />
-      <baseline name="_Client_INITIAL" pvob="${pvobname}" />
-      <baseline name="Service_INITIAL" pvob="${pvobname}" />
-      <baseline name="Model_INITIAL" pvob="${pvobname}" />
-      <baseline name="Clientapp_INITIAL" pvob="${pvobname}" />
+      <baseline name="_a-System_INITIAL" pvob="${pvobname}" />
+      <baseline name="a-Server_INITIAL" pvob="${pvobname}" />
+      <baseline name="a-Client_INITIAL" pvob="${pvobname}" />
     </baselines>
   </stream>
   
-  <view tag="${name}_bootstrap_int" stgloc="-auto">
-    <stream name="bootstrap_int" pvob="${pvobname}" />
+  <view tag="a-${name}_bootstrap_int" stgloc="-auto">
+    <stream name="a-bootstrap_int" pvob="${pvobname}" />
   </view>
 
-  <context mvfs="m:\" linux="/view" view="${name}_bootstrap_int" vob="${vobname}"/>
-  
-  <baseline name="_Server_1.0" label="none" comment="" component="_Server" pvob="${pvobname}">
-    <dependencies>
-      <component name="Service" pvob="${pvobname}" />
-      <component name="Model" pvob="${pvobname}" />
-    </dependencies>
-  </baseline>
+  <context mvfs="m:\" linux="/view" view="a-${name}_bootstrap_int" vob="${vobname}"/>
 
-  <baseline name="_Client_1.0" label="none" comment="" component="_Client" pvob="${pvobname}">
+  <baseline name="_a-System_1.0" label="full" comment="" component="_a-System" pvob="${pvobname}">
     <dependencies>
-      <component name="Clientapp" pvob="${pvobname}" />
-      <component name="Model" pvob="${pvobname}" />
-    </dependencies>
-  </baseline>
-  
-  <baseline name="_System_1.0" label="full" comment="" component="_System" pvob="${pvobname}">
-    <dependencies>
-      <component name="_Server" pvob="${pvobname}" />
-      <component name="_Client" pvob="${pvobname}" />
+      <component name="a-Server" pvob="${pvobname}" />
+      <component name="a-Client" pvob="${pvobname}" />
     </dependencies>
   </baseline>
   
   
-  <project name="one" comment="" pvob="${pvobname}" in="one-folder">
+  <project name="a-one" comment="" pvob="${pvobname}" in="a-folder">
     <components>
-      <component name="Service" pvob="${pvobname}" />
-      <component name="Model" pvob="${pvobname}" />
-      <component name="Clientapp" pvob="${pvobname}" />
+      <component name="a-Server" pvob="${pvobname}" />
+      <component name="a-Client" pvob="${pvobname}" />
     </components>
     <policies>
       <policy>POLICY_INTERPROJECT_DELIVER</policy>
     </policies>
   </project>
   
-  <stream name="one_int" in="one" comment="" pvob="${pvobname}" type="integration">
+  <stream name="a-one_int" in="a-one" comment="" pvob="${pvobname}" type="integration">
     <baselines>
-      <baseline name="_System_1.0" pvob="${pvobname}" />
+      <baseline name="_a-System_1.0" pvob="${pvobname}" />
     </baselines>
   </stream>
+
+
+    <!-- SECOND -->
+
+
+    <view tag="b-${name}_setupview" stgloc="-auto"/>
+    <context mvfs="m:\" linux="/view" view="b-${name}_setupview" vob="${vobname}"/>
+
+    <component root="" comment="" name="_b-System" pvob="${pvobname}" />
+    <component root="b-server" comment="" name="b-Server" pvob="${pvobname}" />
+    <component root="b-client" comment="" name="b-Client" pvob="${pvobname}" />
+
+    <folder name="b-folder" in="RootFolder" pvob="${pvobname}" />
+
+    <project name="b-bootstrap" comment="" model="SIMPLE" pvob="${pvobname}" in="b-folder">
+        <components>
+            <component name="b-Server" pvob="${pvobname}" />
+            <component name="b-Client" pvob="${pvobname}" />
+        </components>
+        <policies>
+            <policy>POLICY_INTERPROJECT_DELIVER</policy>
+        </policies>
+    </project>
+
+    <stream name="b-bootstrap_int" in="b-bootstrap" comment="" pvob="${pvobname}" type="integration">
+        <baselines>
+            <baseline name="_b-System_INITIAL" pvob="${pvobname}" />
+            <baseline name="b-Server_INITIAL" pvob="${pvobname}" />
+            <baseline name="b-Client_INITIAL" pvob="${pvobname}" />
+        </baselines>
+    </stream>
+
+    <view tag="b-${name}_bootstrap_int" stgloc="-auto">
+        <stream name="b-bootstrap_int" pvob="${pvobname}" />
+    </view>
+
+    <context mvfs="m:\" linux="/view" view="b-${name}_bootstrap_int" vob="${vobname}"/>
+
+    <baseline name="_b-System_1.0" label="full" comment="" component="_b-System" pvob="${pvobname}">
+        <dependencies>
+            <component name="b-Server" pvob="${pvobname}" />
+            <component name="b-Client" pvob="${pvobname}" />
+        </dependencies>
+    </baseline>
+
+
+    <project name="b-one" comment="" pvob="${pvobname}" in="b-folder">
+        <components>
+            <component name="b-Server" pvob="${pvobname}" />
+            <component name="b-Client" pvob="${pvobname}" />
+        </components>
+        <policies>
+            <policy>POLICY_INTERPROJECT_DELIVER</policy>
+        </policies>
+    </project>
+
+    <stream name="b-one_int" in="b-one" comment="" pvob="${pvobname}" type="integration">
+        <baselines>
+            <baseline name="_b-System_1.0" pvob="${pvobname}" />
+        </baselines>
+    </stream>
+
+  <!-- END OF REPEAT -->
   
-  <project name="jenkins" comment="" pvob="${pvobname}" in="one-folder">
+  <project name="jenkins" comment="" pvob="${pvobname}" in="a-folder">
     <policies>
       <policy>POLICY_INTERPROJECT_DELIVER</policy>
     </policies>
@@ -94,85 +138,41 @@
   <stream name="jenkins_int" in="jenkins" comment="" pvob="${pvobname}" type="integration">
   </stream>
   
-  <!-- Dev stream #1 -->
-  <stream name="one_dev" in="one_int" comment="" pvob="${pvobname}">
-    <baselines>
-      <baseline name="_System_1.0" pvob="${pvobname}" />
-    </baselines>
-  </stream>
-  
-  <view tag="${name}_one_dev" stgloc="-auto">
-    <stream name="one_dev" pvob="${pvobname}" />
+
+
+  <view tag="a-${name}_one_int" stgloc="-auto">
+    <stream name="a-one_int" pvob="${pvobname}" />
   </view>
 
-  <!-- Dev stream #2 -->
-  <stream name="one_dev2" in="one_int" comment="" pvob="${pvobname}">
-    <baselines>
-      <baseline name="_System_1.0" pvob="${pvobname}" />
-    </baselines>
-  </stream>
+  <context mvfs="m:\" linux="/view" view="a-${name}_one_int" vob="${vobname}"/>
   
-  <view tag="${name}_one_dev2" stgloc="-auto">
-    <stream name="one_dev2" pvob="${pvobname}" />
-  </view>
+  <activity comment="" headline="Adding initial files into components" in="a-one_int" name="initial_files" pvob="${pvobname}" />
   
-  <view tag="${name}_one_int" stgloc="-auto">
-    <stream name="one_int" pvob="${pvobname}" />
-  </view>
-  
-  <context mvfs="m:\" linux="/view" view="${name}_one_int" vob="${vobname}"/>
-  
-  <activity comment="" headline="Adding initial files into components" in="one_int" name="initial_files" pvob="${pvobname}" />
-  
-  <setactivity activity="initial_files" pvob="${pvobname}" />
+  <setactivity activity="a-initial_files" pvob="${pvobname}" />
   
   <!-- First -->
-  <add file="Service/service.h" content="#1" />
+  <add file="a-server/server.h" content="#1" />
   
-  <baseline name="server-1111" label="full" comment="" component="_Server" pvob="${pvobname}" />
-  
-  <!-- Second -->
-  <add file="Clientapp/client.h" content="#1" />
-  
-  <baseline name="client-1" label="full" comment="" component="_Client" pvob="${pvobname}" />
-  
-  
-  <!-- Third -->
-  <checkout comment="" file="Service/service.h" />
-  
-  <content file="Service/service.h" content="#2" />
-  
-  <checkin file="Service/service.h" />
-  
-  <baseline name="server-2" label="full" comment="" component="_Server" pvob="${pvobname}" />
-  
-  
-  <!-- Fourth -->
-  <checkout comment="" file="Service/service.h" />
-  
-  <content file="Service/service.h" content="#3" />
-  
-  <checkin file="Service/service.h" />
-  
-  <baseline name="server-3" label="full" comment="" component="_Server" pvob="${pvobname}" />
+  <baseline name="a-baseline-1" label="full" comment="" component="_a-System" pvob="${pvobname}" />
 
-  <!-- Fifth -->
-  <checkout comment="" file="Clientapp/client.h" />
-  
-  <content file="Clientapp/client.h" content="#2" />
-  
-  <checkin file="Clientapp/client.h" />
-  
-  <baseline name="client-2" label="full" comment="" component="_Client" pvob="${pvobname}" />
-  
-	<!-- Sixth -->
-  <checkout comment="" file="Clientapp/client.h" />
-  
-  <content file="Clientapp/client.h" content="#3" />
-  
-  <checkin file="Clientapp/client.h" />
-  
-  <baseline name="client-3" label="full" comment="" component="_Client" pvob="${pvobname}" />
+
+
+
+
+    <view tag="b-${name}_one_int" stgloc="-auto">
+        <stream name="b-one_int" pvob="${pvobname}" />
+    </view>
+
+    <context mvfs="m:\" linux="/view" view="b-${name}_one_int" vob="${vobname}"/>
+
+    <activity comment="" headline="Adding initial files into components" in="b-one_int" name="initial_files" pvob="${pvobname}" />
+
+    <setactivity activity="b-initial_files" pvob="${pvobname}" />
+
+    <!-- First -->
+    <add file="b-server/server.h" content="#1" />
+
+    <baseline name="b-baseline-1" label="full" comment="" component="_b-System" pvob="${pvobname}" />
 
   
 </ccenv>
